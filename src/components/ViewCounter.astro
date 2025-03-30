@@ -3,9 +3,12 @@
 // This component displays the view count for a specific page
 const { slug } = Astro.props;
 
+// Make sure slug is a string to avoid any type issues
+const safeSlug = typeof slug === 'string' ? slug : String(slug || '');
+
 // Normalize the path to match what GoatCounter expects
 // Ensure we have the right prefix format (/blog/blog/ for blog posts)
-let normalizedPath = slug.startsWith('/') ? slug : `/${slug}`;
+let normalizedPath = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
 normalizedPath = normalizedPath.endsWith('/') ? normalizedPath.slice(0, -1) : normalizedPath;
 
 if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/')) {

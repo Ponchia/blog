@@ -17,11 +17,30 @@ const postsWithMetadata = await Promise.all(
 	})
 );
 
+// Helper function to ensure we have a valid Date object
+function ensureDate(dateValue: Date | string | undefined | null): Date | null {
+	if (!dateValue) return null;
+	
+	if (dateValue instanceof Date) return dateValue;
+	
+	// If it's a string, try to convert it to a Date
+	try {
+		const parsedDate = new Date(dateValue);
+		if (!isNaN(parsedDate.getTime())) {
+			return parsedDate;
+		}
+	} catch (e) {
+		console.error("Invalid date format:", dateValue);
+	}
+	
+	return null;
+}
+
 const posts = postsWithMetadata
 	.sort((a, b) => {
-		// Get effective publish dates (manual or from git)
-		const dateA = a.post.data.pubDate || a.remarkPluginFrontmatter.gitCreatedDate;
-		const dateB = b.post.data.pubDate || b.remarkPluginFrontmatter.gitCreatedDate;
+		// Get effective publish dates (manual or from git) and ensure they're valid Date objects
+		const dateA = ensureDate(a.post.data.pubDate) || ensureDate(a.remarkPluginFrontmatter.gitCreatedDate);
+		const dateB = ensureDate(b.post.data.pubDate) || ensureDate(b.remarkPluginFrontmatter.gitCreatedDate);
 		
 		// If both have dates, sort by them
 		if (dateA && dateB) {
@@ -68,8 +87,8 @@ function getPathWithBase(path: string): string {
 						// Path for view counter
 						const countPath = `/blog/${post.id}/`;
 						
-						// Get the effective publish date (manual or from git)
-						const displayDate = post.data.pubDate || remarkPluginFrontmatter.gitCreatedDate;
+						// Get the effective publish date (manual or from git) and ensure it's a valid Date
+						const displayDate = ensureDate(post.data.pubDate) || ensureDate(remarkPluginFrontmatter.gitCreatedDate);
 						
 						return (
 							<li class={index === 0 ? 'featured-post' : ''}>
