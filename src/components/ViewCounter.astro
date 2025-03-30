@@ -4,50 +4,107 @@
 const { slug } = Astro.props;
 
 // API token for GoatCounter
-const GOATCOUNTER_TOKEN = import.meta.env.PUBLIC_GOATCOUNTER_API_TOKEN;
+const GOATCOUNTER_TOKEN = import.meta.env.PUBLIC_GOATCOUNTER_API_TOKEN || "15kcho1c5xdz81f3j1hr9bxfqd193bqo2w0na4apa39h4o5bvnx";
 const GOATCOUNTER_URL = "https://ponchia.goatcounter.com";
 
 // Normalize the path to match what GoatCounter expects
 const normalizedPath = slug.startsWith('/') ? slug : `/${slug}`;
+
+// Define debugInfo type
+type DebugInfo = {
+  apiUrl: string;
+  pathsResponse: { status: number; statusText: string } | null;
+  matchedPath: { path: string; id: number } | null;
+  statsResponse: { url: string; status: number; statusText: string } | null;
+  finalCount: number | null;
+  error: string | null;
+};
+
+// For debugging
+const debug = true;
+const debugInfo: DebugInfo = {
+  apiUrl: "",
+  pathsResponse: null,
+  matchedPath: null,
+  statsResponse: null,
+  finalCount: null,
+  error: null
+};
 
 // Initialize count with null, will be populated after fetch
 let count: number | null = null;
 
 try {
   // Fetch path ID first
-  const pathsResponse = await fetch(`${GOATCOUNTER_URL}/api/v0/paths`, {
+  const pathsUrl = `${GOATCOUNTER_URL}/api/v0/paths`;
+  debugInfo.apiUrl = pathsUrl;
+  
+  console.log(`[ViewCounter] Fetching paths from: ${pathsUrl}`);
+  console.log(`[ViewCounter] Looking for path: ${normalizedPath}`);
+  
+  const pathsResponse = await fetch(pathsUrl, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${GOATCOUNTER_TOKEN}`
     }
   });
   
+  debugInfo.pathsResponse = {
+    status: pathsResponse.status,
+    statusText: pathsResponse.statusText
+  };
+  
   if (pathsResponse.ok) {
     const pathsData = await pathsResponse.json();
+    console.log(`[ViewCounter] Got ${pathsData.paths?.length || 0} paths from API`);
+    
     // Find the path ID for the current slug
-    const pathInfo = pathsData.paths.find((p: { path: string; id: number }) => p.path === normalizedPath);
+    const pathInfo = pathsData.paths?.find((p: { path: string; id: number }) => p.path === normalizedPath);
+    debugInfo.matchedPath = pathInfo || null;
     
     if (pathInfo && pathInfo.id) {
+      console.log(`[ViewCounter] Found matching path: ${pathInfo.path} with ID: ${pathInfo.id}`);
+      
       // Now fetch the stats for this path ID
-      const statsResponse = await fetch(`${GOATCOUNTER_URL}/api/v0/stats/hits`, {
+      const statsUrl = `${GOATCOUNTER_URL}/api/v0/stats/hits`;
+      const statsResponse = await fetch(statsUrl, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${GOATCOUNTER_TOKEN}`
         }
       });
       
+      debugInfo.statsResponse = {
+        url: statsUrl,
+        status: statsResponse.status,
+        statusText: statsResponse.statusText
+      };
+      
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
-        const pathStats = statsData.paths.find((p: { id: number; count: number }) => p.id === pathInfo.id);
+        console.log(`[ViewCounter] Stats data:`, statsData);
+        
+        const pathStats = statsData.paths?.find((p: { id: number; count: number }) => p.id === pathInfo.id);
         
         if (pathStats) {
           count = pathStats.count;
+          debugInfo.finalCount = count;
+          console.log(`[ViewCounter] Found count for path ${pathInfo.path}: ${count}`);
+        } else {
+          console.log(`[ViewCounter] No stats found for path ID ${pathInfo.id}`);
         }
+      } else {
+        console.error(`[ViewCounter] Stats API error: ${statsResponse.status} ${statsResponse.statusText}`);
       }
+    } else {
+      console.log(`[ViewCounter] Path not found in GoatCounter data: ${normalizedPath}`);
     }
+  } else {
+    console.error(`[ViewCounter] Paths API error: ${pathsResponse.status} ${pathsResponse.statusText}`);
   }
 } catch (error) {
-  console.error('Error fetching view count:', error);
+  console.error('[ViewCounter] Error fetching view count:', error);
+  debugInfo.error = error instanceof Error ? error.message : String(error);
   // Continue rendering without the count
 }
 ---
@@ -60,6 +117,12 @@ try {
   <span class="view-count">
     {count !== null ? count : '–'}
   </span>
+  
+  {debug && (
+    <span class="debug-info" style="display: none;">
+      <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+    </span>
+  )}
 </span>
 
 <style>
@@ -69,10 +132,29 @@ try {
     gap: 0.25rem;
     color: var(--accent-light, #6b7280);
     font-size: 0.875rem;
+    position: relative;
   }
   
   .view-icon {
     opacity: 0.7;
+  }
+  
+  .debug-info {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-width: 500px;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    color: black;
   }
   
   @media (max-width: 640px) {
@@ -88,20 +170,65 @@ try {
 </style>
 
 <script>
-  // Client-side fallback in case the server-side fetch fails
+  // Client-side debugging and fallback
   document.addEventListener('DOMContentLoaded', () => {
-    const counters = document.querySelectorAll('.view-counter .view-count');
-    counters.forEach(counter => {
+    console.log('[ViewCounter Client] DOMContentLoaded event fired');
+    
+    // Check if count.js is loaded
+    const countScript = document.querySelector('script[src*="count.js"]');
+    console.log('[ViewCounter Client] Count.js script found:', !!countScript);
+    
+    const counters = document.querySelectorAll('.view-counter');
+    console.log('[ViewCounter Client] Found counters:', counters.length);
+    
+    counters.forEach((counter, index) => {
+      const countSpan = counter.querySelector('.view-count');
+      const debugInfo = counter.querySelector('.debug-info');
+      const path = counter.getAttribute('data-goatcounter-path');
+      
+      console.log(`[ViewCounter Client] Counter ${index} path:`, path);
+      console.log(`[ViewCounter Client] Counter ${index} current text:`, countSpan?.textContent);
+      
+      // Toggle debug info on click
+      counter.addEventListener('click', (e) => {
+        if (debugInfo && debugInfo instanceof HTMLElement) {
+          const isVisible = debugInfo.style.display !== 'none';
+          debugInfo.style.display = isVisible ? 'none' : 'block';
+          e.stopPropagation();
+        }
+      });
+      
       // Only update if we're showing the fallback dash
-      if (counter.textContent && counter.textContent.trim() === '–') {
+      if (countSpan && countSpan.textContent && countSpan.textContent.trim() === '–') {
+        console.log(`[ViewCounter Client] Counter ${index} needs client update`);
+        
+        // Check immediately and then again after a delay
+        checkCounter(counter, countSpan);
+        
         setTimeout(() => {
-          // Try to use the client-side count if available
-          const parent = counter.closest('[data-goatcounter-count]');
-          if (parent && parent.getAttribute('title')) {
-            counter.textContent = parent.getAttribute('title');
-          }
-        }, 1000);
+          checkCounter(counter, countSpan);
+        }, 1500);
       }
     });
   });
+  
+  function checkCounter(counter: Element, countSpan: Element) {
+    // Check if count.js has populated the title attribute
+    const title = counter.getAttribute('title');
+    console.log('[ViewCounter Client] Counter title attribute:', title);
+    
+    if (title) {
+      console.log('[ViewCounter Client] Updating count from title:', title);
+      countSpan.textContent = title;
+    } else {
+      // Try to retrieve count from data attribute
+      const count = counter.getAttribute('data-count');
+      if (count) {
+        console.log('[ViewCounter Client] Updating count from data-count:', count);
+        countSpan.textContent = count;
+      } else {
+        console.log('[ViewCounter Client] No count available yet');
+      }
+    }
+  }
 </script> 
