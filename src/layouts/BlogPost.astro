@@ -16,12 +16,14 @@ function getImagePath(image: string): string {
 	// If already a full URL, return as is
 	if (image.startsWith('http')) return image;
 	
-	// Get the base URL from the environment
-	const basePath = import.meta.env.BASE_URL;
-	
-	// Clean the path and combine with base path
+	// Get the base URL from the environment with fallback
+	const base = import.meta.env.BASE_URL || '';
+	// Normalize base URL to ensure it doesn't have a trailing slash
+	const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+	// Remove leading slash from path if it exists
 	const cleanPath = image.startsWith('/') ? image.slice(1) : image;
-	return `${basePath}${cleanPath}`;
+	// Join the base with the path, ensuring a single slash separator
+	return normalizedBase ? `${normalizedBase}/${cleanPath}` : `/${cleanPath}`;
 }
 
 const heroImagePath = heroImage ? getImagePath(heroImage) : '';
