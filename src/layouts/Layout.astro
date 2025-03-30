@@ -18,10 +18,25 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 		<BaseHead title={title} description={description} />
 		<!-- GoatCounter Analytics -->
 		<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+		
+		<!-- Theme initialization script - must be in head to avoid FOUC -->
+		<script is:inline>
+			// Get theme from localStorage or system preference
+			function getTheme() {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			}
+			
+			// Apply theme to document immediately
+			const theme = getTheme();
+			document.documentElement.setAttribute('data-theme', theme);
+		</script>
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main class="fade-in">
 			<slot />
 		</main>
 		<Footer />
@@ -30,18 +45,15 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 
 <style>
 	main {
-		width: 720px;
-		max-width: calc(100% - 2em);
-		margin: auto;
-		padding: 2em 1em;
-		background-color: white;
-		border-radius: 8px;
-		box-shadow: 0 4px 6px rgba(var(--gray), 25%);
+		width: 100%;
+		max-width: var(--content-width);
+		margin: 0 auto;
+		padding: 3rem 1.5rem;
 	}
 
-	@media (max-width: 720px) {
+	@media (max-width: 768px) {
 		main {
-			padding: 1em;
+			padding: 2rem 1rem;
 		}
 	}
 </style> 
