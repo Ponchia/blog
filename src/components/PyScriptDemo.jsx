@@ -32,26 +32,18 @@ export default function PyScriptDemo({ code, packages = [] }) {
     scriptEl.src = 'https://pyscript.net/releases/2024.1.1/core.js';
     document.head.appendChild(scriptEl);
     
-    // Wrap code to ensure proper loading of Pyodide packages
+    // Create a minimal wrapper to ensure micropip is available
+    // but without wrapping user code in a way that breaks imports
     const wrappedCode = `
-# First setup Pyodide environment
-from pyodide.ffi import create_proxy
+# First ensure micropip is available
 import pyodide
-import js
-
 try:
-    # Ensure we can access micropip
     await pyodide.loadPackage("micropip")
-    
-    # Now run the actual user code
-    ${code}
 except Exception as e:
-    # Display any errors nicely
-    from pyscript import display
-    display("❌ Error: " + str(e))
-    import traceback
-    display("Stack trace:")
-    display("Error details: " + traceback.format_exc())
+    print("Error loading micropip:", e)
+
+# Now run the user code
+${code}
 `;
     
     // Create Python script element

@@ -55,6 +55,10 @@ import numpy as np
 
 display("Packages are pre-loaded and ready to use!")
 
+# Create target divs for the plots first
+display("<div id='bar-chart'></div>")
+display("<div id='tri-chart'></div>")
+
 # Create a bar chart example
 categories = ['A', 'B', 'C', 'D', 'E']
 values = [22, 35, 14, 28, 19]
@@ -114,10 +118,6 @@ ax2.set_title('Delaunay Triangulation Visualization')
 
 # Display the second plot
 display(fig2, target="tri-chart")
-
-# Create divs for the plots (target elements)
-display("<div id='bar-chart'></div>")
-display("<div id='tri-chart'></div>")
 `} />
 
 ## How It Works
