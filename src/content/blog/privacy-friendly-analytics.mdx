@@ -1,0 +1,113 @@
+---
+title: 'Privacy-Friendly Analytics Without Consent Banners'
+description: 'How this blog implements analytics that respect your privacy without annoying consent popups'
+pubDate: 'Apr 20 2024'
+---
+
+# Privacy-Friendly Analytics Without Consent Banners
+
+Most websites today bombard visitors with cookie consent popups and privacy notices - an annoying experience that frustrates users and disrupts their browsing. But did you know it's possible to gather useful analytics data while respecting user privacy **without** requiring those intrusive consent banners?
+
+On this blog, I've implemented a privacy-first analytics approach that complies with GDPR without disrupting your reading experience. Let me explain how and why this works.
+
+## Understanding GDPR Basics
+
+The General Data Protection Regulation (GDPR) is an EU regulation that came into effect in May 2018, designed to protect personal data and give individuals control over how their information is collected and processed. Under GDPR:
+
+- **Personal data** refers to any information that relates to an identified or identifiable natural person
+- Websites must have a lawful basis for processing personal data
+- Users must be informed about data collection and typically provide consent before non-essential cookies or similar technologies are used
+
+Most analytics platforms (like Google Analytics) require consent because they track users across websites, create persistent identifiers, and build user profiles. This is why most sites show those dreaded cookie banners.
+
+## GoatCounter: Analytics That Respect Privacy
+
+This blog uses [GoatCounter](https://www.goatcounter.com/), a privacy-focused analytics tool that's fundamentally different from conventional analytics services. Here's why it doesn't require a consent banner:
+
+### 1. No Personal Data Collection
+
+GoatCounter **doesn't collect personally identifiable information**:
+- No cookies are used for tracking
+- No persistent unique identifiers
+- No fingerprinting techniques
+- No cross-site tracking
+- No personally identifying information
+
+The GDPR specifically states it "does not apply to anonymous information, namely information which does not relate to an identified or identifiable natural person."
+
+### 2. Minimal Data Processing
+
+The implementation only collects:
+- Page views with timestamps
+- Referrer information (where visitors came from)
+- Browser and device information in aggregate
+- General location data (country level, not precise)
+- Screen size statistics
+
+All this information is aggregated and cannot be tied back to specific individuals.
+
+### 3. Legitimate Interest as Legal Basis
+
+Under GDPR, there are several legal bases for processing data. For minimal analytics like GoatCounter, "legitimate interest" applies - website owners have a legitimate need to understand basic usage patterns without invading privacy.
+
+### 4. Implementation on This Blog
+
+Looking at how GoatCounter is implemented in our codebase, you'll see it's designed with privacy in mind:
+
+```html
+<!-- Simple analytics script with no personal data collection -->
+<script data-goatcounter="https://ponchia.goatcounter.com/count" 
+        async src="//gc.zgo.at/count.js"></script>
+```
+
+The ViewCounter component displays view counts for posts while ensuring no personally identifiable information is processed or stored.
+
+## GitHub Pages and GDPR Considerations
+
+This blog is hosted on GitHub Pages, which raises some additional GDPR considerations. When you host content on GitHub Pages:
+
+1. **Data Controller Relationship**: As the website owner, I remain the data controller for the website, while GitHub acts as a data processor. This means I'm still responsible for ensuring GDPR compliance.
+
+2. **GitHub's Data Processing**: GitHub collects certain technical information (like IP addresses) for security and integrity purposes. According to GitHub's documentation, their terms of service combined with their privacy statement serve as a data processing agreement.
+
+3. **Legitimate Interest Basis**: The minimal data GitHub collects for hosting purposes falls under the "legitimate interest" basis for processing - it's necessary for providing the service and maintaining security.
+
+4. **GitHub's GDPR Compliance**: GitHub itself maintains compliance with EU data protection regulations, including certification with the EU-U.S. Data Privacy Framework.
+
+## Giscus Comments and Privacy
+
+This blog uses [Giscus](https://giscus.app/) for comments, which is powered by GitHub Discussions. This system respects user privacy in several ways:
+
+1. **GitHub Authentication**: To comment, users must explicitly authenticate with GitHub, giving them full control over what information they share.
+
+2. **No Additional Tracking**: Giscus doesn't introduce extra tracking mechanisms or cookies beyond what GitHub already uses.
+
+3. **Transparency**: All comments are public on GitHub Discussions, ensuring full transparency about how user data is being used.
+
+4. **Informed Consent**: Users actively choose to participate by authenticating with GitHub, providing a clear form of consent.
+
+5. **Data Minimization**: The system only processes the data necessary for providing the commenting functionality.
+
+## Benefits of Privacy-Friendly Analytics
+
+Using privacy-friendly analytics offers several advantages:
+
+1. **Better user experience**: No annoying consent popups disrupting visitors
+2. **Simplified compliance**: Fewer regulatory headaches while still respecting privacy
+3. **Ethical data collection**: Getting insights without compromising visitor privacy
+4. **Faster page loads**: Lightweight scripts that don't slow down your site
+5. **Accurate data**: No skewed results from users who reject cookies
+
+## The Ethical Choice
+
+The decision to use privacy-friendly analytics reflects a commitment to ethical web practices. It's not just about legal compliance—it's about respecting visitors and providing a better browsing experience.
+
+Not all websites can take this approach. Sites with more complex tracking needs, personalization features, or advertising dependencies may still require consent mechanisms. However, for blogs, portfolios, and informational sites, privacy-respecting analytics like GoatCounter offer an excellent alternative.
+
+## Conclusion
+
+The web doesn't have to be a place of constant privacy intrusions and annoying popups. By choosing privacy-focused tools like GoatCounter, using GitHub Pages responsibly, and implementing comment systems that respect user agency, websites can gain valuable insights while respecting visitor privacy and complying with regulations like GDPR.
+
+This approach demonstrates that respecting privacy and gathering useful analytics aren't mutually exclusive goals. It's possible to make informed decisions about your website without collecting personally identifiable information or disrupting the user experience.
+
+What do you think about this approach to analytics? Would you consider implementing something similar for your website? Let me know in the comments below! 
