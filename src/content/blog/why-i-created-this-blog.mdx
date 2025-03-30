@@ -1,0 +1,186 @@
+---
+title: 'Why I Created This Blog'
+description: 'The story behind this blog, its architecture, features, and why I chose to make it open source'
+pubDate: 'Mar 31 2024'
+heroImage: 'blog-placeholder-1.jpg'
+mocs: ['Getting Started', 'Behind the Scenes']
+tags: ['astro', 'blogging', 'web development', 'open source']
+status: 'evergreen'
+related: ['react-components-mdx']
+---
+
+import GraphView from '../../components/GraphView.jsx';
+
+# Why I Created This Blog
+
+## The Motivation
+
+I've always encountered interesting technical challenges in my day-to-day work as a software developer. Solutions to these problems often require piecing together information from various sources, experimenting with different approaches, and learning through trial and error. The knowledge gained through these experiences is valuable, but unless documented, it tends to fade with time.
+
+That's why I decided to create this blog—a place to:
+
+- **Document solutions** to problems I've faced
+- **Share knowledge** with the broader tech community
+- **Create a personal knowledge base** that I can refer back to
+- **Connect with other developers** facing similar challenges
+
+The blog will primarily focus on computer science, software architecture, web development, and related technical topics. By making these insights public, I hope to save others time and effort when they encounter similar issues.
+
+## How This Blog Was Built
+
+### Technology Stack
+
+This blog is built with [Astro](https://astro.build/), a modern static site generator that offers several advantages for content-focused websites:
+
+- **Performance-first architecture**: Astro sends minimal JavaScript to the browser by default
+- **Component Islands**: Interactive components are hydrated only when needed
+- **Framework-agnostic**: Works with React, Vue, Svelte, or vanilla JavaScript
+- **Content Collections**: First-class support for Markdown and MDX content
+
+The complete technology stack includes:
+
+- **Astro** (v5.5.5): The core framework
+- **React** (v19.1.0): For interactive components
+- **MDX**: Markdown with embedded React components
+- **TypeScript**: For type safety throughout the codebase
+- **GitHub Pages**: For hosting
+- **GitHub Actions**: For CI/CD
+
+### Key Features
+
+#### 1. Knowledge Graph Visualization
+
+One of the standout features is the knowledge graph visualization, powered by Force Graph:
+
+<div style={{ height: '400px', marginBottom: '2rem', border: '1px solid var(--border-color)', borderRadius: '0.5rem' }}>
+  <GraphView 
+    graphData={{
+      nodes: [
+        { id: 'why-i-created-this-blog', label: 'Why I Created This Blog', type: 'post', status: 'evergreen' },
+        { id: 'react-components-mdx', label: 'React Components in MDX', type: 'post', status: 'evergreen' },
+        { id: 'moc-Getting Started', label: 'Getting Started', type: 'moc' },
+        { id: 'moc-Behind the Scenes', label: 'Behind the Scenes', type: 'moc' },
+        { id: 'tag-astro', label: 'astro', type: 'tag' },
+        { id: 'tag-blogging', label: 'blogging', type: 'tag' },
+        { id: 'tag-web development', label: 'web development', type: 'tag' },
+        { id: 'tag-open source', label: 'open source', type: 'tag' }
+      ],
+      links: [
+        { source: 'why-i-created-this-blog', target: 'moc-Getting Started', type: 'in-moc' },
+        { source: 'why-i-created-this-blog', target: 'moc-Behind the Scenes', type: 'in-moc' },
+        { source: 'why-i-created-this-blog', target: 'tag-astro', type: 'tagged' },
+        { source: 'why-i-created-this-blog', target: 'tag-blogging', type: 'tagged' },
+        { source: 'why-i-created-this-blog', target: 'tag-web development', type: 'tagged' },
+        { source: 'why-i-created-this-blog', target: 'tag-open source', type: 'tagged' },
+        { source: 'why-i-created-this-blog', target: 'react-components-mdx', type: 'related' }
+      ]
+    }}
+  />
+</div>
+
+This visualization represents the connections between blog posts, topics (MOCs - Maps of Content), and tags, creating a network of related content that readers can explore. It's particularly useful for discovering connections between seemingly unrelated topics.
+
+#### 2. Dark/Light Theme Support
+
+The blog automatically detects your system preference for dark or light mode and applies the appropriate theme. This enhances readability based on your environment and preferences.
+
+#### 3. Comments via Giscus
+
+Comments are powered by [Giscus](https://giscus.app/), which leverages GitHub Discussions to provide a seamless commenting experience without requiring a separate database or comment system. This keeps everything open source and transparent.
+
+#### 4. Responsive Design
+
+The blog is fully responsive and works well on devices of all sizes, from desktop monitors to mobile phones. The layout adapts dynamically to provide an optimal reading experience regardless of screen size.
+
+#### 5. MDX Support
+
+All blog posts are written in MDX, which means I can embed interactive React components directly within my Markdown content. This allows for dynamic visualizations, interactive examples, and rich content that goes beyond static text and images.
+
+#### 6. Content Organization
+
+Content is organized using:
+
+- **Tags**: For specific topics and technologies
+- **MOCs (Maps of Content)**: For broader categories and themes
+- **Related Posts**: For suggesting related content
+
+This multi-faceted organization makes it easier to discover relevant content through different paths.
+
+## The Benefits of Open Source Blogging
+
+### Free Hosting and Deployment
+
+One of the most compelling advantages of this setup is that it's completely free to host and deploy:
+
+- **GitHub Pages**: Free hosting for static sites
+- **GitHub Actions**: Free CI/CD for automated deployments
+- **No Databases**: Static site means no database costs
+- **No Server Costs**: Pre-rendered content eliminates server expenses
+
+The entire blog can be run with zero monthly costs while still providing a fast, reliable experience for readers.
+
+### Open Source Benefits
+
+By making the blog open source:
+
+- Others can **learn from the implementation**
+- The community can **contribute improvements**
+- It demonstrates **real-world code** that others can reference
+- It **builds trust** through transparency
+
+You can find the [full source code on GitHub](https://github.com/Ponchia/blog), including all components, configurations, and content.
+
+## Technical Challenges and Solutions
+
+Building this blog involved solving several interesting technical challenges:
+
+### 1. Base Path Configuration
+
+Since the blog is hosted on GitHub Pages under a subpath (`/blog`), all internal links and assets needed to account for this base path. This was handled in the Astro configuration:
+
+```javascript
+// astro.config.mjs
+export default defineConfig({
+    site: 'https://ponchia.github.io',
+    base: isProduction ? '/blog' : '',
+    // ...
+});
+```
+
+The configuration dynamically sets the base path depending on the environment, making local development seamless while ensuring proper paths in production.
+
+### 2. Interactive Components in Static Content
+
+Integrating dynamic React components within static Markdown content required setting up Astro's partial hydration system. This allows components to be rendered statically by default and hydrated on the client only when needed:
+
+```jsx
+<Counter client:visible />
+```
+
+The `client:visible` directive tells Astro to hydrate this component only when it becomes visible in the viewport, saving resources and improving performance.
+
+### 3. Knowledge Graph Generation
+
+Creating the knowledge graph visualization required parsing frontmatter from all blog posts to establish connections between content. This involves:
+
+1. Extracting metadata (tags, MOCs, related posts) from each post
+2. Building a graph data structure with nodes and edges
+3. Rendering the visualization using Force Graph
+
+## Future Plans
+
+This blog is just getting started, and I have several enhancements planned:
+
+1. **Search functionality** to make it easier to find specific content
+2. **Newsletter integration** for subscribers to receive updates
+3. **Code snippet highlighting** with copy functionality
+4. **Reading time estimates** for each article
+5. **Table of contents** for longer posts
+
+## Conclusion
+
+Creating this blog has been both a practical solution to document my technical experiences and an enjoyable exercise in modern web development. By leveraging Astro, React, and GitHub Pages, I've built a platform that's fast, interactive, and completely free to maintain.
+
+I invite you to explore the blog, check out the code, and perhaps even contribute if you're interested. Whether you're here to learn about a specific technical topic or curious about how the blog itself was built, I hope you find something valuable.
+
+Happy coding! 
