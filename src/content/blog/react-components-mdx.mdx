@@ -1,0 +1,45 @@
+---
+title: 'React Components in MDX'
+description: 'How to use React components in MDX with Astro'
+pubDate: 'Mar 30, 2024'
+heroImage: '/blog-placeholder-5.jpg'
+---
+
+This blog post demonstrates how to use React components within MDX files in Astro.
+
+## What is MDX?
+
+MDX combines the power of Markdown with JSX, allowing you to import and use React components directly in your content.
+
+## Example Component
+
+Here's a simple counter component built with React:
+
+import { useState } from 'react';
+
+export const Counter = () => {
+  const [count, setCount] = useState(0);
+  return (
+    <div style={{ padding: '1rem', background: '#f4f4f4', borderRadius: '0.5rem', marginBottom: '1rem' }}>
+      <p>Current count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(count - 1)}>Decrement</button>
+    </div>
+  );
+};
+
+<Counter client:visible />
+
+## How It Works
+
+1. Create your React component (can be inline or imported)
+2. Add the appropriate client directive (like `client:visible`)
+3. Use the component in your MDX content
+
+## Benefits of Using React in MDX
+
+- Interactive elements in otherwise static content
+- Reusable components across multiple content pages
+- Full access to React's ecosystem and features
+
+This approach gives you the best of both worlds - the simplicity of Markdown with the power of React when needed. 
