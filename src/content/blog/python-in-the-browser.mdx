@@ -1,0 +1,73 @@
+---
+title: 'Running Python in Your Browser with PyScript'
+description: 'Learn how to embed and run Python code directly in your browser using PyScript'
+pubDate: 'May 16 2024'
+heroImage: '/blog/blog-placeholder-3.jpg'
+---
+
+import PyScriptDemo from '../../components/PyScriptDemo';
+
+# Python in Your Browser with PyScript
+
+One of the most exciting developments in web technology is the ability to run Python code directly in the browser without any server-side processing. [PyScript](https://pyscript.net/) makes this possible by leveraging WebAssembly to execute Python within the browser environment.
+
+## What is PyScript?
+
+PyScript is a framework that allows you to create Python applications in the browser using HTML's interface. It's built on top of Pyodide, which is a port of CPython to WebAssembly.
+
+## A Simple Example
+
+Below is a simple "Hello, World!" example using PyScript. The code will run right in your browser:
+
+<PyScriptDemo client:load code={`
+from pyscript import display
+from datetime import datetime
+
+# Simple hello world
+display("Hello, World from Python in the browser!")
+
+# Let's add something slightly more interesting
+for i in range(1, 6):
+    display(f"Counting: {i}")
+
+# Create a simple function
+def greet(name):
+    return f"Hello, {name}! Welcome to PyScript."
+
+display(greet("Reader"))
+
+# Display current date and time
+now = datetime.now()
+display("Current time: " + now.strftime("%m/%d/%Y, %H:%M:%S"))
+`} />
+
+## How It Works
+
+When you load this page, the PyScript framework:
+
+1. Downloads and initializes the Python interpreter (compiled to WebAssembly)
+2. Executes the Python code inside the `<script type="py">` tags
+3. Outputs the results directly to the page using the `display()` function
+
+## Benefits of PyScript
+
+- **No Installation Required**: Users don't need to install Python
+- **Client-Side Processing**: Reduces server load by running code in the browser
+- **Interactive Data Analysis**: Create interactive visualizations and data apps
+- **Educational Tool**: Perfect for teaching Python in a browser environment
+
+## Ideas for Using PyScript
+
+- Interactive data visualizations with libraries like Matplotlib
+- Small educational examples and exercises
+- Form validation and processing
+- Simple games and animations
+- Data processing tools
+
+Try editing the Python code above to see the changes in real-time when you refresh the page!
+
+## Learn More
+
+- [PyScript Official Website](https://pyscript.net/)
+- [PyScript Documentation](https://docs.pyscript.net/)
+- [GitHub Repository](https://github.com/pyscript/pyscript) 
