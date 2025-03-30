@@ -4,6 +4,8 @@
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
 :root {
 	/* Shared theme variables */
 	--content-width: 700px;
@@ -61,8 +63,6 @@
 	font-style: normal;
 	font-display: swap;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
 
 body {
 	font-family: 'Atkinson', sans-serif;
