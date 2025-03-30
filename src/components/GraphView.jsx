@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import ForceGraph2D from 'react-force-graph-2d';
+// Remove direct import of ForceGraph2D
+// import ForceGraph2D from 'react-force-graph-2d';
 
 // Helper function to get proper path with base URL
 function getPath(path) {
@@ -17,10 +18,19 @@ const isBrowser = typeof window !== 'undefined';
 
 // Graph visualization component for force-directed graph
 export default function GraphView({ graphData }) {
-  // If not in browser environment, render a placeholder
-  if (!isBrowser) {
-    return <div>Graph visualization loading...</div>;
-  }
+  const [ForceGraph, setForceGraph] = useState(null);
+  
+  // Load ForceGraph component dynamically only on client-side
+  useEffect(() => {
+    if (isBrowser) {
+      import('react-force-graph-2d').then(module => {
+        setForceGraph(() => module.default);
+      }).catch(err => {
+        console.error("Failed to load ForceGraph:", err);
+        setError("Failed to load graph visualization library.");
+      });
+    }
+  }, []);
   
   console.log("GraphView component rendering with data:", graphData);
   
@@ -31,6 +41,8 @@ export default function GraphView({ graphData }) {
 
   // Update dimensions on mount and window resize
   useEffect(() => {
+    if (!isBrowser) return;
+    
     const updateDimensions = () => {
       const container = containerRef.current;
       if (container && container.parentElement) {
@@ -60,7 +72,29 @@ export default function GraphView({ graphData }) {
         graphRef.current.zoomToFit(400, 40);
       }, 500);
     }
-  }, [graphData]);
+  }, [graphData, ForceGraph]);
+
+  // If not in browser environment, render a placeholder
+  if (!isBrowser) {
+    return <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Graph visualization loading...</div>;
+  }
+  
+  // If ForceGraph hasn't loaded yet
+  if (!ForceGraph) {
+    return (
+      <div ref={containerRef} style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100%',
+        width: '100%',
+        fontSize: '1.2rem',
+        color: '#666'
+      }}>
+        Loading graph visualization...
+      </div>
+    );
+  }
 
   // If there's no data to display
   if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
@@ -98,7 +132,7 @@ export default function GraphView({ graphData }) {
 
   return (
     <div ref={containerRef} style={{ height: '100%', width: '100%' }}>
-      <ForceGraph2D
+      <ForceGraph
         ref={graphRef}
         graphData={graphData}
         width={dimensions.width}
