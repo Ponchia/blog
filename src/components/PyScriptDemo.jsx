@@ -35,12 +35,19 @@ export default function PyScriptDemo({ code, packages = [] }) {
     // Create a minimal wrapper to ensure micropip is available
     // but without wrapping user code in a way that breaks imports
     const wrappedCode = `
-# First ensure micropip is available
+# First ensure micropip is available - must use async function
 import pyodide
-try:
-    await pyodide.loadPackage("micropip")
-except Exception as e:
-    print("Error loading micropip:", e)
+
+async def ensure_micropip():
+    try:
+        await pyodide.loadPackage("micropip")
+        print("Micropip loaded successfully")
+    except Exception as e:
+        print("Error loading micropip:", e)
+
+# For top-level await, we'll use pyscript's asyncio integration
+import asyncio
+asyncio.create_task(ensure_micropip())
 
 # Now run the user code
 ${code}
