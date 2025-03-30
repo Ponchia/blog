@@ -1,4 +1,160 @@
-# Astro Starter Kit: Blog
+# Modern Astro Blog
+
+A modern, responsive blog built with Astro, React, and MDX, featuring Giscus comments powered by GitHub Discussions.
+
+## Features
+
+- ✨ Modern and minimalist design
+- 📱 Fully responsive layout
+- ⚡ Blazing fast performance with Astro
+- 💻 Interactive React components in MDX
+- 💬 Comment system using Giscus (GitHub Discussions)
+- 📊 SEO optimized
+- 🔄 RSS feed support
+- 🌙 Light/dark mode support (via preferred color scheme)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or later)
+- npm, yarn, or pnpm
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/blog.git
+cd blog
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+Visit `http://localhost:4321` to see your blog.
+
+## Adding Content
+
+### Blog Posts
+
+Blog posts are stored in `src/content/blog/` as Markdown (.md) or MDX (.mdx) files.
+
+Each post should include frontmatter:
+
+```yaml
+---
+title: 'Your Post Title'
+description: 'A brief description of your post'
+pubDate: 'Apr 01 2024'
+heroImage: '/path/to/image.jpg'
+---
+```
+
+### MDX and React Components
+
+You can use React components in your MDX files:
+
+```mdx
+---
+title: 'Using React in MDX'
+description: 'A post with interactive components'
+pubDate: 'Apr 01 2024'
+---
+
+import Counter from '../../components/Counter';
+
+# My MDX Post with Interactive Components
+
+<Counter client:visible />
+```
+
+Note: React components for MDX should be created in separate files (e.g., `src/components/`) and then imported into your MDX files. Client directives like `client:visible` make the components interactive on the client side.
+
+## Comments Setup
+
+This blog uses Giscus for comments. To configure:
+
+1. Set up Giscus for your repository: https://giscus.app/
+2. Update the Giscus parameters in `src/components/Comments.tsx` with your repository details:
+
+```tsx
+<Giscus
+  id="comments"
+  repo="your-username/your-repo"
+  repoId="R_xxx"
+  category="Blog Post Comments"
+  categoryId="DIC_xxx"
+  mapping="pathname"
+  reactionsEnabled="1"
+  emitMetadata="0"
+  inputPosition="top"
+  theme="preferred_color_scheme"
+  lang="en"
+  loading="lazy"
+/>
+```
+
+## Deployment
+
+### GitHub Pages
+
+The blog is pre-configured for GitHub Pages deployment:
+
+1. Update `site` and `base` in `astro.config.mjs` with your GitHub username:
+```js
+export default defineConfig({
+  site: 'https://yourusername.github.io',
+  base: '/blog',
+  // ...
+});
+```
+
+2. Push to GitHub
+3. Enable GitHub Pages in your repository settings
+
+```bash
+npm run build
+```
+
+### Other Platforms
+
+You can deploy this blog to any static hosting service like Netlify, Vercel, or Cloudflare Pages.
+
+## Customization
+
+- Styling: Update styles in `src/styles/global.css`
+- Layout: Edit components in `src/components/` and layouts in `src/layouts/`
+- Config: Modify site settings in `src/consts.ts` and `astro.config.mjs`
+
+## Project Structure
+
+```text
+├── public/           # Static assets
+├── src/
+│   ├── components/   # React and Astro components
+│   ├── content/      # Blog posts and content collections
+│   ├── layouts/      # Page layouts
+│   └── pages/        # Page routes
+├── astro.config.mjs  # Astro configuration
+├── README.md
+└── package.json
+```
+
+## Commands
+
+| Command                | Action                                       |
+| :--------------------- | :------------------------------------------- |
+| `npm install`          | Installs dependencies                        |
+| `npm run dev`          | Starts local dev server at `localhost:4321`  |
+| `npm run build`        | Build your production site to `./dist/`      |
+| `npm run preview`      | Preview your build locally                   |
+
+## License
+
+MIT
 
 ```sh
 npm create astro@latest -- --template blog

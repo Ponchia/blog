@@ -1,0 +1,38 @@
+---
+title: 'React Components in MDX'
+description: 'Demonstrating interactive React components in an Astro blog'
+pubDate: 'Mar 30 2024'
+heroImage: '/blog-placeholder-3.jpg'
+---
+
+import Counter from '../../components/Counter';
+
+# React Components in MDX
+
+This blog post demonstrates how to use React components directly in your MDX content. MDX is a special format that allows you to include JSX directly in your Markdown.
+
+## Interactive Counter Example
+
+Below is an example of an interactive counter built with React:
+
+<Counter client:visible />
+
+## Why Use React in MDX?
+
+Using React components in your blog posts allows you to:
+
+1. Create interactive elements for readers
+2. Implement dynamic visualizations and demos
+3. Build reusable components for your content
+4. Enhance user engagement with interactive experiences
+
+## Getting Started with React in Astro
+
+To use React in your Astro blog:
+
+1. Add the React integration: `npx astro add react`
+2. Create React components in your project
+3. Import and use them in your MDX files
+4. Add client directives like `client:visible` or `client:load` to make them interactive
+
+This blog now has Giscus comments enabled below, powered by GitHub Discussions! 
