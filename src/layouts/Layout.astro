@@ -30,9 +30,18 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 
 <style>
 	main {
-		width: calc(100% - 2em);
-		max-width: 100%;
-		margin: 0;
-		padding: 1em;
+		width: 720px;
+		max-width: calc(100% - 2em);
+		margin: auto;
+		padding: 2em 1em;
+		background-color: white;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(var(--gray), 25%);
+	}
+
+	@media (max-width: 720px) {
+		main {
+			padding: 1em;
+		}
 	}
 </style> 

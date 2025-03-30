@@ -30,36 +30,45 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
+		<!-- GoatCounter Analytics -->
+		<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 		<style>
 			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+				background-color: white;
+				border-radius: 8px;
+				box-shadow: 0 4px 6px rgba(var(--gray), 25%);
 			}
 			.hero-image {
 				width: 100%;
+				margin-bottom: 1.5em;
 			}
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
+				max-width: 100%;
+				height: auto;
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: 100%;
 				margin: auto;
-				padding: 1em;
 				color: rgb(var(--gray-dark));
 			}
 			.title {
 				margin-bottom: 1em;
-				padding: 1em 0;
+				padding: 0 0 1em 0;
 				text-align: center;
 				line-height: 1;
+				border-bottom: 1px solid rgba(var(--gray), 25%);
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
+				color: rgb(var(--black));
 			}
 			.date {
 				margin-bottom: 0.5em;
@@ -69,16 +78,19 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 				font-style: italic;
 			}
 			.comments-section {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: 2em auto;
-				padding: 1em;
+				width: 100%;
+				margin: 2em auto 0;
+				padding-top: 2em;
+				border-top: 1px solid rgba(var(--gray), 25%);
+			}
+
+			@media (max-width: 720px) {
+				main {
+					padding: 1em;
+				}
 			}
 		</style>
 	</head>
-
-	<!-- GoatCounter Analytics -->
-	<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 	<body>
 		<Header />
@@ -100,7 +112,6 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 							}
 						</div>
 						<h1>{title}</h1>
-						<hr />
 					</div>
 					<slot />
 				</div>
