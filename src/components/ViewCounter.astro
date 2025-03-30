@@ -3,162 +3,25 @@
 // This component displays the view count for a specific page
 const { slug } = Astro.props;
 
-// API token for GoatCounter
-const GOATCOUNTER_TOKEN = import.meta.env.PUBLIC_GOATCOUNTER_API_TOKEN || "15kcho1c5xdz81f3j1hr9bxfqd193bqo2w0na4apa39h4o5bvnx";
-const GOATCOUNTER_URL = "https://ponchia.goatcounter.com";
-
 // Normalize the path to match what GoatCounter expects
 // Remove trailing slash as GoatCounter seems to store paths without it
 let normalizedPath = slug.startsWith('/') ? slug : `/${slug}`;
 normalizedPath = normalizedPath.endsWith('/') ? normalizedPath.slice(0, -1) : normalizedPath;
 
-console.log(`[ViewCounter Server] Normalized path: ${normalizedPath}`);
-
-// Define debugInfo type
-type DebugInfo = {
-  apiUrl: string;
-  pathsResponse: { status: number; statusText: string } | null;
-  matchedPath: { path: string; id: number } | null;
-  statsResponse: { url: string; status: number; statusText: string } | null;
-  finalCount: number | null;
-  error: string | null;
-};
-
 // For debugging
 const debug = true;
-const debugInfo: DebugInfo = {
-  apiUrl: "",
-  pathsResponse: null,
-  matchedPath: null,
-  statsResponse: null,
-  finalCount: null,
-  error: null
-};
-
-// Initialize count with null, will be populated after fetch
-let count: number | null = null;
-
-try {
-  // Fetch path ID first
-  const pathsUrl = `${GOATCOUNTER_URL}/api/v0/paths`;
-  debugInfo.apiUrl = pathsUrl;
-  
-  console.log(`[ViewCounter Server] Fetching paths from: ${pathsUrl}`);
-  console.log(`[ViewCounter Server] Looking for path: ${normalizedPath}`);
-  
-  const pathsResponse = await fetch(pathsUrl, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${GOATCOUNTER_TOKEN}`
-    }
-  });
-  
-  debugInfo.pathsResponse = {
-    status: pathsResponse.status,
-    statusText: pathsResponse.statusText
-  };
-  
-  if (pathsResponse.ok) {
-    const pathsData = await pathsResponse.json();
-    console.log(`[ViewCounter Server] Got ${pathsData.paths?.length || 0} paths from API`);
-    
-    if (pathsData.paths && pathsData.paths.length > 0) {
-      console.log(`[ViewCounter Server] Available paths:`, pathsData.paths.map((p: any) => p.path));
-    
-      // Find the path ID for the current slug
-      let pathInfo = pathsData.paths?.find((p: { path: string; id: number }) => p.path === normalizedPath);
-      
-      // If not found with exact match, try without the /blog prefix as GoatCounter might store it differently
-      if (!pathInfo && normalizedPath.startsWith('/blog')) {
-        const alternativePath = normalizedPath.replace(/^\/blog/, '');
-        console.log(`[ViewCounter Server] Trying alternative path: ${alternativePath}`);
-        pathInfo = pathsData.paths?.find((p: { path: string; id: number }) => p.path === alternativePath);
-      }
-      
-      debugInfo.matchedPath = pathInfo || null;
-      
-      if (pathInfo && pathInfo.id) {
-        console.log(`[ViewCounter Server] Found matching path: ${pathInfo.path} with ID: ${pathInfo.id}`);
-        
-        // Now fetch the stats for this path ID
-        const statsUrl = `${GOATCOUNTER_URL}/api/v0/stats/hits`;
-        const statsResponse = await fetch(statsUrl, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${GOATCOUNTER_TOKEN}`
-          }
-        });
-        
-        debugInfo.statsResponse = {
-          url: statsUrl,
-          status: statsResponse.status,
-          statusText: statsResponse.statusText
-        };
-        
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json();
-          console.log(`[ViewCounter Server] Stats data:`, statsData);
-          
-          if (statsData.paths && statsData.paths.length > 0) {
-            const pathStats = statsData.paths?.find((p: { id: number; count: number }) => p.id === pathInfo.id);
-            
-            if (pathStats) {
-              count = pathStats.count;
-              debugInfo.finalCount = count;
-              console.log(`[ViewCounter Server] Found count for path ${pathInfo.path}: ${count}`);
-            } else {
-              console.log(`[ViewCounter Server] No stats found for path ID ${pathInfo.id}`);
-              
-              // If we can't find specific path stats, try to get the count from the dashboard totals
-              if (statsData.total_day && statsData.total_day > 0) {
-                console.log(`[ViewCounter Server] Using total count as fallback: ${statsData.total_day}`);
-                count = statsData.total_day;
-                debugInfo.finalCount = count;
-              }
-            }
-          } else {
-            console.log(`[ViewCounter Server] No paths in stats data`);
-          }
-        } else {
-          console.error(`[ViewCounter Server] Stats API error: ${statsResponse.status} ${statsResponse.statusText}`);
-        }
-      } else {
-        console.log(`[ViewCounter Server] Path not found in GoatCounter data: ${normalizedPath}`);
-      }
-    } else {
-      console.log(`[ViewCounter Server] No paths returned from API`);
-    }
-  } else {
-    console.error(`[ViewCounter Server] Paths API error: ${pathsResponse.status} ${pathsResponse.statusText}`);
-    
-    // Try to get a better error message if available
-    try {
-      const errorData = await pathsResponse.json();
-      console.error('[ViewCounter Server] API error details:', errorData);
-      debugInfo.error = JSON.stringify(errorData);
-    } catch (e) {
-      // Ignore JSON parsing errors
-    }
-  }
-} catch (error) {
-  console.error('[ViewCounter Server] Error fetching view count:', error);
-  debugInfo.error = error instanceof Error ? error.message : String(error);
-  // Continue rendering without the count
-}
 ---
 
-<span class="view-counter" data-goatcounter-count data-goatcounter-path={normalizedPath}>
+<span class="view-counter">
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-icon">
     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
     <circle cx="12" cy="12" r="3"></circle>
   </svg>
-  <span class="view-count">
-    {count !== null ? count : '–'}
-  </span>
+  <span class="view-count" data-path={normalizedPath}>–</span>
   
   {debug && (
     <span class="debug-info" style="display: none;">
-      <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+      <pre>Path: {normalizedPath}</pre>
     </span>
   )}
 </span>
@@ -171,6 +34,7 @@ try {
     color: var(--accent-light, #6b7280);
     font-size: 0.875rem;
     position: relative;
+    cursor: pointer;
   }
   
   .view-icon {
@@ -211,6 +75,15 @@ try {
   // Declare type for GoatCounter
   interface GoatCounter {
     count: (opts: { path?: string; event?: boolean; title?: string }) => void;
+    visit_count: (opts: { 
+      append?: string; 
+      path?: string;
+      type?: 'html' | 'svg' | 'png';
+      no_branding?: boolean;
+      attr?: Record<string, string>;
+      style?: string;
+    }) => void;
+    get_data: () => Record<string, any>;
   }
   
   // Extend the Window interface to include goatcounter
@@ -220,36 +93,20 @@ try {
     }
   }
 
-  // Client-side debugging and fallback
+  // Client-side debugging and visitor count
   document.addEventListener('DOMContentLoaded', () => {
     console.log('[ViewCounter Client] DOMContentLoaded event fired');
     
-    // Check if count.js is loaded
-    const countScript = document.querySelector('script[src*="count.js"]');
-    console.log('[ViewCounter Client] Count.js script found:', !!countScript);
-    
-    // If script tag exists, check if it's actually loaded and accessible
-    if (countScript) {
-      console.log('[ViewCounter Client] Count.js attributes:', 
-        Array.from(countScript.attributes)
-          .map(attr => `${attr.name}="${attr.value}"`)
-          .join(', ')
-      );
-    }
-    
-    // Check for window.goatcounter object which should be defined by the script
-    console.log('[ViewCounter Client] GoatCounter global object exists:', typeof window.goatcounter !== 'undefined');
-    
+    // Find all counter elements
     const counters = document.querySelectorAll('.view-counter');
     console.log('[ViewCounter Client] Found counters:', counters.length);
     
     counters.forEach((counter, index) => {
       const countSpan = counter.querySelector('.view-count');
       const debugInfo = counter.querySelector('.debug-info');
-      const path = counter.getAttribute('data-goatcounter-path');
+      const path = countSpan?.getAttribute('data-path') || '';
       
       console.log(`[ViewCounter Client] Counter ${index} path:`, path);
-      console.log(`[ViewCounter Client] Counter ${index} current text:`, countSpan?.textContent);
       
       // Toggle debug info on click
       counter.addEventListener('click', (e) => {
@@ -260,62 +117,56 @@ try {
         }
       });
       
-      // Manually trigger a count update - this simulates what count.js should do
-      if (window.goatcounter && typeof window.goatcounter.count === 'function' && path) {
-        try {
-          console.log(`[ViewCounter Client] Manually triggering count for ${path}`);
-          window.goatcounter.count({
-            path: path,
-            event: false,
-            title: document.title
-          });
-        } catch (e) {
-          console.error('[ViewCounter Client] Error triggering count:', e);
-        }
-      }
-      
-      // Only update if we're showing the fallback dash
-      if (countSpan && countSpan.textContent && countSpan.textContent.trim() === '–') {
-        console.log(`[ViewCounter Client] Counter ${index} needs client update`);
-        
-        // Check immediately and then again after a delay
-        checkCounter(counter, countSpan);
-        
-        setTimeout(() => {
-          checkCounter(counter, countSpan);
-        }, 1500);
-        
-        // One more delayed check
-        setTimeout(() => {
-          checkCounter(counter, countSpan);
+      // Wait for goatcounter to be available
+      const checkGoatCounter = setInterval(() => {
+        if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
+          clearInterval(checkGoatCounter);
           
-          // As a last resort, if still no count, show "1" for new pages
-          if (countSpan.textContent && countSpan.textContent.trim() === '–') {
-            console.log('[ViewCounter Client] No count found after delays, using default of 1');
-            countSpan.textContent = '1';
+          // Get the count via JSON endpoint
+          if (countSpan instanceof HTMLElement) {
+            updateCount(path, countSpan);
           }
-        }, 3000);
-      }
+        }
+      }, 100);
+      
+      // Set a timeout to ensure we don't wait forever
+      setTimeout(() => {
+        clearInterval(checkGoatCounter);
+        if (countSpan && countSpan.textContent === '–') {
+          console.log('[ViewCounter Client] GoatCounter not available after timeout, using fallback');
+          countSpan.textContent = '1';
+        }
+      }, 5000);
     });
   });
   
-  function checkCounter(counter: Element, countSpan: Element) {
-    // Check if count.js has populated the title attribute
-    const title = counter.getAttribute('title');
-    console.log('[ViewCounter Client] Counter title attribute:', title);
+  // Function to fetch the count from JSON endpoint
+  async function updateCount(path: string, countElement: HTMLElement) {
+    if (!path) return;
     
-    if (title) {
-      console.log('[ViewCounter Client] Updating count from title:', title);
-      countSpan.textContent = title;
-    } else {
-      // Try to retrieve count from data attribute
-      const count = counter.getAttribute('data-count');
-      if (count) {
-        console.log('[ViewCounter Client] Updating count from data-count:', count);
-        countSpan.textContent = count;
+    try {
+      console.log(`[ViewCounter Client] Fetching count for path: ${path}`);
+      
+      // Use the correct site domain
+      const response = await fetch(`https://ponchia.goatcounter.com/counter${path}.json`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`[ViewCounter Client] Received count data:`, data);
+        
+        if (data.count) {
+          countElement.textContent = data.count;
+        } else {
+          console.log('[ViewCounter Client] No count in response, using default');
+          countElement.textContent = '1';
+        }
       } else {
-        console.log('[ViewCounter Client] No count available yet');
+        console.error(`[ViewCounter Client] Failed to fetch count: ${response.status}`);
+        countElement.textContent = '1';
       }
+    } catch (error) {
+      console.error('[ViewCounter Client] Error fetching count:', error);
+      countElement.textContent = '1';
     }
   }
 </script> 
