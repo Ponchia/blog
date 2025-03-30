@@ -1,7 +1,7 @@
 ---
 title: 'Why I Created This Blog'
 description: 'The story behind this blog, its architecture, features, and why I chose to make it open source'
-pubDate: 'Mar 31 2024'
+pubDate: 'Mar 30 2025'
 heroImage: 'blog-placeholder-1.jpg'
 mocs: ['Getting Started', 'Behind the Scenes']
 tags: ['astro', 'blogging', 'web development', 'open source']
@@ -54,6 +54,7 @@ One of the standout features is the knowledge graph visualization, powered by Fo
 
 <div style={{ height: '400px', marginBottom: '2rem', border: '1px solid var(--border-color)', borderRadius: '0.5rem' }}>
   <GraphView 
+    client:only="react"
     graphData={{
       nodes: [
         { id: 'why-i-created-this-blog', label: 'Why I Created This Blog', type: 'post', status: 'evergreen' },

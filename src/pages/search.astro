@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SearchField from '../components/SearchField.astro';
+
+const title = "Search";
+const description = "Search across the blog for articles, topics, and more.";
+---
+
+<Layout title={title} description={description}>
+    <section class="search-container">
+        <h1>Search</h1>
+        <p>Search across all blog posts and content</p>
+        
+        <div class="search-info">
+            <p><strong>Pro tip:</strong> You can quickly access search from anywhere on the site by pressing <kbd>Ctrl</kbd>+<kbd>K</kbd> (or <kbd>⌘</kbd>+<kbd>K</kbd> on Mac).</p>
+            <p>Search results can be shared by copying the URL which includes your search query.</p>
+        </div>
+        
+        <SearchField id="blog-search" className="search-ui" />
+    </section>
+</Layout>
+
+<style>
+    .search-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .search-info {
+        background-color: var(--bg-secondary);
+        border-left: 3px solid var(--accent-light);
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .search-info p {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .search-info p:last-child {
+        margin-bottom: 0;
+    }
+
+    kbd {
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        font-family: monospace;
+        font-size: 0.85em;
+        padding: 0.2em 0.4em;
+    }
+
+    /* Additional responsive styles */
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+        
+        .search-info {
+            padding: 0.75rem;
+        }
+    }
+</style> 

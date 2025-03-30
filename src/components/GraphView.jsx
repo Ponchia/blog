@@ -12,8 +12,16 @@ function getPath(path) {
   return `${baseWithSlash}${cleanPath}`;
 }
 
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
 // Graph visualization component for force-directed graph
 export default function GraphView({ graphData }) {
+  // If not in browser environment, render a placeholder
+  if (!isBrowser) {
+    return <div>Graph visualization loading...</div>;
+  }
+  
   console.log("GraphView component rendering with data:", graphData);
   
   const [error, setError] = useState(null);

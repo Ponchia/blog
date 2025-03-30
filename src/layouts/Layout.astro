@@ -40,6 +40,24 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 			<slot />
 		</main>
 		<Footer />
+
+		<!-- Search shortcut script -->
+		<script>
+			// Add keyboard shortcut for search (Ctrl+K or Cmd+K)
+			document.addEventListener('keydown', (e) => {
+				// Check if Ctrl/Cmd + K is pressed
+				if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+					e.preventDefault();
+					
+					// Determine the base URL
+					const base = import.meta.env.BASE_URL || '';
+					const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+					
+					// Navigate to search page
+					window.location.href = `${baseWithSlash}search`;
+				}
+			});
+		</script>
 	</body>
 </html>
 
