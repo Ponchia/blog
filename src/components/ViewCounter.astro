@@ -4,23 +4,15 @@
 const { slug } = Astro.props;
 
 // Normalize the path to match what GoatCounter expects
-// The dashboard shows paths like /blog/blog/why-i-created-this-blog
-// Make sure we're using the right path format with /blog/blog/ prefix for blog posts
+// Ensure we have the right prefix format (/blog/blog/ for blog posts)
 let normalizedPath = slug.startsWith('/') ? slug : `/${slug}`;
 normalizedPath = normalizedPath.endsWith('/') ? normalizedPath.slice(0, -1) : normalizedPath;
 
-// Ensure the path has the right prefix based on the pattern in the dashboard
-// Blog posts need /blog/blog/ prefix, other pages just need /blog/ prefix
 if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/')) {
-  // It's a blog post path but doesn't have the right prefix
   normalizedPath = `/blog${normalizedPath}`;
 } else if (!normalizedPath.startsWith('/blog/')) {
-  // Other pages need at least the /blog/ prefix
   normalizedPath = `/blog${normalizedPath}`;
 }
-
-// For debugging
-const debug = true;
 ---
 
 <span class="view-counter">
@@ -29,12 +21,6 @@ const debug = true;
     <circle cx="12" cy="12" r="3"></circle>
   </svg>
   <span class="view-count" data-path={normalizedPath}>–</span>
-  
-  {debug && (
-    <span class="debug-info" style="display: none;">
-      <pre>Path: {normalizedPath}</pre>
-    </span>
-  )}
 </span>
 
 <style>
@@ -44,30 +30,10 @@ const debug = true;
     gap: 0.25rem;
     color: var(--accent-light, #6b7280);
     font-size: 0.875rem;
-    position: relative;
-    cursor: pointer;
   }
   
   .view-icon {
     opacity: 0.7;
-  }
-  
-  .debug-info {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-    background: white;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    max-width: 500px;
-    overflow: auto;
-    font-family: monospace;
-    font-size: 12px;
-    white-space: pre-wrap;
-    color: black;
   }
   
   @media (max-width: 640px) {
@@ -104,36 +70,19 @@ const debug = true;
     }
   }
 
-  // Client-side debugging and visitor count
+  // Client-side visitor count
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('[ViewCounter Client] DOMContentLoaded event fired');
-    
-    // Find all counter elements
     const counters = document.querySelectorAll('.view-counter');
-    console.log('[ViewCounter Client] Found counters:', counters.length);
     
-    counters.forEach((counter, index) => {
+    counters.forEach(counter => {
       const countSpan = counter.querySelector('.view-count');
-      const debugInfo = counter.querySelector('.debug-info');
       const path = countSpan?.getAttribute('data-path') || '';
-      
-      console.log(`[ViewCounter Client] Counter ${index} path:`, path);
-      
-      // Toggle debug info on click
-      counter.addEventListener('click', (e) => {
-        if (debugInfo && debugInfo instanceof HTMLElement) {
-          const isVisible = debugInfo.style.display !== 'none';
-          debugInfo.style.display = isVisible ? 'none' : 'block';
-          e.stopPropagation();
-        }
-      });
       
       // Wait for goatcounter to be available
       const checkGoatCounter = setInterval(() => {
         if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
           clearInterval(checkGoatCounter);
           
-          // Get the count via JSON endpoint
           if (countSpan instanceof HTMLElement) {
             updateCount(path, countSpan);
           }
@@ -144,8 +93,9 @@ const debug = true;
       setTimeout(() => {
         clearInterval(checkGoatCounter);
         if (countSpan && countSpan.textContent === '–') {
-          console.log('[ViewCounter Client] GoatCounter not available after timeout, using fallback');
-          countSpan.textContent = '1';
+          if (countSpan instanceof HTMLElement) {
+            countSpan.textContent = '1';
+          }
         }
       }, 5000);
     });
@@ -156,34 +106,23 @@ const debug = true;
     if (!path) return;
     
     try {
-      console.log(`[ViewCounter Client] Fetching count for path: ${path}`);
-      
-      // Remove leading slash from path to avoid triple slash in URL
       const pathWithoutLeadingSlash = path.startsWith('/') ? path.substring(1) : path;
-      
-      // Use the correct URL format with double slash - this is the format that works
-      // Format: https://site.goatcounter.com/counter//path.json (without leading slash in path)
       const url = `https://ponchia.goatcounter.com/counter//${pathWithoutLeadingSlash}.json`;
-      console.log(`[ViewCounter Client] Request URL: ${url}`);
       
       const response = await fetch(url);
       
       if (response.ok) {
         const data = await response.json();
-        console.log(`[ViewCounter Client] Received count data:`, data);
         
         if (data.count) {
           countElement.textContent = data.count;
         } else {
-          console.log('[ViewCounter Client] No count in response, using default');
           countElement.textContent = '1';
         }
       } else {
-        console.error(`[ViewCounter Client] Failed to fetch count: ${response.status}`);
         countElement.textContent = '1';
       }
     } catch (error) {
-      console.error('[ViewCounter Client] Error fetching count:', error);
       countElement.textContent = '1';
     }
   }
