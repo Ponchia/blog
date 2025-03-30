@@ -19,6 +19,7 @@
     "astro": "^5.5.5",
     "force-graph": "^1.49.5",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-force-graph-2d": "^1.27.1"
   }
 }

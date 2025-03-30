@@ -2,17 +2,35 @@
 import type { CollectionEntry } from 'astro:content';
 
 // Type for blog posts with slug property
-type BlogPost = CollectionEntry<'blog'> & { slug: string };
+type BlogPost = CollectionEntry<'blog'>;
+
+/**
+ * Get a valid slug for a post, using either the existing slug or extracting from id
+ */
+export function getPostSlug(post: BlogPost): string {
+  // If post has any slug property (from Collection Entry), use it
+  if ('slug' in post && typeof post.slug === 'string') return post.slug;
+  
+  // Otherwise extract from id which is typically in format like 'src/content/blog/first-post.md'
+  if (post.id) {
+    const parts = post.id.split('/');
+    const filename = parts[parts.length - 1];
+    // Remove file extension
+    return filename.replace(/\.(md|mdx)$/, '');
+  }
+  
+  // Fallback to empty string if we can't determine
+  return '';
+}
 
 /**
  * Get all posts belonging to a specific MOC
  */
 export function getPostsByMoc(allPosts: BlogPost[], mocName: string): BlogPost[] {
-  // Make sure we're only returning posts that have the MOC and have a valid slug
+  // Make sure we're only returning posts that have the MOC
   return allPosts.filter(post => 
     post.data.mocs && 
-    post.data.mocs.includes(mocName) && 
-    post.slug // Ensure slug exists
+    post.data.mocs.includes(mocName)
   );
 }
 
@@ -36,7 +54,7 @@ export function getRelatedPosts(allPosts: BlogPost[], currentPost: BlogPost): Bl
   if (!currentPost.data.related) return [];
   
   return allPosts.filter(post => 
-    currentPost.data.related?.includes(post.slug)
+    currentPost.data.related?.includes(getPostSlug(post))
   );
 }
 
@@ -66,7 +84,7 @@ export function getAllTags(allPosts: BlogPost[]): string[] {
  * Get post by slug
  */
 export function getPostBySlug(allPosts: BlogPost[], slug: string): BlogPost | undefined {
-  return allPosts.find(post => post.slug === slug);
+  return allPosts.find(post => getPostSlug(post) === slug);
 }
 
 /**

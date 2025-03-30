@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getAllMocs, getPostsByMoc, slugify } from '../../utils/moc-utils';
+import { getAllMocs, getPostsByMoc, slugify, getPostSlug } from '../../utils/moc-utils';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
@@ -64,7 +64,7 @@ const { mocName, posts } = Astro.props;
             <li>
               <div class="post-card">
                 <div class="post-header">
-                  <a href={getPath(`blog/${post.slug}`)} class="post-title">
+                  <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title">
                     <span class={`status-indicator ${post.data.status}`}></span>
                     {post.data.title}
                   </a>

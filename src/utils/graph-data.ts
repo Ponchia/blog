@@ -1,9 +1,9 @@
 // Utility functions for generating graph data for visualization
 import type { CollectionEntry } from 'astro:content';
-import { slugify } from './moc-utils';
+import { slugify, getPostSlug } from './moc-utils';
 
 // Type for blog posts with slug
-type BlogPost = CollectionEntry<'blog'> & { slug: string };
+type BlogPost = CollectionEntry<'blog'>;
 
 // Node types for graph visualization
 type NodeType = 'post' | 'moc' | 'tag';
@@ -48,7 +48,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
 
   // Create nodes for posts
   const postNodes: Node[] = posts.map(post => ({
-    id: post.slug,
+    id: getPostSlug(post),
     label: post.data.title,
     type: 'post',
     date: post.data.pubDate,
@@ -90,7 +90,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
     if (post.data.mocs && Array.isArray(post.data.mocs)) {
       post.data.mocs.forEach(moc => {
         postMocLinks.push({
-          source: post.slug,
+          source: getPostSlug(post),
           target: `moc-${slugify(moc)}`,
           type: 'in-moc',
         });
@@ -104,7 +104,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
     if (post.data.tags && Array.isArray(post.data.tags)) {
       post.data.tags.forEach(tag => {
         postTagLinks.push({
-          source: post.slug,
+          source: getPostSlug(post),
           target: `tag-${slugify(tag)}`,
           type: 'has-tag',
         });
@@ -117,10 +117,11 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
   posts.forEach(post => {
     if (post.data.related && Array.isArray(post.data.related)) {
       post.data.related.forEach(relatedSlug => {
-        // Ensure the related post exists
-        if (posts.some(p => p.slug === relatedSlug)) {
+        // Find the related post
+        const relatedPost = posts.find(p => getPostSlug(p) === relatedSlug);
+        if (relatedPost) {
           relatedLinks.push({
-            source: post.slug,
+            source: getPostSlug(post),
             target: relatedSlug,
             type: 'related',
           });

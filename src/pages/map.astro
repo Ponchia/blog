@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getAllMocs, getPostsByMoc, slugify } from '../utils/moc-utils';
+import { getAllMocs, getPostsByMoc, slugify, getPostSlug } from '../utils/moc-utils';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
@@ -17,11 +17,12 @@ function getPath(path: string) {
 // Get all posts
 const posts = await getCollection('blog');
 
-// Log any posts that don't have slugs (this shouldn't happen with Astro content collections)
+// Log any posts that have issues with slug extraction
 console.log('Posts with potential slug issues:');
 posts.forEach(post => {
-  if (!post.slug) {
-    console.log(`Post "${post.data.title}" is missing a slug`);
+  const slug = getPostSlug(post);
+  if (!slug) {
+    console.log(`Post "${post.data.title}" could not generate a slug`);
   }
 });
 
@@ -63,7 +64,7 @@ const mocsByPostCount = mocs.map(moc => {
               <ul class="moc-post-list">
                 {moc.posts.slice(0, 3).map(post => (
                   <li>
-                    <a href={getPath(`blog/${post.slug || ''}`)} title={post.slug ? undefined : 'Slug is not defined for this post'}>
+                    <a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
                       <span class={`status-dot ${post.data.status}`}></span>
                       {post.data.title}
                     </a>

@@ -20,7 +20,7 @@ const posts = await getCollection('blog');
 
 // Generate graph data
 const graphData = generateGraphData(posts);
-console.log(`Graph data: ${JSON.stringify(graphData, null, 2)}`);
+console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${graphData.links.length} links`);
 ---
 
 <Layout title="Content Graph">
@@ -128,8 +128,6 @@ console.log(`Graph data: ${JSON.stringify(graphData, null, 2)}`);
   }
   
   .graph-container {
-    border: 1px solid #eee;
-    border-radius: 8px;
     overflow: hidden;
     background-color: #fff;
     margin-bottom: 2rem;
