@@ -1,0 +1,56 @@
+---
+// src/components/ViewCounter.astro
+// This component displays the view count for a specific page
+const { slug } = Astro.props;
+---
+
+<span class="view-counter" data-goatcounter-count data-goatcounter-path={slug}>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-icon">
+    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+    <circle cx="12" cy="12" r="3"></circle>
+  </svg>
+  <span class="view-count">...</span>
+</span>
+
+<style>
+  .view-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--accent-light, #6b7280);
+    font-size: 0.875rem;
+  }
+  
+  .view-icon {
+    opacity: 0.7;
+  }
+  
+  @media (max-width: 640px) {
+    .view-icon {
+      width: 14px;
+      height: 14px;
+    }
+    
+    .view-counter {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  // This script runs after GoatCounter has loaded and populated count data
+  document.addEventListener('DOMContentLoaded', () => {
+    // Give GoatCounter time to populate the counts
+    setTimeout(() => {
+      const counters = document.querySelectorAll('.view-counter');
+      counters.forEach(counter => {
+        const countSpan = counter.querySelector('.view-count');
+        // If GoatCounter hasn't populated the count yet (it puts it in title attribute)
+        // then just show a dash to indicate it's loading
+        if (!counter.getAttribute('title') && countSpan) {
+          countSpan.textContent = '–';
+        }
+      });
+    }, 1000);
+  });
+</script> 

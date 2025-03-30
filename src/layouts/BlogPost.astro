@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Comments from '../components/Comments';
+import ViewCounter from '../components/ViewCounter.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
 
@@ -27,6 +28,8 @@ function getImagePath(image: string): string {
 }
 
 const heroImagePath = heroImage ? getImagePath(heroImage) : '';
+// Get the current URL path for the view counter
+const currentPath = Astro.url.pathname;
 ---
 
 <html lang="en">
@@ -93,9 +96,21 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 				color: var(--accent-light);
 				font-size: 1rem;
 			}
+			.post-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1rem;
+				align-items: center;
+				margin-bottom: 0.75rem;
+				color: var(--accent-light);
+				font-size: 1rem;
+			}
+			.post-meta > * {
+				display: flex;
+				align-items: center;
+			}
 			.reading-time {
 				display: inline-block;
-				margin-left: 1rem;
 				padding-left: 1rem;
 				border-left: 1px solid var(--accent-light);
 				color: var(--accent-light);
@@ -123,6 +138,9 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 				.comments-section {
 					margin-top: 4rem;
 				}
+				.post-meta {
+					gap: 0.75rem;
+				}
 			}
 		</style>
 	</head>
@@ -132,21 +150,22 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 		<main class="fade-in">
 			<article class="blog-post">
 				<div class="title">
-					<div class="date">
-						<FormattedDate date={pubDate} />
+					<div class="post-meta">
+						<div><FormattedDate date={pubDate} /></div>
 						{
 							minutesRead && (
-								<span class="reading-time">{minutesRead}</span>
+								<div class="reading-time">{minutesRead}</div>
 							)
 						}
-						{
-							updatedDate && (
-								<div class="last-updated-on">
-									Last updated on <FormattedDate date={updatedDate} />
-								</div>
-							)
-						}
+						<ViewCounter slug={currentPath} />
 					</div>
+					{
+						updatedDate && (
+							<div class="last-updated-on">
+								Last updated on <FormattedDate date={updatedDate} />
+							</div>
+						)
+					}
 					<h1>{title}</h1>
 				</div>
 				{heroImagePath && (

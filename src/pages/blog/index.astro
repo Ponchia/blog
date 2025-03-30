@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
+import ViewCounter from '../../components/ViewCounter.astro';
 import { render } from 'astro:content';
 
 const postsData = await getCollection('blog');
@@ -47,6 +48,9 @@ function getPathWithBase(path: string): string {
 						const imgSrc = post.data.heroImage 
 							? getPathWithBase(post.data.heroImage)
 							: '';
+							
+						// Path for view counter
+						const countPath = `/blog/${post.id}/`;
 						
 						return (
 							<li class={index === 0 ? 'featured-post' : ''}>
@@ -70,6 +74,9 @@ function getPathWithBase(path: string): string {
 											{remarkPluginFrontmatter.minutesRead && (
 												<p class="reading-time">{remarkPluginFrontmatter.minutesRead}</p>
 											)}
+											<div class="view-count-wrapper">
+												<ViewCounter slug={countPath} />
+											</div>
 										</div>
 										<h4 class="title">{post.data.title}</h4>
 										{post.data.description && (
@@ -212,6 +219,8 @@ function getPathWithBase(path: string): string {
 	.meta-info {
 		display: flex;
 		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.5rem 1rem;
 	}
 	
 	.date {
@@ -221,7 +230,7 @@ function getPathWithBase(path: string): string {
 	}
 	
 	.reading-time {
-		margin: 0 0 0 1rem;
+		margin: 0;
 		padding-left: 1rem;
 		font-size: 0.9rem;
 		color: var(--accent-light);
@@ -229,6 +238,22 @@ function getPathWithBase(path: string): string {
 	}
 	
 	.reading-time::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		height: 0.8em;
+		width: 1px;
+		background-color: var(--accent-light);
+	}
+	
+	.view-count-wrapper {
+		position: relative;
+		padding-left: 1rem;
+	}
+	
+	.view-count-wrapper::before {
 		content: '';
 		position: absolute;
 		left: 0;
