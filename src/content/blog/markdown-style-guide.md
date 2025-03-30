@@ -1,8 +1,8 @@
 ---
 title: 'Markdown Style Guide'
 description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
-pubDate: 'Jun 19 2024'
-heroImage: '/blog-placeholder-1.jpg'
+pubDate: 'Jul 01 2022'
+heroImage: '/blog/blog-placeholder-1.jpg'
 ---
 
 Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
@@ -39,7 +39,7 @@ Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sap
 
 ### Output
 
-![blog placeholder](/blog-placeholder-about.jpg)
+![This is a placeholder image description](/placeholder-social.jpg)
 
 ## Blockquotes
 
@@ -89,7 +89,7 @@ The blockquote element represents content that is quoted from another source, op
 
 | Italics   | Bold     | Code   |
 | --------- | -------- | ------ |
-| _italics_ | **bold** | `code` |
+| *italics* | **bold** | `code` |
 
 ## Code Blocks
 
@@ -97,7 +97,7 @@ The blockquote element represents content that is quoted from another source, op
 
 we can use 3 backticks ``` in new line and write snippet and close with 3 backticks on new line and to highlight language specific syntax, write one word of language name after first 3 backticks, for eg. html, javascript, css, markdown, typescript, txt, bash
 
-````markdown
+```markdown
 ```html
 <!doctype html>
 <html lang="en">
@@ -110,7 +110,7 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
   </body>
 </html>
 ```
-````
+```
 
 ### Output
 
@@ -157,9 +157,9 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
 
 #### Output
 
-- List item
-- Another item
-- And another item
+* List item
+* Another item
+* And another item
 
 ### Nested list
 
@@ -177,13 +177,13 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
 
 #### Output
 
-- Fruit
-  - Apple
-  - Orange
-  - Banana
-- Dairy
-  - Milk
-  - Cheese
+* Fruit
+  * Apple
+  * Orange
+  * Banana
+* Dairy
+  * Milk
+  * Cheese
 
 ## Other Elements — abbr, sub, sup, kbd, mark
 
@@ -209,6 +209,6 @@ H<sub>2</sub>O
 
 X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
 
-Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
+Press <kbd><kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>Delete</kbd></kbd> to end the session.
 
 Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.

@@ -13,8 +13,16 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 // Helper function to ensure hero image has the correct path
 function getImagePath(image: string): string {
 	if (!image) return '';
+	// If already a full URL, return as is
 	if (image.startsWith('http')) return image;
-	return `${import.meta.env.BASE_URL}${image.startsWith('/') ? image.slice(1) : image}`;
+	
+	// Avoid double base path for images that already include it
+	if (image.startsWith('/blog/')) return image;
+	
+	// Otherwise, add the base path
+	const basePath = import.meta.env.BASE_URL;
+	const cleanPath = image.startsWith('/') ? image.slice(1) : image;
+	return `${basePath}${cleanPath}`;
 }
 
 const heroImagePath = heroImage ? getImagePath(heroImage) : '';
