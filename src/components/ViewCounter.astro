@@ -2,14 +2,64 @@
 // src/components/ViewCounter.astro
 // This component displays the view count for a specific page
 const { slug } = Astro.props;
+
+// API token for GoatCounter
+const GOATCOUNTER_TOKEN = import.meta.env.PUBLIC_GOATCOUNTER_API_TOKEN;
+const GOATCOUNTER_URL = "https://ponchia.goatcounter.com";
+
+// Normalize the path to match what GoatCounter expects
+const normalizedPath = slug.startsWith('/') ? slug : `/${slug}`;
+
+// Initialize count with null, will be populated after fetch
+let count: number | null = null;
+
+try {
+  // Fetch path ID first
+  const pathsResponse = await fetch(`${GOATCOUNTER_URL}/api/v0/paths`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${GOATCOUNTER_TOKEN}`
+    }
+  });
+  
+  if (pathsResponse.ok) {
+    const pathsData = await pathsResponse.json();
+    // Find the path ID for the current slug
+    const pathInfo = pathsData.paths.find((p: { path: string; id: number }) => p.path === normalizedPath);
+    
+    if (pathInfo && pathInfo.id) {
+      // Now fetch the stats for this path ID
+      const statsResponse = await fetch(`${GOATCOUNTER_URL}/api/v0/stats/hits`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GOATCOUNTER_TOKEN}`
+        }
+      });
+      
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        const pathStats = statsData.paths.find((p: { id: number; count: number }) => p.id === pathInfo.id);
+        
+        if (pathStats) {
+          count = pathStats.count;
+        }
+      }
+    }
+  }
+} catch (error) {
+  console.error('Error fetching view count:', error);
+  // Continue rendering without the count
+}
 ---
 
-<span class="view-counter" data-goatcounter-count data-goatcounter-path={slug}>
+<span class="view-counter" data-goatcounter-count data-goatcounter-path={normalizedPath}>
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-icon">
     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
     <circle cx="12" cy="12" r="3"></circle>
   </svg>
-  <span class="view-count">...</span>
+  <span class="view-count">
+    {count !== null ? count : '–'}
+  </span>
 </span>
 
 <style>
@@ -38,19 +88,20 @@ const { slug } = Astro.props;
 </style>
 
 <script>
-  // This script runs after GoatCounter has loaded and populated count data
+  // Client-side fallback in case the server-side fetch fails
   document.addEventListener('DOMContentLoaded', () => {
-    // Give GoatCounter time to populate the counts
-    setTimeout(() => {
-      const counters = document.querySelectorAll('.view-counter');
-      counters.forEach(counter => {
-        const countSpan = counter.querySelector('.view-count');
-        // If GoatCounter hasn't populated the count yet (it puts it in title attribute)
-        // then just show a dash to indicate it's loading
-        if (!counter.getAttribute('title') && countSpan) {
-          countSpan.textContent = '–';
-        }
-      });
-    }, 1000);
+    const counters = document.querySelectorAll('.view-counter .view-count');
+    counters.forEach(counter => {
+      // Only update if we're showing the fallback dash
+      if (counter.textContent && counter.textContent.trim() === '–') {
+        setTimeout(() => {
+          // Try to use the client-side count if available
+          const parent = counter.closest('[data-goatcounter-count]');
+          if (parent && parent.getAttribute('title')) {
+            counter.textContent = parent.getAttribute('title');
+          }
+        }, 1000);
+      }
+    });
   });
 </script> 

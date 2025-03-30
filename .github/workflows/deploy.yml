@@ -23,6 +23,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Create .env file
+        run: |
+          echo "PUBLIC_GOATCOUNTER_API_TOKEN=${{ secrets.GOATCOUNTER_API_TOKEN }}" > .env
+          echo "GOATCOUNTER_API_TOKEN=${{ secrets.GOATCOUNTER_API_TOKEN }}" >> .env
       - name: Build Astro
         run: npm run build
       - name: Upload artifact
