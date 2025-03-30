@@ -21,12 +21,14 @@ function getPathWithBase(path) {
 ---
 
 <Layout title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
-	<div class="blog-container">
-		<h1>Blog Posts</h1>
-		<section>
+	<div class="blog-container fade-in">
+		<h1 class="section-title">Exploring the Universe</h1>
+		<p class="intro-text">Thoughts, stories, and ideas from across the cosmos.</p>
+		
+		<section class="posts-grid">
 			<ul>
 				{
-					posts.map((post) => {
+					posts.map((post, index) => {
 						// Generate post URL with correct base path
 						const postUrl = getPathWithBase(`blog/${post.id}/`);
 						
@@ -36,20 +38,28 @@ function getPathWithBase(path) {
 							: '';
 						
 						return (
-							<li>
+							<li class={index === 0 ? 'featured-post' : ''}>
 								<a href={postUrl} class="post-card">
-									{imgSrc && (
-										<img 
-											width={720} 
-											height={360} 
-											src={imgSrc} 
-											alt="" 
-										/>
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
+									<div class="card-image-container">
+										{imgSrc && (
+											<img 
+												width={720} 
+												height={360} 
+												src={imgSrc} 
+												alt="" 
+												loading="lazy"
+											/>
+										)}
+									</div>
+									<div class="card-content">
+										<p class="date">
+											<FormattedDate date={post.data.pubDate} />
+										</p>
+										<h4 class="title">{post.data.title}</h4>
+										{post.data.description && (
+											<p class="description">{post.data.description}</p>
+										)}
+									</div>
 								</a>
 							</li>
 						);
@@ -62,89 +72,178 @@ function getPathWithBase(path) {
 
 <style>
 	.blog-container {
-		max-width: 1200px;  /* Wider container for the blog grid */
+		max-width: var(--content-width);
 		margin: 0 auto;
 	}
-	.blog-container h1 {
+	
+	.section-title {
 		text-align: center;
-		margin-bottom: 2rem;
-		color: rgb(var(--black));
+		margin-bottom: 0.5rem;
+		color: var(--text-light);
+		position: relative;
+		display: inline-block;
+		left: 50%;
+		transform: translateX(-50%);
 	}
-	ul {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 2rem;
+	
+	.section-title::after {
+		content: '';
+		position: absolute;
+		bottom: -10px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 80px;
+		height: 3px;
+		background-color: var(--accent);
+	}
+	
+	.intro-text {
+		text-align: center;
+		margin-bottom: 3rem;
+		font-size: 1.2rem;
+		color: rgba(var(--white), 0.8);
+		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	
+	.posts-grid ul {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 2.5rem;
 		list-style-type: none;
 		margin: 0;
 		padding: 0;
 	}
-	ul li {
-		width: calc(50% - 1rem);
-		transition: transform 0.2s ease;
+	
+	.featured-post {
+		grid-column: 1 / -1;
 	}
-	ul li:hover {
-		transform: translateY(-5px);
+	
+	.featured-post .post-card {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
 	}
+	
+	.featured-post .card-image-container {
+		height: 100%;
+	}
+	
+	.featured-post .title {
+		font-size: 2.2rem;
+		margin-top: 0.5rem;
+	}
+	
+	.featured-post .description {
+		font-size: 1.1rem;
+	}
+	
 	.post-card {
-		display: block;
+		display: flex;
+		flex-direction: column;
 		text-decoration: none;
-		border-radius: 8px;
+		transition: all 0.3s ease;
+		height: 100%;
+		border-radius: 12px;
 		overflow: hidden;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--gray), 25%);
-		transition: all 0.2s ease;
+		background-color: rgba(var(--gray-dark), 0.2);
 	}
+	
 	.post-card:hover {
-		box-shadow: var(--box-shadow);
+		transform: translateY(-5px);
+		background-color: rgba(var(--gray-dark), 0.3);
 	}
-	ul li:first-child {
+	
+	.card-image-container {
+		overflow: hidden;
+		position: relative;
+	}
+	
+	.card-image-container::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
-		margin-bottom: 1rem;
-		text-align: center;
+		height: 100%;
+		background: linear-gradient(to bottom, transparent 70%, rgba(var(--black), 0.8));
+		z-index: 1;
 	}
-	ul li:first-child img {
+	
+	.post-card img {
 		width: 100%;
-	}
-	ul li:first-child .title {
-		font-size: 2.369rem;
-	}
-	ul li img {
-		margin-bottom: 0;
-		border-radius: 8px 8px 0 0;
-		width: 100%;
-		height: auto;
-		aspect-ratio: 2/1;
+		height: 220px;
 		object-fit: cover;
+		transition: transform 0.3s ease;
 	}
-	.title, .date {
-		padding: 0 1rem;
+	
+	.featured-post .post-card img {
+		height: 360px;
 	}
+	
+	.post-card:hover img {
+		transform: scale(1.05);
+	}
+	
+	.card-content {
+		padding: 1.5rem;
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+	}
+	
 	.title {
-		margin: 1rem 0 0.5rem 0;
-		color: rgb(var(--black));
-		line-height: 1;
+		margin: 0.5rem 0;
+		color: var(--text-light);
+		line-height: 1.2;
+		transition: color 0.2s ease;
 	}
+	
 	.date {
-		margin: 0 0 1rem 0;
-		color: rgb(var(--gray));
+		margin: 0;
+		font-size: 0.9rem;
+		color: rgba(var(--white), 0.7);
 	}
-	ul li a:hover h4,
-	ul li a:hover .date {
-		color: var(--accent);
+	
+	.description {
+		margin: 0.75rem 0 0;
+		color: rgba(var(--white), 0.9);
+		font-size: 0.95rem;
+		line-height: 1.6;
 	}
-	@media (max-width: 720px) {
-		ul {
-			gap: 0.5em;
+	
+	@media (max-width: 900px) {
+		.featured-post .post-card {
+			grid-template-columns: 1fr;
 		}
-		ul li {
-			width: 100%;
-			text-align: center;
+		
+		.featured-post .title {
+			font-size: 1.8rem;
 		}
-		ul li:first-child {
-			margin-bottom: 0;
+	}
+	
+	@media (max-width: 768px) {
+		.posts-grid ul {
+			grid-template-columns: 1fr;
+			gap: 2rem;
 		}
-		ul li:first-child .title {
-			font-size: 1.563em;
+		
+		.post-card img {
+			height: 200px;
+		}
+		
+		.featured-post .post-card img {
+			height: 220px;
+		}
+		
+		.section-title {
+			font-size: 2.2rem;
+		}
+		
+		.intro-text {
+			font-size: 1.1rem;
+			margin-bottom: 2rem;
 		}
 	}
 </style>
