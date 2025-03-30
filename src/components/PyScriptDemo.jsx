@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function PyScriptDemo({ code }) {
+export default function PyScriptDemo({ code, packages = [] }) {
   const containerRef = useRef(null);
   
   useEffect(() => {
@@ -12,17 +12,52 @@ export default function PyScriptDemo({ code }) {
     linkEl.href = 'https://pyscript.net/releases/2024.1.1/core.css';
     document.head.appendChild(linkEl);
 
+    // Prepare any packages that need to be pre-loaded
+    const packageList = Array.isArray(packages) ? packages : [];
+    const packageConfig = packageList.length > 0 ? 
+      `<py-config>
+        packages = ${JSON.stringify(packageList)}
+      </py-config>` : '';
+    
+    // Add the config for packages if needed
+    if (packageConfig) {
+      const configEl = document.createElement('div');
+      configEl.innerHTML = packageConfig;
+      containerRef.current.appendChild(configEl);
+    }
+
     // Add PyScript JS as module
     const scriptEl = document.createElement('script');
     scriptEl.type = 'module';
     scriptEl.src = 'https://pyscript.net/releases/2024.1.1/core.js';
     document.head.appendChild(scriptEl);
     
+    // Wrap code to ensure proper loading of Pyodide packages
+    const wrappedCode = `
+# First setup Pyodide environment
+from pyodide.ffi import create_proxy
+import pyodide
+import js
+
+try:
+    # Ensure we can access micropip
+    await pyodide.loadPackage("micropip")
+    
+    # Now run the actual user code
+    ${code}
+except Exception as e:
+    # Display any errors nicely
+    from pyscript import display
+    display("❌ Error: " + str(e))
+    import traceback
+    display("Stack trace:")
+    display("Error details: " + traceback.format_exc())
+`;
+    
     // Create Python script element
     const pyScriptEl = document.createElement('script');
     pyScriptEl.type = 'py';
-    pyScriptEl.textContent = code;
-    containerRef.current.appendChild(pyScriptEl);
+    pyScriptEl.textContent = wrappedCode;
     
     // Add loading dialog
     const dialogEl = document.createElement('dialog');
@@ -39,18 +74,27 @@ export default function PyScriptDemo({ code }) {
       addEventListener('py:ready', () => loading.close());
     `;
     containerRef.current.appendChild(loadingScriptEl);
+    
+    // Add the script after the loading elements are in place
+    containerRef.current.appendChild(pyScriptEl);
 
     // Cleanup function
     return () => {
       document.head.removeChild(linkEl);
       document.head.removeChild(scriptEl);
       if (containerRef.current) {
-        containerRef.current.removeChild(pyScriptEl);
-        containerRef.current.removeChild(dialogEl);
-        containerRef.current.removeChild(loadingScriptEl);
+        if (containerRef.current.contains(pyScriptEl)) {
+          containerRef.current.removeChild(pyScriptEl);
+        }
+        if (containerRef.current.contains(dialogEl)) {
+          containerRef.current.removeChild(dialogEl);
+        }
+        if (containerRef.current.contains(loadingScriptEl)) {
+          containerRef.current.removeChild(loadingScriptEl);
+        }
       }
     };
-  }, [code]);
+  }, [code, packages]);
 
   return (
     <div 
