@@ -41,6 +41,73 @@ now = datetime.now()
 display("Current time: " + now.strftime("%m/%d/%Y, %H:%M:%S"))
 `} />
 
+## Data Visualization Example
+
+One of the most powerful features of PyScript is the ability to create interactive data visualizations directly in the browser. Here's an example using Matplotlib to create a simple bar chart:
+
+<PyScriptDemo client:load code={`
+from pyscript import display
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create some sample data
+categories = ['A', 'B', 'C', 'D', 'E']
+values = [22, 35, 14, 28, 19]
+
+# Create a figure with a specific size
+plt.figure(figsize=(8, 4))
+
+# Create a bar chart with custom colors
+bars = plt.bar(categories, values, color='#4285F4')
+
+# Add a title and labels
+plt.title('Sample Data Visualization')
+plt.xlabel('Categories')
+plt.ylabel('Values')
+
+# Add value labels on top of each bar
+for bar in bars:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+             f'{height}', ha='center', va='bottom')
+
+# Add a grid for better readability
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+# Customize the background color
+plt.gca().set_facecolor('#f8f9fa')
+
+# Display the plot
+display(plt)
+
+# You can also create multiple visualizations
+# Let's add a simple line chart
+plt.figure(figsize=(8, 4))
+
+# Generate some data for plotting
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Plot multiple lines with different styles
+plt.plot(x, y1, label='sin(x)', color='#DB4437', linewidth=2)
+plt.plot(x, y2, label='cos(x)', color='#0F9D58', linewidth=2, linestyle='--')
+
+# Add labels and title
+plt.title('Sine and Cosine Functions')
+plt.xlabel('x')
+plt.ylabel('y')
+
+# Add a legend
+plt.legend()
+
+# Add a grid
+plt.grid(True, alpha=0.3)
+
+# Display the second plot
+display(plt)
+`} />
+
 ## How It Works
 
 When you load this page, the PyScript framework:
