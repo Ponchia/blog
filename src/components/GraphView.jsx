@@ -16,9 +16,59 @@ function getPath(path) {
 // Check if we're in a browser environment
 const isBrowser = typeof window !== 'undefined';
 
+// Helper function to get CSS variable value
+function getCssVar(varName) {
+  if (!isBrowser) return '';
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
 // Graph visualization component for force-directed graph
 export default function GraphView({ graphData }) {
   const [ForceGraph, setForceGraph] = useState(null);
+  // Theme color references
+  const [themeColors, setThemeColors] = useState({
+    text: '#666',
+    error: '#e74c3c',
+    moc: '#2980b9',
+    tag: '#8e44ad',
+    evergreen: '#27ae60',
+    fleeting: '#e74c3c',
+    related: '#8e44ad',
+    hasTag: '#d35400'
+  });
+  
+  // Update theme colors when theme changes
+  useEffect(() => {
+    if (!isBrowser) return;
+
+    const updateThemeColors = () => {
+      setThemeColors({
+        text: getCssVar('--text-secondary') || '#666',
+        error: getCssVar('--accent-dark') || '#e74c3c',
+        moc: '#2980b9', // Keep consistent for visual mapping
+        tag: '#8e44ad', // Keep consistent for visual mapping
+        evergreen: '#27ae60', // Keep consistent for visual mapping
+        fleeting: '#e74c3c', // Keep consistent for visual mapping
+        related: '#8e44ad', // Keep consistent for visual mapping
+        hasTag: '#d35400' // Keep consistent for visual mapping
+      });
+    };
+
+    // Initial color setup
+    updateThemeColors();
+
+    // Listen for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          updateThemeColors();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
   
   // Load ForceGraph component dynamically only on client-side
   useEffect(() => {
@@ -89,7 +139,7 @@ export default function GraphView({ graphData }) {
         height: '100%',
         width: '100%',
         fontSize: '1.2rem',
-        color: '#666'
+        color: themeColors.text
       }}>
         Loading graph visualization...
       </div>
@@ -106,7 +156,7 @@ export default function GraphView({ graphData }) {
         height: '100%',
         width: '100%',
         fontSize: '1.2rem',
-        color: '#666'
+        color: themeColors.text
       }}>
         No graph data available. Add some MOCs and tags to your posts.
       </div>
@@ -123,7 +173,7 @@ export default function GraphView({ graphData }) {
         height: '100%',
         width: '100%',
         fontSize: '1.2rem',
-        color: '#e74c3c'
+        color: themeColors.error
       }}>
         {error}
       </div>
@@ -146,18 +196,18 @@ export default function GraphView({ graphData }) {
         nodeColor={(node) => {
           // Default colors based on node type
           if (node.type === 'post') {
-            return node.status === 'evergreen' ? '#27ae60' : '#e74c3c';
+            return node.status === 'evergreen' ? themeColors.evergreen : themeColors.fleeting;
           } else if (node.type === 'moc') {
-            return '#2980b9';
+            return themeColors.moc;
           } else { // tag
-            return '#8e44ad';
+            return themeColors.tag;
           }
         }}
         linkWidth={1.5}
         linkColor={(link) => {
           // Colors based on link type
-          return link.type === 'related' ? '#8e44ad' : 
-                link.type === 'in-moc' ? '#2980b9' : '#d35400';
+          return link.type === 'related' ? themeColors.related : 
+                link.type === 'in-moc' ? themeColors.moc : themeColors.hasTag;
         }}
         onNodeClick={(node) => {
           console.log("Node clicked:", node);

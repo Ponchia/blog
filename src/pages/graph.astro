@@ -101,43 +101,43 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
   
   .description {
     margin-bottom: 1.5rem;
-    color: #666;
+    color: var(--text-secondary);
   }
   
   .tabs {
     display: flex;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
   }
   
   .tab {
     padding: 0.5rem 1rem;
     text-decoration: none;
-    color: #666;
+    color: var(--text-secondary);
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
   }
   
   .tab:hover {
-    color: #333;
-    border-bottom-color: #ddd;
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
   }
   
   .tab.active {
-    color: #000;
-    border-bottom-color: #3498db;
+    color: var(--text-primary);
+    border-bottom-color: var(--accent-light);
   }
   
   .graph-container {
     overflow: hidden;
-    background-color: #fff;
+    background-color: var(--bg-primary);
     margin-bottom: 2rem;
     height: 70vh; /* Make graph taller */
     min-height: 500px;
   }
   
   .legend {
-    background-color: #f9f9f9;
+    background-color: var(--bg-secondary);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -202,7 +202,7 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
   
   .tips {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-secondary);
   }
   
   .tip {
