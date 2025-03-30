@@ -12,6 +12,7 @@ A modern, responsive blog built with Astro, React, and MDX, featuring Giscus com
 - 📊 SEO optimized
 - 🔄 RSS feed support
 - 🌙 Light/dark mode support (via preferred color scheme)
+- 📈 Privacy-friendly analytics with GoatCounter
 
 ## Getting Started
 
@@ -97,6 +98,27 @@ This blog uses Giscus for comments. To configure:
 />
 ```
 
+## Analytics Setup
+
+This blog uses [GoatCounter](https://www.goatcounter.com/) for privacy-friendly analytics. GoatCounter is:
+
+- Free for personal use
+- Privacy-friendly (GDPR compliant)
+- Doesn't require cookies
+- Provides basic visitor stats without tracking personal information
+
+The script is already added to the layout files. If you need to update the configuration:
+
+1. Sign up for a free account at [GoatCounter](https://www.goatcounter.com/)
+2. Update the script in the layout files with your site code:
+
+```html
+<script data-goatcounter="https://YOUR-SITE-CODE.goatcounter.com/count" 
+        async src="//gc.zgo.at/count.js"></script>
+```
+
+Your analytics dashboard will be available at `https://YOUR-SITE-CODE.goatcounter.com/`.
+
 ## Deployment
 
 ### GitHub Pages
@@ -142,6 +164,14 @@ You can deploy this blog to any static hosting service like Netlify, Vercel, or 
 ├── README.md
 └── package.json
 ```
+
+## Contributing
+
+Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to work on this project, including:
+- Conventional commit standards
+- Testing requirements
+- Deployment considerations
+- Base URL configuration
 
 ## Commands
 
