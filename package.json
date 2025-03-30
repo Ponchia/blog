@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "dev:search": "astro build && astro dev"
+    "dev:search": "astro build && astro dev",
+    "test:git-dates": "node src/utils/test-git-dates.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.2",

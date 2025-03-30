@@ -103,4 +103,39 @@ export function formatDate(date: Date): string {
     month: 'long',
     day: 'numeric'
   });
+}
+
+/**
+ * Safely format a date with fallback value
+ * Handles undefined dates and ensures the input is a Date object
+ */
+export function safeFormatDate(date: Date | undefined | null, format = 'short'): string {
+  if (!date) return '';
+  
+  // Convert string to Date if needed
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Ensure it's a valid date
+  if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+    return '';
+  }
+  
+  try {
+    if (format === 'short') {
+      return dateObj.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } else {
+      return dateObj.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+  } catch (e) {
+    console.error('Error formatting date:', e);
+    return '';
+  }
 } 

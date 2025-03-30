@@ -1,9 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getAllTags, getPostsByTag, slugify } from '../../utils/moc-utils';
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 
-// Create path helpers for navigation links
+// Import utilities
+import { slugify, safeFormatDate, getAllTags, getPostsByTag } from '../../utils/moc-utils';
+
+// Helper function for navigation paths
 function getPath(path: string) {
   const base = import.meta.env.BASE_URL || '';
   // Ensure base ends with slash if not empty
@@ -15,28 +19,17 @@ function getPath(path: string) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const postsData = await getCollection('blog');
+  const postsWithMetadata = await Promise.all(
+    postsData.map(async (post) => {
+      const { remarkPluginFrontmatter } = await render(post);
+      // Merge remarkPluginFrontmatter into post.data
+      post.data = { ...post.data, ...remarkPluginFrontmatter };
+      return post;
+    })
+  );
   
-  // For demonstration, let's add some tag data to the existing posts
-  // In a real scenario, you would properly tag posts in their frontmatter
-  posts.forEach((post, index) => {
-    // Just for demo: add some tags to the first few posts
-    if (index === 0) {
-      post.data.mocs = ['Getting Started', 'Tutorials'];
-      post.data.related = ['second-post'];
-      post.data.tags = ['astro', 'blogging'];
-      post.data.status = 'evergreen';
-    } else if (index === 1) {
-      post.data.mocs = ['Tutorials', 'Advanced Concepts'];
-      post.data.tags = ['astro', 'mdx'];
-      post.data.status = 'evergreen';
-    } else if (index === 2) {
-      post.data.mocs = ['Advanced Concepts'];
-      post.data.tags = ['markdown', 'styling'];
-      post.data.status = 'fleeting';
-    }
-  });
-  
+  const posts = postsWithMetadata;
   const tags = getAllTags(posts);
   
   return tags.map(tag => {
@@ -81,42 +74,54 @@ const { tagName, posts } = Astro.props;
         </div>
       ) : (
         <ul>
-          {posts.map(post => (
-            <li>
-              <div class="post-card">
-                <div class="post-header">
-                  <a href={getPath(`blog/${post.slug}`)} class="post-title">
-                    <span class={`status-indicator ${post.data.status}`}></span>
-                    {post.data.title}
-                  </a>
-                  <div class="post-date">{post.data.pubDate.toLocaleDateString()}</div>
+          {posts.map(post => {
+            // Get effective publication date
+            const displayDate = post.data.pubDate || post.data.gitCreatedDate;
+            
+            return (
+              <li>
+                <div class="post-card">
+                  <div class="post-header">
+                    <a href={getPath(`blog/${post.id}`)} class="post-title">
+                      <span class={`status-indicator ${post.data.status}`}></span>
+                      {post.data.title}
+                    </a>
+                    {displayDate && (
+                      <div class="post-date">
+                        {safeFormatDate(displayDate)}
+                        {!post.data.pubDate && post.data.gitCreatedDate && (
+                          <span class="date-source">(from git)</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p class="post-description">{post.data.description}</p>
+                  
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="post-tags">
+                      {post.data.tags.filter(tag => tag !== tagName).map(tag => (
+                        <a href={getPath(`tags/${tag}`)} class="tag">{tag}</a>
+                      ))}
+                      <span class="current-tag">{tagName}</span>
+                    </div>
+                  )}
+                  
+                  {post.data.mocs && post.data.mocs.length > 0 && (
+                    <div class="in-mocs">
+                      <span class="in-label">In MOCs:</span>
+                      {post.data.mocs.map((moc, index) => (
+                        <>
+                          <a href={getPath(`mocs/${slugify(moc)}`)} class="in-moc">{moc}</a>
+                          {index < post.data.mocs.length - 1 ? ", " : ""}
+                        </>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                
-                <p class="post-description">{post.data.description}</p>
-                
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="post-tags">
-                    {post.data.tags.filter(tag => tag !== tagName).map(tag => (
-                      <a href={getPath(`tags/${tag}`)} class="tag">{tag}</a>
-                    ))}
-                    <span class="current-tag">{tagName}</span>
-                  </div>
-                )}
-                
-                {post.data.mocs && post.data.mocs.length > 0 && (
-                  <div class="in-mocs">
-                    <span class="in-label">In MOCs:</span>
-                    {post.data.mocs.map((moc, index) => (
-                      <>
-                        <a href={getPath(`mocs/${slugify(moc)}`)} class="in-moc">{moc}</a>
-                        {index < post.data.mocs.length - 1 ? ", " : ""}
-                      </>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
@@ -227,6 +232,12 @@ const { tagName, posts } = Astro.props;
     font-size: 0.85rem;
     color: #999;
     white-space: nowrap;
+  }
+  
+  .date-source {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-left: 0.3rem;
   }
   
   .post-description {

@@ -18,7 +18,23 @@ const postsWithMetadata = await Promise.all(
 );
 
 const posts = postsWithMetadata
-	.sort((a, b) => b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf());
+	.sort((a, b) => {
+		// Get effective publish dates (manual or from git)
+		const dateA = a.post.data.pubDate || a.remarkPluginFrontmatter.gitCreatedDate;
+		const dateB = b.post.data.pubDate || b.remarkPluginFrontmatter.gitCreatedDate;
+		
+		// If both have dates, sort by them
+		if (dateA && dateB) {
+			return dateB.valueOf() - dateA.valueOf();
+		}
+		
+		// If only one has a date, put the one with a date first
+		if (dateA) return -1;
+		if (dateB) return 1;
+		
+		// If neither has a date, maintain original order
+		return 0;
+	});
 
 // Helper function to ensure consistent paths with the base URL
 function getPathWithBase(path: string): string {
@@ -52,6 +68,9 @@ function getPathWithBase(path: string): string {
 						// Path for view counter
 						const countPath = `/blog/${post.id}/`;
 						
+						// Get the effective publish date (manual or from git)
+						const displayDate = post.data.pubDate || remarkPluginFrontmatter.gitCreatedDate;
+						
 						return (
 							<li class={index === 0 ? 'featured-post' : ''}>
 								<a href={postUrl} class="post-card">
@@ -68,9 +87,14 @@ function getPathWithBase(path: string): string {
 									</div>
 									<div class="card-content">
 										<div class="meta-info">
-											<p class="date">
-												<FormattedDate date={post.data.pubDate} />
-											</p>
+											{displayDate && (
+												<p class="date">
+													<FormattedDate date={displayDate} />
+													{!post.data.pubDate && remarkPluginFrontmatter.gitCreatedDate && (
+														<span class="date-source">(from git)</span>
+													)}
+												</p>
+											)}
 											{remarkPluginFrontmatter.minutesRead && (
 												<p class="reading-time">{remarkPluginFrontmatter.minutesRead}</p>
 											)}
@@ -176,6 +200,12 @@ function getPathWithBase(path: string): string {
 	.post-card:hover {
 		transform: translateY(-5px);
 		background-color: rgba(var(--gray-dark), 0.3);
+	}
+	
+	.date-source {
+		font-size: 0.8rem;
+		opacity: 0.7;
+		margin-left: 0.5rem;
 	}
 	
 	.card-image-container {
