@@ -47,8 +47,17 @@ One of the most powerful features of PyScript is the ability to create interacti
 
 <PyScriptDemo client:load code={`
 from pyscript import display
+
+# First, we need to install matplotlib
+display("Installing matplotlib... (this may take a few moments)")
+import micropip
+await micropip.install("matplotlib")
+await micropip.install("numpy")
+
+# Now we can import matplotlib and numpy
 import matplotlib.pyplot as plt
 import numpy as np
+display("Libraries loaded successfully!")
 
 # Create some sample data
 categories = ['A', 'B', 'C', 'D', 'E']
