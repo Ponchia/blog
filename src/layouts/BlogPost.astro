@@ -9,7 +9,21 @@ import ViewCounter from '../components/ViewCounter.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
 
-const { title, description, pubDate, updatedDate, heroImage, minutesRead } = Astro.props;
+const { 
+	title, 
+	description, 
+	pubDate, 
+	updatedDate, 
+	gitCreatedDate, 
+	gitLastModified, 
+	heroImage, 
+	minutesRead 
+} = Astro.props;
+
+// Use manual pubDate if available, otherwise use Git created date
+const displayPubDate = pubDate || gitCreatedDate;
+// Use manual updatedDate if available, otherwise use Git last modified date
+const displayUpdatedDate = updatedDate || gitLastModified;
 
 // Helper function to ensure hero image has the correct path
 function getImagePath(image: string): string {
@@ -127,6 +141,12 @@ const currentPath = Astro.url.pathname;
 				padding-top: 2rem;
 				border-top: 1px solid var(--border-color);
 			}
+			.date-source {
+				font-size: 0.8rem;
+				color: var(--accent-light);
+				opacity: 0.7;
+				margin-left: 0.5rem;
+			}
 
 			@media (max-width: 768px) {
 				main {
@@ -151,7 +171,14 @@ const currentPath = Astro.url.pathname;
 			<article class="blog-post">
 				<div class="title">
 					<div class="post-meta">
-						<div><FormattedDate date={pubDate} /></div>
+						{displayPubDate && (
+							<div>
+								<FormattedDate date={displayPubDate} />
+								{!pubDate && gitCreatedDate && (
+									<span class="date-source">(from git)</span>
+								)}
+							</div>
+						)}
 						{
 							minutesRead && (
 								<div class="reading-time">{minutesRead}</div>
@@ -160,9 +187,12 @@ const currentPath = Astro.url.pathname;
 						<ViewCounter slug={currentPath} />
 					</div>
 					{
-						updatedDate && (
+						displayUpdatedDate && (
 							<div class="last-updated-on">
-								Last updated on <FormattedDate date={updatedDate} />
+								Last updated on <FormattedDate date={displayUpdatedDate} />
+								{!updatedDate && gitLastModified && (
+									<span class="date-source">(from git)</span>
+								)}
 							</div>
 						)
 					}

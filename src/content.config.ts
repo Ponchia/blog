@@ -9,8 +9,11 @@ const blog = defineCollection({
 		title: z.string(),
 		description: z.string(),
 		// Transform string to Date object
-		pubDate: z.coerce.date(),
+		pubDate: z.coerce.date().optional(),
 		updatedDate: z.coerce.date().optional(),
+		// Git-based dates
+		gitCreatedDate: z.coerce.date().optional(),
+		gitLastModified: z.coerce.date().optional(),
 		heroImage: z.string().optional(),
 		// MOC connections - list of maps of content this post belongs to
 		mocs: z.array(z.string()).optional(),
