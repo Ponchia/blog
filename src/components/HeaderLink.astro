@@ -4,25 +4,46 @@ import type { HTMLAttributes } from 'astro/types';
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
-
-// Normalize the current pathname to match against
 const { pathname } = Astro.url;
-const currentPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
-const basePath = import.meta.env.BASE_URL.endsWith('/') 
-  ? import.meta.env.BASE_URL 
-  : `${import.meta.env.BASE_URL}/`;
 
-// Remove base path from current path for comparison
-const normalizedPath = currentPath.startsWith(basePath) 
-  ? currentPath.slice(basePath.length - 1) 
-  : currentPath;
+// Detect if we're in dev or production
+const isDev = import.meta.env.DEV;
+const baseURL = import.meta.env.BASE_URL;
 
-// Normalize the href for comparison
-const hrefWithoutBase = href.toString().replace(import.meta.env.BASE_URL, '');
-const hrefPath = hrefWithoutBase === '' ? '/' : hrefWithoutBase;
+// Normalize paths for comparison
+function normalizePath(path: string) {
+	// Ensure trailing slash
+	return path.endsWith('/') ? path : `${path}/`;
+}
 
-// Check if the link should be active
-const isActive = normalizedPath === '/' + hrefPath || normalizedPath === hrefPath;
+// Function to strip base path if needed
+function removeBasePath(path: string) {
+	if (isDev || !baseURL) return path;
+	return path.startsWith(baseURL) ? path.slice(baseURL.length - 1) : path;
+}
+
+// Get the current path without base for comparison
+const currentPath = normalizePath(removeBasePath(pathname));
+
+// Get the link path for comparison
+let linkPath: string;
+if (typeof href === 'string') {
+	// Handle root path
+	if (href === '/' || href === baseURL) {
+		linkPath = '/';
+	} else {
+		// Handle other paths
+		const strippedHref = href.toString().replace(baseURL, '');
+		linkPath = normalizePath(strippedHref.startsWith('/') ? strippedHref : `/${strippedHref}`);
+	}
+} else {
+	linkPath = '/';
+}
+
+// Check if active
+const isActive = linkPath === '/' 
+	? currentPath === '/' 
+	: currentPath.startsWith(linkPath);
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>

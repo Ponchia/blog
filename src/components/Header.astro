@@ -1,15 +1,28 @@
 ---
 import HeaderLink from './HeaderLink.astro';
 import { SITE_TITLE } from '../consts';
+
+// Determine if we're in development or production
+const isDev = import.meta.env.DEV;
+
+// Create path helpers for navigation links
+function getPath(path: string) {
+	// In development, use paths as-is
+	if (isDev) {
+		return path;
+	}
+	// In production, prefix with base path
+	return `${import.meta.env.BASE_URL}${path.startsWith('/') ? path.slice(1) : path}`;
+}
 ---
 
 <header>
 	<nav>
-		<h2><a href={import.meta.env.BASE_URL}>{SITE_TITLE}</a></h2>
+		<h2><a href={getPath('/')}>{SITE_TITLE}</a></h2>
 		<div class="internal-links">
-			<HeaderLink href={import.meta.env.BASE_URL}>Home</HeaderLink>
-			<HeaderLink href={`${import.meta.env.BASE_URL}blog/`}>Blog</HeaderLink>
-			<HeaderLink href={`${import.meta.env.BASE_URL}about/`}>About</HeaderLink>
+			<HeaderLink href={getPath('/')}>Home</HeaderLink>
+			<HeaderLink href={getPath('/blog/')}>Blog</HeaderLink>
+			<HeaderLink href={getPath('/about/')}>About</HeaderLink>
 		</div>
 		<div class="social-links">
 			<a href="https://m.webtoo.ls/@astro" target="_blank">
