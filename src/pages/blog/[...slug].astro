@@ -14,8 +14,16 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content, remarkPluginFrontmatter } = await render(post);
+
+// Add Git dates from remarkPluginFrontmatter to post.data if they exist
+const postData = {
+	...post.data,
+	gitCreatedDate: remarkPluginFrontmatter.gitCreatedDate,
+	gitLastModified: remarkPluginFrontmatter.gitLastModified,
+	minutesRead: remarkPluginFrontmatter.minutesRead
+};
 ---
 
-<BlogPost {...post.data} minutesRead={remarkPluginFrontmatter.minutesRead}>
+<BlogPost {...postData}>
 	<Content />
 </BlogPost>
