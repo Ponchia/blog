@@ -1,0 +1,229 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getAllMocs, getPostsByMoc, slugify } from '../utils/moc-utils';
+
+// Create path helpers for navigation links
+function getPath(path: string) {
+  const base = import.meta.env.BASE_URL || '';
+  // Ensure base ends with slash if not empty
+  const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+  // Remove leading slash from path if it exists
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Join base with path
+  return `${baseWithSlash}${cleanPath}`;
+}
+
+// Get all posts
+const posts = await getCollection('blog');
+
+// Log any posts that don't have slugs (this shouldn't happen with Astro content collections)
+console.log('Posts with potential slug issues:');
+posts.forEach(post => {
+  if (!post.slug) {
+    console.log(`Post "${post.data.title}" is missing a slug`);
+  }
+});
+
+// Get all MOCs and sort by post count for display
+const mocs = getAllMocs(posts);
+const mocsByPostCount = mocs.map(moc => {
+  return {
+    name: moc,
+    count: getPostsByMoc(posts, moc).length,
+    posts: getPostsByMoc(posts, moc)
+  };
+}).sort((a, b) => b.count - a.count);
+---
+
+<Layout title="Map of Content">
+  <main>
+    <h1>Map of Content</h1>
+    <p class="description">Explore content by topic areas, discover connections</p>
+    
+    <div class="tabs">
+      <a href={getPath('map')} class="tab active">Content Map</a>
+      <a href={getPath('graph')} class="tab">Graph View</a>
+    </div>
+    
+    <section id="mocs">
+      {mocsByPostCount.length === 0 ? (
+        <div class="empty-state">
+          <p>No Maps of Content (MOCs) found. Start by adding MOCs to your posts.</p>
+        </div>
+      ) : (
+        <div class="moc-grid">
+          {mocsByPostCount.map(moc => (
+            <div class="moc-card">
+              <h2 class="moc-title">
+                <a href={getPath(`mocs/${slugify(moc.name)}`)}>{moc.name}</a>
+              </h2>
+              <div class="moc-posts-count">{moc.count} {moc.count === 1 ? 'post' : 'posts'}</div>
+              
+              <ul class="moc-post-list">
+                {moc.posts.slice(0, 3).map(post => (
+                  <li>
+                    <a href={getPath(`blog/${post.slug || ''}`)} title={post.slug ? undefined : 'Slug is not defined for this post'}>
+                      <span class={`status-dot ${post.data.status}`}></span>
+                      {post.data.title}
+                    </a>
+                  </li>
+                ))}
+                {moc.posts.length > 3 && (
+                  <li class="more-posts">
+                    <a href={getPath(`mocs/${slugify(moc.name)}`)}>
+                      + {moc.posts.length - 3} more...
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .description {
+    margin-bottom: 2rem;
+    color: #666;
+  }
+  
+  .tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .tab {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .tab:hover {
+    color: #333;
+    border-bottom-color: #ddd;
+  }
+  
+  .tab.active {
+    color: #000;
+    border-bottom-color: #3498db;
+  }
+  
+  .moc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+  
+  .moc-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease;
+    background-color: #fff;
+  }
+  
+  .moc-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .moc-count {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+  
+  .preview-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .preview-list li {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .preview-list li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .preview-list a {
+    text-decoration: none;
+    color: #2980b9;
+    display: flex;
+    align-items: center;
+  }
+  
+  .preview-list a:hover {
+    text-decoration: underline;
+  }
+  
+  .date {
+    font-size: 0.8rem;
+    color: #999;
+  }
+  
+  .status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .status-indicator.evergreen {
+    background-color: #27ae60;
+  }
+  
+  .status-indicator.fleeting {
+    background-color: #e74c3c;
+  }
+  
+  .empty-state {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  pre {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    text-align: left;
+  }
+  
+  code {
+    font-family: monospace;
+  }
+  
+  @media (max-width: 768px) {
+    .moc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style> 

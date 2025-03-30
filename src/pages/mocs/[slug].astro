@@ -1,0 +1,284 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getAllMocs, getPostsByMoc, slugify } from '../../utils/moc-utils';
+
+// Create path helpers for navigation links
+function getPath(path: string) {
+  const base = import.meta.env.BASE_URL || '';
+  // Ensure base ends with slash if not empty
+  const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+  // Remove leading slash from path if it exists
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Join base with path
+  return `${baseWithSlash}${cleanPath}`;
+}
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const mocs = getAllMocs(posts);
+  
+  return mocs.map(moc => {
+    return {
+      params: { slug: slugify(moc) },
+      props: { mocName: moc, posts: getPostsByMoc(posts, moc) }
+    };
+  });
+}
+
+const { mocName, posts } = Astro.props;
+---
+
+<Layout title={`${mocName} - Map of Content`}>
+  <main>
+    <div class="breadcrumbs">
+      <a href={getPath('map')}>Maps of Content</a> &rsaquo; <span>{mocName}</span>
+    </div>
+    
+    <h1>{mocName}</h1>
+    <p class="description">Explore posts related to this topic</p>
+    
+    <div class="actions">
+      <a href={getPath('graph')} class="action-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="21.17" y1="8" x2="12" y2="8"></line>
+          <line x1="3.95" y1="6.06" x2="8.54" y2="14"></line>
+          <line x1="10.88" y1="21.94" x2="15.46" y2="14"></line>
+        </svg>
+        View in Graph
+      </a>
+    </div>
+    
+    <div class="post-list">
+      <h2>Posts ({posts.length})</h2>
+      
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <p>No posts found in this category.</p>
+        </div>
+      ) : (
+        <ul>
+          {posts.map(post => (
+            <li>
+              <div class="post-card">
+                <div class="post-header">
+                  <a href={getPath(`blog/${post.slug}`)} class="post-title">
+                    <span class={`status-indicator ${post.data.status}`}></span>
+                    {post.data.title}
+                  </a>
+                  <div class="post-date">{post.data.pubDate.toLocaleDateString()}</div>
+                </div>
+                
+                <p class="post-description">{post.data.description}</p>
+                
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="post-tags">
+                    {post.data.tags.map(tag => (
+                      <a href={getPath(`tags/${tag}`)} class="tag">{tag}</a>
+                    ))}
+                  </div>
+                )}
+                
+                {post.data.mocs && post.data.mocs.filter(moc => moc !== mocName).length > 0 && (
+                  <div class="also-in">
+                    <span class="also-label">Also in:</span>
+                    {post.data.mocs.filter(moc => moc !== mocName).map(moc => (
+                      <a href={getPath(`mocs/${slugify(moc)}`)} class="also-moc">{moc}</a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+  
+  .breadcrumbs a {
+    color: #3498db;
+    text-decoration: none;
+  }
+  
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+  
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .description {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #f5f5f5;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .action-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .post-list h2 {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  .post-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .post-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease;
+    background-color: #fff;
+  }
+  
+  .post-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .post-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+  }
+  
+  .post-title:hover {
+    color: #3498db;
+  }
+  
+  .post-date {
+    font-size: 0.85rem;
+    color: #999;
+    white-space: nowrap;
+  }
+  
+  .post-description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tag {
+    background-color: #f0f0f0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #666;
+  }
+  
+  .also-in {
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .also-label {
+    color: #999;
+  }
+  
+  .also-moc {
+    color: #3498db;
+    text-decoration: none;
+  }
+  
+  .also-moc:hover {
+    text-decoration: underline;
+  }
+  
+  .status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .status-indicator.evergreen {
+    background-color: #27ae60;
+  }
+  
+  .status-indicator.fleeting {
+    background-color: #e74c3c;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    color: #666;
+  }
+  
+  @media (max-width: 768px) {
+    .post-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .post-date {
+      margin-left: 1rem;
+    }
+  }
+</style> 

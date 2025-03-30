@@ -12,6 +12,14 @@ const blog = defineCollection({
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
 		heroImage: z.string().optional(),
+		// MOC connections - list of maps of content this post belongs to
+		mocs: z.array(z.string()).optional(),
+		// Related posts - explicit connections to other posts by slug
+		related: z.array(z.string()).optional(),
+		// Content status - for visual differentiation
+		status: z.enum(['evergreen', 'fleeting']).optional().default('evergreen'),
+		// Traditional tags can still be used alongside MOCs
+		tags: z.array(z.string()).optional(),
 	}),
 });
 

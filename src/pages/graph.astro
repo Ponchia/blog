@@ -1,0 +1,224 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GraphView from '../components/GraphView.jsx';
+import { getCollection } from 'astro:content';
+import { generateGraphData } from '../utils/graph-data';
+
+// Create path helpers for navigation links
+function getPath(path: string) {
+  const base = import.meta.env.BASE_URL || '';
+  // Ensure base ends with slash if not empty
+  const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+  // Remove leading slash from path if it exists
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Join base with path
+  return `${baseWithSlash}${cleanPath}`;
+}
+
+// Get all posts
+const posts = await getCollection('blog');
+
+// Generate graph data
+const graphData = generateGraphData(posts);
+console.log(`Graph data: ${JSON.stringify(graphData, null, 2)}`);
+---
+
+<Layout title="Content Graph">
+  <main>
+    <h1>Content Graph</h1>
+    <p class="description">Explore connections between posts and topics</p>
+    
+    <div class="tabs">
+      <a href={getPath('map')} class="tab">Content Map</a>
+      <a href={getPath('graph')} class="tab active">Graph View</a>
+    </div>
+    
+    <div class="graph-container">
+      <GraphView graphData={graphData} client:only="react" />
+    </div>
+    
+    <div class="legend">
+      <h3 class="legend-title">Graph Legend</h3>
+      <div class="legend-content">
+        <div class="legend-section">
+          <h4>Nodes</h4>
+          <div class="legend-items">
+            <div class="legend-item">
+              <span class="dot moc"></span> Topics/MOCs
+            </div>
+            <div class="legend-item">
+              <span class="dot tag"></span> Tags
+            </div>
+            <div class="legend-item">
+              <span class="dot evergreen"></span> Evergreen Posts
+            </div>
+            <div class="legend-item">
+              <span class="dot fleeting"></span> Draft/Recent Posts
+            </div>
+          </div>
+        </div>
+        
+        <div class="legend-section">
+          <h4>Links</h4>
+          <div class="legend-items">
+            <div class="legend-item">
+              <span class="line in-moc"></span> Post in MOC
+            </div>
+            <div class="legend-item">
+              <span class="line has-tag"></span> Post has Tag
+            </div>
+            <div class="legend-item">
+              <span class="line related"></span> Related Posts
+            </div>
+          </div>
+        </div>
+        
+        <div class="legend-section">
+          <h4>Interactions</h4>
+          <div class="legend-items tips">
+            <div class="tip">Hover over nodes to highlight connections</div>
+            <div class="tip">Click on a node to navigate to its page</div>
+            <div class="tip">Scroll to zoom in/out</div>
+            <div class="tip">Drag the canvas to pan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .description {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+  
+  .tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .tab {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .tab:hover {
+    color: #333;
+    border-bottom-color: #ddd;
+  }
+  
+  .tab.active {
+    color: #000;
+    border-bottom-color: #3498db;
+  }
+  
+  .graph-container {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 2rem;
+    height: 70vh; /* Make graph taller */
+    min-height: 500px;
+  }
+  
+  .legend {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .legend-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  
+  .legend-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-around;
+  }
+  
+  .legend-section {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .legend-section h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  
+  .line {
+    width: 24px;
+    height: 2px;
+  }
+  
+  .moc { background-color: #2980b9; }
+  .tag { background-color: #8e44ad; }
+  .evergreen { background-color: #27ae60; }
+  .fleeting { background-color: #e74c3c; }
+  .in-moc { background-color: #2980b9; }
+  .has-tag { background-color: #d35400; }
+  .related { background-color: #8e44ad; }
+  
+  .tips {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .tip {
+    margin-bottom: 0.25rem;
+  }
+  
+  @media (max-width: 768px) {
+    .legend-content {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .graph-container {
+      height: 60vh;
+      min-height: 400px;
+    }
+  }
+</style> 

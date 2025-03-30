@@ -1,10 +1,52 @@
 ---
 const today = new Date();
+
+// Create path helpers for navigation links
+function getPath(path: string) {
+	const base = import.meta.env.BASE_URL || '';
+	// Ensure base ends with slash if not empty
+	const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+	// Remove leading slash from path if it exists
+	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+	// Join base with path
+	return `${baseWithSlash}${cleanPath}`;
+}
 ---
 
 <footer>
 	<div class="footer-content">
-		<p>&copy; {today.getFullYear()} Ponchia. All rights reserved.</p>
+		<div class="sitemap">
+			<div class="sitemap-section">
+				<h3>Navigation</h3>
+				<ul>
+					<li><a href={getPath('')}>Home</a></li>
+					<li><a href={getPath('blog')}>Blog</a></li>
+					<li><a href={getPath('about')}>About</a></li>
+				</ul>
+			</div>
+			
+			<div class="sitemap-section">
+				<h3>Content Map</h3>
+				<ul>
+					<li><a href={getPath('map')}>Map of Content</a></li>
+					<li><a href={getPath('graph')}>Graph View</a></li>
+					<li><a href={getPath('map#mocs')}>All MOCs</a></li>
+				</ul>
+			</div>
+			
+			<div class="sitemap-section">
+				<h3>Resources</h3>
+				<ul>
+					<li><a href={getPath('tags')}>All Tags</a></li>
+					<li><a href="https://github.com/ponchia/blog" target="_blank" rel="noopener">GitHub</a></li>
+					<li><a href={getPath('rss.xml')}>RSS Feed</a></li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="copyright">
+			<p>&copy; {today.getFullYear()} Ponchia. All rights reserved.</p>
+		</div>
 	</div>
 </footer>
 <style>
@@ -24,18 +66,78 @@ const today = new Date();
 		justify-content: center;
 		max-width: var(--content-width);
 		margin: 0 auto;
+		width: 100%;
 	}
 	
-	.footer-content p {
+	.sitemap {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		width: 100%;
+		margin-bottom: 3rem;
+	}
+	
+	.sitemap-section {
+		flex: 1;
+		min-width: 200px;
+		margin-bottom: 1.5rem;
+	}
+	
+	.sitemap-section h3 {
+		font-size: 1.1rem;
+		margin-bottom: 1rem;
+		color: var(--text-primary);
+	}
+	
+	.sitemap-section ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	
+	.sitemap-section li {
+		margin-bottom: 0.5rem;
+	}
+	
+	.sitemap-section a {
+		color: var(--text-secondary);
+		text-decoration: none;
+		font-size: 0.9rem;
+		transition: color 0.2s ease;
+	}
+	
+	.sitemap-section a:hover {
+		color: var(--accent-light);
+		text-decoration: underline;
+	}
+	
+	.copyright {
+		width: 100%;
+		text-align: center;
+		border-top: 1px solid var(--border-color);
+		padding-top: 1.5rem;
+	}
+	
+	.copyright p {
 		margin: 0;
 		font-size: 0.9rem;
 		letter-spacing: 0.5px;
+		color: var(--text-secondary);
 	}
 	
 	@media (max-width: 768px) {
 		footer {
 			padding: 2.5rem 1rem;
 			margin-top: 4rem;
+		}
+		
+		.sitemap {
+			flex-direction: column;
+			margin-bottom: 2rem;
+		}
+		
+		.sitemap-section {
+			margin-bottom: 2rem;
 		}
 	}
 </style>
