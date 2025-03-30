@@ -5,12 +5,17 @@ const { slug } = Astro.props;
 
 // Normalize the path to match what GoatCounter expects
 // The dashboard shows paths like /blog/blog/why-i-created-this-blog
-// Make sure we're using the right path format with /blog/ prefix
+// Make sure we're using the right path format with /blog/blog/ prefix for blog posts
 let normalizedPath = slug.startsWith('/') ? slug : `/${slug}`;
 normalizedPath = normalizedPath.endsWith('/') ? normalizedPath.slice(0, -1) : normalizedPath;
 
-// GoatCounter requires the path to be prefixed with /blog if it's not already
-if (!normalizedPath.startsWith('/blog')) {
+// Ensure the path has the right prefix based on the pattern in the dashboard
+// Blog posts need /blog/blog/ prefix, other pages just need /blog/ prefix
+if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/')) {
+  // It's a blog post path but doesn't have the right prefix
+  normalizedPath = `/blog${normalizedPath}`;
+} else if (!normalizedPath.startsWith('/blog/')) {
+  // Other pages need at least the /blog/ prefix
   normalizedPath = `/blog${normalizedPath}`;
 }
 
@@ -153,9 +158,9 @@ const debug = true;
     try {
       console.log(`[ViewCounter Client] Fetching count for path: ${path}`);
       
-      // Use the correct URL format - note the double slash is intentional
+      // Use the correct URL format with double slash - this is the format that works
       // Format: https://site.goatcounter.com/counter//path.json
-      const url = `https://ponchia.goatcounter.com/counter/${path}.json`;
+      const url = `https://ponchia.goatcounter.com/counter//${path}.json`;
       console.log(`[ViewCounter Client] Request URL: ${url}`);
       
       const response = await fetch(url);
@@ -172,27 +177,6 @@ const debug = true;
         }
       } else {
         console.error(`[ViewCounter Client] Failed to fetch count: ${response.status}`);
-        
-        // Try alternative URL format with double slash
-        const altUrl = `https://ponchia.goatcounter.com/counter//${path}.json`;
-        console.log(`[ViewCounter Client] Trying alternative URL: ${altUrl}`);
-        
-        try {
-          const altResponse = await fetch(altUrl);
-          
-          if (altResponse.ok) {
-            const altData = await altResponse.json();
-            console.log(`[ViewCounter Client] Received count data from alt URL:`, altData);
-            
-            if (altData.count) {
-              countElement.textContent = altData.count;
-              return;
-            }
-          }
-        } catch (altError) {
-          console.error('[ViewCounter Client] Error fetching from alt URL:', altError);
-        }
-        
         countElement.textContent = '1';
       }
     } catch (error) {
