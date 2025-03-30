@@ -43,85 +43,93 @@ display("Current time: " + now.strftime("%m/%d/%Y, %H:%M:%S"))
 
 ## Data Visualization Example
 
-One of the most powerful features of PyScript is the ability to create interactive data visualizations directly in the browser. Here's an example using Matplotlib to create a simple bar chart:
+One of the most powerful features of PyScript is the ability to create interactive data visualizations directly in the browser. Here's an example using Matplotlib to create data visualizations:
 
 <PyScriptDemo client:load code={`
+import asyncio
 from pyscript import display
 
-# Define an async function to handle package installation and visualization
-async def main():
-    # First, we need to install matplotlib
-    display("Installing matplotlib... (this may take a few moments)")
-    import micropip
+# Display a message while packages are loading
+display("Loading packages... This may take a moment.")
+
+# Import necessary packages (micropip is already available)
+import micropip
+
+# Define and execute the async function for installing packages
+async def setup():
     await micropip.install("matplotlib")
     await micropip.install("numpy")
     
-    # Now we can import matplotlib and numpy
+    # Now that we have the packages, import them
     import matplotlib.pyplot as plt
     import numpy as np
-    display("Libraries loaded successfully!")
     
-    # Create some sample data
+    display("Packages loaded successfully! Creating visualizations...")
+    
+    # Create a bar chart example
     categories = ['A', 'B', 'C', 'D', 'E']
     values = [22, 35, 14, 28, 19]
     
-    # Create a figure with a specific size
-    plt.figure(figsize=(8, 4))
+    fig1, ax1 = plt.subplots(figsize=(8, 4))
+    bars = ax1.bar(categories, values, color='#4285F4')
     
-    # Create a bar chart with custom colors
-    bars = plt.bar(categories, values, color='#4285F4')
-    
-    # Add a title and labels
-    plt.title('Sample Data Visualization')
-    plt.xlabel('Categories')
-    plt.ylabel('Values')
+    # Add title and labels
+    ax1.set_title('Sample Data Visualization')
+    ax1.set_xlabel('Categories')
+    ax1.set_ylabel('Values')
     
     # Add value labels on top of each bar
     for bar in bars:
         height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                 f'{height}', ha='center', va='bottom')
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                f'{height}', ha='center', va='bottom')
     
     # Add a grid for better readability
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    ax1.grid(axis='y', linestyle='--', alpha=0.7)
     
-    # Customize the background color
-    plt.gca().set_facecolor('#f8f9fa')
+    # Set background color
+    ax1.set_facecolor('#f8f9fa')
     
-    # Display the plot
-    display(plt)
+    # Display the plot using display function
+    display(fig1, target="bar-chart")
     
-    # You can also create multiple visualizations
-    # Let's add a simple line chart
-    plt.figure(figsize=(8, 4))
+    # Create a nice trigonometric visualization
+    # First create the x and y coordinates of the points
+    n_angles = 36
+    n_radii = 8
+    min_radius = 0.25
+    radii = np.linspace(min_radius, 0.95, n_radii)
     
-    # Generate some data for plotting
-    x = np.linspace(0, 10, 100)
-    y1 = np.sin(x)
-    y2 = np.cos(x)
+    angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
+    angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
+    angles[:, 1::2] += np.pi / n_angles
     
-    # Plot multiple lines with different styles
-    plt.plot(x, y1, label='sin(x)', color='#DB4437', linewidth=2)
-    plt.plot(x, y2, label='cos(x)', color='#0F9D58', linewidth=2, linestyle='--')
+    x = (radii * np.cos(angles)).flatten()
+    y = (radii * np.sin(angles)).flatten()
+    z = (np.cos(radii) * np.cos(3 * angles)).flatten()
     
-    # Add labels and title
-    plt.title('Sine and Cosine Functions')
-    plt.xlabel('x')
-    plt.ylabel('y')
+    # Create the Triangulation; no triangles so Delaunay triangulation created
+    import matplotlib.tri as tri
+    triang = tri.Triangulation(x, y)
     
-    # Add a legend
-    plt.legend()
+    # Mask off unwanted triangles
+    triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
+                            y[triang.triangles].mean(axis=1))
+                    < min_radius)
     
-    # Add a grid
-    plt.grid(True, alpha=0.3)
+    fig2, ax2 = plt.subplots(figsize=(8, 6))
+    ax2.set_aspect('equal')
+    tpc = ax2.tripcolor(triang, z, shading='flat')
+    fig2.colorbar(tpc)
+    ax2.set_title('Delaunay Triangulation Visualization')
     
     # Display the second plot
-    display(plt)
+    display(fig2, target="tri-chart")
 
-# Run the async function using the proper PyScript-compatible pattern
-display("Starting visualization demo...")
-from js import pyscript
-pyscript.run_until_complete(main())
+# Start the setup process and provide targets for the plots
+display("<div id='bar-chart'></div>")
+display("<div id='tri-chart'></div>")
+asyncio.ensure_future(setup())
 `} />
 
 ## How It Works
