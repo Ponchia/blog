@@ -53,87 +53,74 @@ from pyscript import display
 import matplotlib.pyplot as plt
 import numpy as np
 import asyncio
-import time
 
 display("Packages are pre-loaded and ready to use!")
 
-# First create the container elements and ensure they're in the DOM
-display("<div id='vis-container'><div id='bar-chart'></div><div id='tri-chart'></div></div>")
+# Create a simple bar chart
+display("Creating bar chart visualization...")
+categories = ['A', 'B', 'C', 'D', 'E']
+values = [22, 35, 14, 28, 19]
 
-# Define an async function for visualization to ensure proper sequencing
-async def create_visualizations():
-    # Add a small delay to ensure the DOM is updated
-    await asyncio.sleep(0.5)
-    
-    display("Creating visualizations...")
-    
-    # Create a bar chart example
-    categories = ['A', 'B', 'C', 'D', 'E']
-    values = [22, 35, 14, 28, 19]
-    
-    fig1, ax1 = plt.subplots(figsize=(8, 4))
-    bars = ax1.bar(categories, values, color='#4285F4')
-    
-    # Add title and labels
-    ax1.set_title('Sample Data Visualization')
-    ax1.set_xlabel('Categories')
-    ax1.set_ylabel('Values')
-    
-    # Add value labels on top of each bar
-    for bar in bars:
-        height = bar.get_height()
-        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                 f'{height}', ha='center', va='bottom')
-    
-    # Add a grid for better readability
-    ax1.grid(axis='y', linestyle='--', alpha=0.7)
-    
-    # Set background color
-    ax1.set_facecolor('#f8f9fa')
-    
-    # Display the plot using display function
-    display(fig1, target="bar-chart")
-    
-    # Add a small delay between plots
-    await asyncio.sleep(0.2)
-    
-    # Create a nice trigonometric visualization
-    # First create the x and y coordinates of the points
-    n_angles = 36
-    n_radii = 8
-    min_radius = 0.25
-    radii = np.linspace(min_radius, 0.95, n_radii)
-    
-    angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
-    angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
-    angles[:, 1::2] += np.pi / n_angles
-    
-    x = (radii * np.cos(angles)).flatten()
-    y = (radii * np.sin(angles)).flatten()
-    z = (np.cos(radii) * np.cos(3 * angles)).flatten()
-    
-    # Create the Triangulation; no triangles so Delaunay triangulation created
-    import matplotlib.tri as tri
-    triang = tri.Triangulation(x, y)
-    
-    # Mask off unwanted triangles
-    triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                            y[triang.triangles].mean(axis=1))
-                    < min_radius)
-    
-    fig2, ax2 = plt.subplots(figsize=(8, 6))
-    ax2.set_aspect('equal')
-    tpc = ax2.tripcolor(triang, z, shading='flat')
-    fig2.colorbar(tpc)
-    ax2.set_title('Delaunay Triangulation Visualization')
-    
-    # Display the second plot
-    display(fig2, target="tri-chart")
-    
-    display("Visualizations complete!")
+# Create figure and axis
+fig1, ax1 = plt.subplots(figsize=(8, 4))
+bars = ax1.bar(categories, values, color='#4285F4')
 
-# Start the visualization process
-asyncio.create_task(create_visualizations())
+# Add title and labels
+ax1.set_title('Sample Data Visualization')
+ax1.set_xlabel('Categories')
+ax1.set_ylabel('Values')
+
+# Add value labels on top of each bar
+for bar in bars:
+    height = bar.get_height()
+    ax1.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+             f'{height}', ha='center', va='bottom')
+
+# Add a grid for better readability
+ax1.grid(axis='y', linestyle='--', alpha=0.7)
+
+# Set background color
+ax1.set_facecolor('#f8f9fa')
+
+# Display the plot directly
+display(fig1)
+
+# Create a trigonometric visualization
+display("Creating trigonometric visualization...")
+
+# First create the x and y coordinates of the points
+n_angles = 36
+n_radii = 8
+min_radius = 0.25
+radii = np.linspace(min_radius, 0.95, n_radii)
+
+angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
+angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
+angles[:, 1::2] += np.pi / n_angles
+
+x = (radii * np.cos(angles)).flatten()
+y = (radii * np.sin(angles)).flatten()
+z = (np.cos(radii) * np.cos(3 * angles)).flatten()
+
+# Create the Triangulation; no triangles so Delaunay triangulation created
+import matplotlib.tri as tri
+triang = tri.Triangulation(x, y)
+
+# Mask off unwanted triangles
+triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
+                        y[triang.triangles].mean(axis=1))
+                < min_radius)
+
+fig2, ax2 = plt.subplots(figsize=(8, 6))
+ax2.set_aspect('equal')
+tpc = ax2.tripcolor(triang, z, shading='flat')
+fig2.colorbar(tpc)
+ax2.set_title('Delaunay Triangulation Visualization')
+
+# Display the second plot directly
+display(fig2)
+
+display("Visualizations complete!")
 `} />
 
 ## How It Works

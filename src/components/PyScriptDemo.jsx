@@ -32,31 +32,11 @@ export default function PyScriptDemo({ code, packages = [] }) {
     scriptEl.src = 'https://pyscript.net/releases/2024.1.1/core.js';
     document.head.appendChild(scriptEl);
     
-    // Create a minimal wrapper to ensure micropip is available
-    // but without wrapping user code in a way that breaks imports
-    const wrappedCode = `
-# First ensure micropip is available - must use async function
-import pyodide
-
-async def ensure_micropip():
-    try:
-        await pyodide.loadPackage("micropip")
-        print("Micropip loaded successfully")
-    except Exception as e:
-        print("Error loading micropip:", e)
-
-# For top-level await, we'll use pyscript's asyncio integration
-import asyncio
-asyncio.create_task(ensure_micropip())
-
-# Now run the user code
-${code}
-`;
-    
-    // Create Python script element
+    // For PyScript 2024.1.1, we don't need to manually load micropip
+    // as it should be available through the config
     const pyScriptEl = document.createElement('script');
     pyScriptEl.type = 'py';
-    pyScriptEl.textContent = wrappedCode;
+    pyScriptEl.textContent = code;
     
     // Add loading dialog
     const dialogEl = document.createElement('dialog');
