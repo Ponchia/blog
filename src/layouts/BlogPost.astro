@@ -10,25 +10,21 @@ type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 
-// Simple helper function to ensure hero image has the correct path
+// Helper function to ensure hero image has the correct path
 function getImagePath(image: string): string {
 	if (!image) return '';
-	
-	// Images that start with http are already full URLs
+	// If already a full URL, return as is
 	if (image.startsWith('http')) return image;
 	
-	// Get base URL with trailing slash handling
-	const baseUrl = import.meta.env.BASE_URL || '/';
-	const baseWithTrailingSlash = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+	// Get the base URL from the environment
+	const basePath = import.meta.env.BASE_URL;
 	
-	// Always use the absolute path approach to avoid any confusion
-	const imagePath = image.startsWith('/') ? image.substring(1) : image;
-	
-	return `${baseWithTrailingSlash}${imagePath}`;
+	// Clean the path and combine with base path
+	const cleanPath = image.startsWith('/') ? image.slice(1) : image;
+	return `${basePath}${cleanPath}`;
 }
 
 const heroImagePath = heroImage ? getImagePath(heroImage) : '';
-console.log(`Hero image path (processed): ${heroImagePath}`);
 ---
 
 <html lang="en">
@@ -80,6 +76,9 @@ console.log(`Hero image path (processed): ${heroImagePath}`);
 			}
 		</style>
 	</head>
+
+	<!-- GoatCounter Analytics -->
+	<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 	<body>
 		<Header />
