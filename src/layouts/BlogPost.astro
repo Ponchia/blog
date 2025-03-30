@@ -6,9 +6,9 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Comments from '../components/Comments';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, minutesRead } = Astro.props;
 
 // Helper function to ensure hero image has the correct path
 function getImagePath(image: string): string {
@@ -93,6 +93,14 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 				color: var(--accent-light);
 				font-size: 1rem;
 			}
+			.reading-time {
+				display: inline-block;
+				margin-left: 1rem;
+				padding-left: 1rem;
+				border-left: 1px solid var(--accent-light);
+				color: var(--accent-light);
+				font-size: 1rem;
+			}
 			.last-updated-on {
 				font-style: italic;
 				color: var(--accent-light);
@@ -126,6 +134,11 @@ const heroImagePath = heroImage ? getImagePath(heroImage) : '';
 				<div class="title">
 					<div class="date">
 						<FormattedDate date={pubDate} />
+						{
+							minutesRead && (
+								<span class="reading-time">{minutesRead}</span>
+							)
+						}
 						{
 							updatedDate && (
 								<div class="last-updated-on">

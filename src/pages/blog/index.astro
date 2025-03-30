@@ -3,13 +3,24 @@ import Layout from '../../layouts/Layout.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
+import { render } from 'astro:content';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+const postsData = await getCollection('blog');
+const postsWithMetadata = await Promise.all(
+	postsData.map(async (post) => {
+		const { remarkPluginFrontmatter } = await render(post);
+		return {
+			post,
+			remarkPluginFrontmatter
+		};
+	})
 );
 
+const posts = postsWithMetadata
+	.sort((a, b) => b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf());
+
 // Helper function to ensure consistent paths with the base URL
-function getPathWithBase(path) {
+function getPathWithBase(path: string): string {
 	const base = import.meta.env.BASE_URL || '';
 	// Normalize base URL to ensure it doesn't have a trailing slash
 	const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
@@ -28,7 +39,7 @@ function getPathWithBase(path) {
 		<section class="posts-grid">
 			<ul>
 				{
-					posts.map((post, index) => {
+					posts.map(({ post, remarkPluginFrontmatter }, index) => {
 						// Generate post URL with correct base path
 						const postUrl = getPathWithBase(`blog/${post.id}/`);
 						
@@ -52,9 +63,14 @@ function getPathWithBase(path) {
 										)}
 									</div>
 									<div class="card-content">
-										<p class="date">
-											<FormattedDate date={post.data.pubDate} />
-										</p>
+										<div class="meta-info">
+											<p class="date">
+												<FormattedDate date={post.data.pubDate} />
+											</p>
+											{remarkPluginFrontmatter.minutesRead && (
+												<p class="reading-time">{remarkPluginFrontmatter.minutesRead}</p>
+											)}
+										</div>
 										<h4 class="title">{post.data.title}</h4>
 										{post.data.description && (
 											<p class="description">{post.data.description}</p>
@@ -193,17 +209,41 @@ function getPathWithBase(path) {
 		flex-direction: column;
 	}
 	
+	.meta-info {
+		display: flex;
+		align-items: center;
+	}
+	
+	.date {
+		font-size: 0.9rem;
+		color: var(--accent-light);
+		margin: 0;
+	}
+	
+	.reading-time {
+		margin: 0 0 0 1rem;
+		padding-left: 1rem;
+		font-size: 0.9rem;
+		color: var(--accent-light);
+		position: relative;
+	}
+	
+	.reading-time::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		height: 0.8em;
+		width: 1px;
+		background-color: var(--accent-light);
+	}
+	
 	.title {
 		margin: 0.5rem 0;
 		color: var(--text-light);
 		line-height: 1.2;
 		transition: color 0.2s ease;
-	}
-	
-	.date {
-		margin: 0;
-		font-size: 0.9rem;
-		color: rgba(var(--white), 0.7);
 	}
 	
 	.description {

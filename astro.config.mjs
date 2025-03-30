@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import pagefind from 'astro-pagefind';
+import { remarkReadingTime } from './remark-reading-time.mjs';
 
 // Determine if we're in production or dev
 const isProduction = process.env.NODE_ENV === 'production';
@@ -27,4 +28,7 @@ export default defineConfig({
             },
         })
     ],
+    markdown: {
+        remarkPlugins: [remarkReadingTime],
+    },
 });
