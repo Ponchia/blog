@@ -1,0 +1,27 @@
+---
+interface Props {
+  type?: 'info' | 'success' | 'warning' | 'error';
+}
+
+const { type = 'info' } = Astro.props;
+
+const colors = {
+  info: 'bg-blue-50 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+  success: 'bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-300 border-green-200 dark:border-green-800',
+  warning: 'bg-yellow-50 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
+  error: 'bg-red-50 text-red-800 dark:bg-red-900/50 dark:text-red-300 border-red-200 dark:border-red-800'
+};
+---
+
+<div class={`p-4 mb-4 border rounded-lg ${colors[type]}`}>
+  <slot />
+</div>
+
+<style>
+  div {
+    line-height: 1.6;
+  }
+  :global(div p:last-child) {
+    margin-bottom: 0;
+  }
+</style> 
