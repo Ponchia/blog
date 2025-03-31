@@ -122,4 +122,109 @@ The site is deployed to GitHub Pages when changes are tagged for release.
 
 - [Astro Documentation](https://docs.astro.build/)
 - [GitHub Pages Documentation](https://docs.github.com/en/pages)
-- [Conventional Commits](https://www.conventionalcommits.org/) 
+- [Conventional Commits](https://www.conventionalcommits.org/)
+
+### Dependency Management
+
+1. **Tailwind CSS Setup**
+   - Use the official Astro integration:
+     ```bash
+     npm install -D @astrojs/tailwind@^6.0.2 tailwindcss@^3.0.24 @tailwindcss/typography postcss autoprefixer
+     ```
+   - Ensure proper configuration in `astro.config.mjs`:
+     ```js
+     tailwind({
+       applyBaseStyles: false,
+     })
+     ```
+   - Create `postcss.config.mjs`:
+     ```js
+     export default {
+       plugins: {
+         tailwindcss: {},
+         autoprefixer: {},
+       },
+     }
+     ```
+
+2. **Version Compatibility**
+   - When encountering dependency conflicts:
+     - First try uninstalling conflicting packages
+     - Reinstall with specific versions
+     - Use `--legacy-peer-deps` only as a last resort
+   - Monitor console for version mismatch warnings
+
+### Testing and Verification
+
+1. **Development Server**
+   ```bash
+   npm run dev -- --port 4322 --host
+   ```
+   - Watch the console for:
+     - Compilation errors
+     - CSS processing issues
+     - Asset loading problems
+     - Slug conflicts
+
+2. **Component Testing**
+   - Test components in both light and dark modes
+   - Verify Tailwind classes are applied correctly
+   - Check responsive behavior across breakpoints
+   - Ensure proper hydration of interactive components
+
+3. **Build Testing**
+   ```bash
+   npm run build
+   npm run preview
+   ```
+   - Verify production build:
+     - Check console for warnings/errors
+     - Test all interactive features
+     - Confirm proper asset loading with base path
+     - Validate SSR/CSR behavior
+
+4. **MCP Services Integration**
+   - Test Jira integration if applicable:
+     - Verify issue creation/updates
+     - Check comment synchronization
+     - Validate worklog entries
+   - Monitor browser integration:
+     - Test file uploads
+     - Verify navigation actions
+     - Check screenshot capabilities
+
+### Troubleshooting Guide
+
+1. **Dependency Issues**
+   - Clear npm cache:
+     ```bash
+     npm cache clean --force
+     ```
+   - Remove and reinstall dependencies:
+     ```bash
+     rm -rf node_modules package-lock.json
+     npm install
+     ```
+   - Check for conflicting peer dependencies in package.json
+
+2. **Build Problems**
+   - Verify Astro configuration:
+     - Check base URL settings
+     - Confirm integration settings
+     - Validate output options
+   - Clear build cache:
+     ```bash
+     rm -rf dist .astro
+     ```
+
+3. **CSS/Styling Issues**
+   - Confirm Tailwind directives in global CSS
+   - Check PostCSS configuration
+   - Verify theme configuration
+   - Test dark mode implementation
+
+4. **Component Errors**
+   - Check import paths (use relative paths from root)
+   - Verify client directives (client:load, client:visible)
+   - Test hydration behavior
+   - Monitor console for component-specific errors 
