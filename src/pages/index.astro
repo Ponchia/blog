@@ -1,211 +1,346 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getAllMocs, getPostsByMoc, slugify, getPostSlug } from '../utils/moc-utils';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+// Create path helpers for navigation links
+function getPath(path: string) {
+	const base = import.meta.env.BASE_URL || '';
+	// Ensure base ends with slash if not empty
+	const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+	// Remove leading slash from path if it exists
+	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+	// Join base with path
+	return `${baseWithSlash}${cleanPath}`;
+}
+
+// Get all posts
+const posts = await getCollection('blog');
+
+// Get all MOCs and sort by post count for display
+const mocs = getAllMocs(posts);
+const mocsByPostCount = mocs.map(moc => {
+	return {
+		name: moc,
+		count: getPostsByMoc(posts, moc).length,
+		posts: getPostsByMoc(posts, moc)
+	};
+}).sort((a, b) => b.count - a.count);
+
+// Get recent posts
+const recentPosts = [...posts]
+	.sort((a, b) => {
+		const dateA = a.data.pubDate instanceof Date ? a.data.pubDate : new Date(a.data.pubDate || 0);
+		const dateB = b.data.pubDate instanceof Date ? b.data.pubDate : new Date(b.data.pubDate || 0);
+		return dateB.valueOf() - dateA.valueOf();
+	})
+	.slice(0, 4);
 ---
 
-<Layout>
-	<div class="home-content fade-in">
-		<div class="hero-section">
-			<div class="astronaut-icon">🧑‍🚀</div>
-			<h1>Hello, Astronaut!</h1>
-			<div class="hero-text">
-				<p>
-					Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-					template serves as a lightweight, minimally-styled starting point for anyone looking to build
-					a personal website, blog, or portfolio with Astro.
-				</p>
-			</div>
-		</div>
-
-		<div class="features-section">
-			<h2 class="section-title">Get Started</h2>
-			
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			
-			<div class="feature-cards">
-				<div class="card">
-					<h3>Edit Your Pages</h3>
-					<ul>
-						<li>Edit this page in <code>src/pages/index.astro</code></li>
-						<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-						<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-					</ul>
-				</div>
-				
-				<div class="card">
-					<h3>Create Content</h3>
-					<ul>
-						<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-						<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-						<li>Add new blog posts as markdown files in the content directory</li>
-					</ul>
-				</div>
-			</div>
+<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<main>
+		<h1>Knowledge Base</h1>
+		<p class="description">Explore content by topic areas, discover connections, and find related information</p>
+		
+		<div class="tabs">
+			<a href={getPath('')} class="tab active">Content Map</a>
+			<a href={getPath('navigation/graph')} class="tab">Graph View</a>
+			<a href={getPath('navigation/tags')} class="tab">All Tags</a>
+			<a href={getPath('search')} class="tab">Search</a>
 		</div>
 		
-		<div class="help-section">
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</div>
-	</div>
+		<section id="mocs">
+			{mocsByPostCount.length === 0 ? (
+				<div class="empty-state">
+					<p>No Maps of Content (MOCs) found. Start by adding MOCs to your posts.</p>
+				</div>
+			) : (
+				<div class="moc-grid">
+					{mocsByPostCount.map(moc => (
+						<div class="moc-card">
+							<h2 class="moc-title">
+								<a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>{moc.name}</a>
+							</h2>
+							<div class="moc-meta">
+								<span class="moc-posts-count">{moc.count} {moc.count === 1 ? 'post' : 'posts'}</span>
+								<span class="moc-icon">📚</span>
+							</div>
+							
+							<ul class="moc-post-list">
+								{moc.posts.slice(0, 3).map(post => (
+									<li>
+										<a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
+											<span class={`status-dot ${post.data.status || 'fleeting'}`}></span>
+											{post.data.title}
+										</a>
+									</li>
+								))}
+								{moc.posts.length > 3 && (
+									<li class="more-posts">
+										<a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>
+											+ {moc.posts.length - 3} more...
+										</a>
+									</li>
+								)}
+							</ul>
+						</div>
+					))}
+				</div>
+			)}
+		</section>
+		
+		<section id="recent-posts">
+			<h2 class="section-heading">Recent Posts</h2>
+			<div class="recent-posts-grid">
+				{recentPosts.map(post => (
+					<div class="recent-post-card">
+						<h3 class="post-title">
+							<a href={getPath(`blog/${getPostSlug(post)}`)}>
+								<span class={`status-dot ${post.data.status || 'fleeting'}`}></span>
+								{post.data.title}
+							</a>
+						</h3>
+						<div class="post-date">
+							{post.data.pubDate ? (
+								post.data.pubDate instanceof Date 
+									? post.data.pubDate.toLocaleDateString() 
+									: new Date(post.data.pubDate).toLocaleDateString()
+							) : 'No date'}
+						</div>
+						<p class="post-description">{post.data.description}</p>
+						{post.data.tags && (
+							<div class="post-tags">
+								{post.data.tags.slice(0, 3).map(tag => (
+									<a href={getPath(`navigation/tags/${tag}`)} class="tag">{tag}</a>
+								))}
+							</div>
+						)}
+					</div>
+				))}
+			</div>
+		</section>
+	</main>
 </Layout>
 
 <style>
-	.home-content {
-		line-height: 1.6;
-	}
-	
-	.hero-section {
-		text-align: center;
-		margin-bottom: 4rem;
-	}
-	
-	.astronaut-icon {
-		font-size: 5rem;
-		margin-bottom: 1rem;
-		display: inline-block;
-		animation: float 6s ease-in-out infinite;
-	}
-	
-	@keyframes float {
-		0% { transform: translateY(0px); }
-		50% { transform: translateY(-20px); }
-		100% { transform: translateY(0px); }
-	}
-	
-	.hero-section h1 {
-		margin: 0 0 1.5rem 0;
-		font-size: 3.5rem;
-		background: linear-gradient(to right, var(--accent-light), var(--accent));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-		text-fill-color: transparent;
-	}
-	
-	.hero-text {
-		max-width: 700px;
+	main {
+		max-width: 1200px;
 		margin: 0 auto;
+		padding: 1rem;
+	}
+	
+	h1 {
+		margin-bottom: 0.5rem;
+	}
+	
+	.description {
+		margin-bottom: 2rem;
+		color: var(--text-secondary);
+	}
+	
+	.tabs {
+		display: flex;
+		margin-bottom: 2rem;
+		border-bottom: 1px solid var(--border-color);
+	}
+	
+	.tab {
+		padding: 0.5rem 1rem;
+		text-decoration: none;
+		color: var(--text-secondary);
+		border-bottom: 2px solid transparent;
+		transition: all 0.3s ease;
+	}
+	
+	.tab:hover {
+		color: var(--text-primary);
+		border-bottom-color: var(--border-color);
+	}
+	
+	.tab.active {
+		color: var(--text-primary);
+		border-bottom-color: var(--accent-light);
+	}
+	
+	.moc-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+		gap: 2rem;
+		margin-bottom: 3rem;
+	}
+	
+	.moc-card {
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		padding: 1.5rem;
+		transition: box-shadow 0.3s ease;
+		background-color: var(--bg-primary);
+	}
+	
+	.moc-card:hover {
+		box-shadow: 0 5px 15px var(--border-color);
+	}
+	
+	.moc-meta {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		color: var(--text-secondary);
+	}
+	
+	.moc-icon {
 		font-size: 1.2rem;
 	}
 	
-	.hero-text p {
-		margin-bottom: 1rem;
+	.moc-post-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
 	}
 	
-	.features-section {
-		margin: 4rem 0;
+	.moc-post-list li {
+		margin-bottom: 0.75rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px dashed var(--border-color);
 	}
 	
-	.section-title {
-		position: relative;
+	.moc-post-list li:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+	
+	.moc-post-list a {
+		color: var(--text-primary);
+		text-decoration: none;
+		display: flex;
+		align-items: center;
+	}
+	
+	.moc-post-list a:hover {
+		color: var(--accent-light);
+	}
+	
+	.status-dot {
 		display: inline-block;
-		margin-bottom: 2rem;
-		font-size: 2.5rem;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		margin-right: 8px;
 	}
 	
-	.section-title::after {
-		content: '';
-		position: absolute;
-		bottom: -10px;
-		left: 0;
-		width: 60px;
-		height: 3px;
-		background-color: var(--accent);
+	.status-dot.evergreen {
+		background-color: #27ae60;
 	}
 	
-	.feature-cards {
+	.status-dot.fleeting {
+		background-color: #e74c3c;
+	}
+	
+	.more-posts a {
+		color: var(--accent-light);
+		font-style: italic;
+	}
+	
+	.section-heading {
+		position: relative;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid var(--border-color);
+	}
+	
+	.recent-posts-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 2rem;
-		margin: 2rem 0;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 1.5rem;
 	}
 	
-	.card {
-		padding: 2rem;
-		background-color: rgba(var(--gray-dark), 0.2);
-		border-radius: 12px;
-		transition: transform 0.3s ease, background-color 0.3s ease;
+	.recent-post-card {
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		padding: 1.5rem;
+		background-color: var(--bg-primary);
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
 	}
 	
-	.card:hover {
+	.recent-post-card:hover {
 		transform: translateY(-5px);
-		background-color: rgba(var(--gray-dark), 0.3);
+		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 	}
 	
-	.card h3 {
+	.post-title {
 		margin-top: 0;
-		font-size: 1.5rem;
+		margin-bottom: 0.5rem;
+		font-size: 1.25rem;
 	}
 	
-	.help-section {
-		margin-top: 4rem;
-		padding: 2rem;
-		background-color: rgba(var(--gray-dark), 0.15);
-		border-radius: 12px;
-		font-size: 1.1rem;
+	.post-title a {
+		color: var(--text-primary);
+		text-decoration: none;
+		display: flex;
+		align-items: center;
 	}
 	
-	.help-section p:last-child {
-		margin-bottom: 0;
+	.post-title a:hover {
+		color: var(--accent-light);
 	}
 	
-	ul {
-		padding-left: 1.5rem;
-		margin-bottom: 0;
-	}
-	
-	li {
+	.post-date {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
 		margin-bottom: 0.75rem;
 	}
 	
-	li:last-child {
-		margin-bottom: 0;
+	.post-description {
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		margin-bottom: 1rem;
+		line-height: 1.5;
 	}
 	
-	code {
-		padding: 0.2em 0.4em;
-		border-radius: 3px;
-		background-color: rgba(var(--gray-dark), 0.4);
-		font-size: 0.9em;
+	.post-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	
+	.tag {
+		background-color: var(--bg-secondary);
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		color: var(--text-secondary);
+		text-decoration: none;
+	}
+	
+	.tag:hover {
+		background-color: var(--accent-dark);
+		color: var(--text-primary);
+	}
+	
+	.empty-state {
+		background-color: var(--bg-secondary);
+		border-radius: 8px;
+		padding: 2rem;
+		text-align: center;
+		margin: 2rem 0;
+		color: var(--text-secondary);
 	}
 	
 	@media (max-width: 768px) {
-		.hero-section h1 {
-			font-size: 2.5rem;
-		}
-		
-		.astronaut-icon {
-			font-size: 4rem;
-		}
-		
-		.hero-text {
-			font-size: 1.1rem;
-		}
-		
-		.feature-cards {
+		.moc-grid, .recent-posts-grid {
 			grid-template-columns: 1fr;
 		}
 		
-		.section-title {
-			font-size: 2rem;
+		.tabs {
+			flex-wrap: wrap;
 		}
 		
-		.help-section {
-			padding: 1.5rem;
+		.tab {
+			padding: 0.5rem 0.75rem;
+			font-size: 0.9rem;
 		}
 	}
 </style>

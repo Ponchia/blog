@@ -1,8 +1,8 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import GraphView from '../components/GraphView.jsx';
+import Layout from '../../layouts/Layout.astro';
+import GraphView from '../../components/GraphView.jsx';
 import { getCollection } from 'astro:content';
-import { generateGraphData } from '../utils/graph-data';
+import { generateGraphData } from '../../utils/graph-data';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
@@ -29,9 +29,10 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
     <p class="description">Explore connections between posts and topics</p>
     
     <div class="tabs">
-      <a href={getPath('map')} class="tab">Content Map</a>
-      <a href={getPath('graph')} class="tab active">Graph View</a>
-      <a href={getPath('tags')} class="tab">All Tags</a>
+      <a href={getPath('')} class="tab">Content Map</a>
+      <a href={getPath('navigation/graph')} class="tab active">Graph View</a>
+      <a href={getPath('navigation/tags')} class="tab">All Tags</a>
+      <a href={getPath('search')} class="tab">Search</a>
     </div>
     
     <div class="graph-container">

@@ -1,0 +1,403 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+// Import utilities
+import { slugify, safeFormatDate, getAllTags, getPostsByTag } from '../../../utils/moc-utils';
+
+// Helper function for navigation paths
+function getPath(path: string) {
+  const base = import.meta.env.BASE_URL || '';
+  // Ensure base ends with slash if not empty
+  const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+  // Remove leading slash from path if it exists
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Join base with path
+  return `${baseWithSlash}${cleanPath}`;
+}
+
+export async function getStaticPaths() {
+  const postsData = await getCollection('blog');
+  const postsWithMetadata = await Promise.all(
+    postsData.map(async (post) => {
+      const { remarkPluginFrontmatter } = await render(post);
+      // Merge remarkPluginFrontmatter into post.data
+      post.data = { ...post.data, ...remarkPluginFrontmatter };
+      return post;
+    })
+  );
+  
+  const posts = postsWithMetadata;
+  const tags = getAllTags(posts);
+  
+  return tags.map(tag => {
+    const taggedPosts = getPostsByTag(posts, tag);
+    
+    // Find related tags (tags that appear with the current tag)
+    const relatedTags = new Set<string>();
+    taggedPosts.forEach(post => {
+      if (post.data.tags) {
+        post.data.tags.forEach((t: string) => {
+          if (t !== tag) relatedTags.add(t);
+        });
+      }
+    });
+    
+    return {
+      params: { tag },
+      props: { 
+        tagName: tag, 
+        posts: taggedPosts,
+        relatedTags: Array.from(relatedTags)
+      }
+    };
+  });
+}
+
+// Generate tag description
+function generateTagDescription(tagName: string, postCount: number) {
+  return `Explore ${postCount} posts tagged with "${tagName}" in our knowledge base.`;
+}
+
+const { tagName, posts, relatedTags } = Astro.props;
+const tagDescription = generateTagDescription(tagName, posts.length);
+
+// Sort posts by date (newest first)
+const sortedPosts = [...posts].sort((a, b) => {
+  const dateA = a.data.pubDate instanceof Date ? a.data.pubDate : new Date(a.data.pubDate || 0);
+  const dateB = b.data.pubDate instanceof Date ? b.data.pubDate : new Date(b.data.pubDate || 0);
+  return dateB.valueOf() - dateA.valueOf();
+});
+---
+
+<Layout title={`Posts tagged with ${tagName}`} description={tagDescription}>
+  <main>
+    <div class="breadcrumbs">
+      <a href={getPath('')}>Home</a> &rsaquo; <a href={getPath('navigation/tags')}>All Tags</a> &rsaquo; <span>{tagName}</span>
+    </div>
+    
+    <h1>Tag: {tagName}</h1>
+    <p class="description">{tagDescription}</p>
+    
+    <div class="actions">
+      <a href={getPath('navigation/graph')} class="action-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="21.17" y1="8" x2="12" y2="8"></line>
+          <line x1="3.95" y1="6.06" x2="8.54" y2="14"></line>
+          <line x1="10.88" y1="21.94" x2="15.46" y2="14"></line>
+        </svg>
+        View in Graph
+      </a>
+    </div>
+    
+    {relatedTags.length > 0 && (
+      <div class="related-tags-container">
+        <h3>Related Tags</h3>
+        <div class="related-tags">
+          {relatedTags.map(tag => (
+            <a href={getPath(`navigation/tags/${tag}`)} class="tag">{tag}</a>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    <div class="post-list">
+      <h2>Posts ({posts.length})</h2>
+      
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <p>No posts found with this tag.</p>
+        </div>
+      ) : (
+        <ul>
+          {sortedPosts.map(post => {
+            // Get effective publication date
+            const displayDate = post.data.pubDate || post.data.gitCreatedDate;
+            
+            return (
+              <li>
+                <div class="post-card">
+                  <div class="post-header">
+                    <a href={getPath(`blog/${post.id}`)} class="post-title">
+                      <span class={`status-indicator ${post.data.status || 'fleeting'}`}></span>
+                      {post.data.title}
+                    </a>
+                    {displayDate && (
+                      <div class="post-date">
+                        {post.data.pubDate ? (
+                          post.data.pubDate instanceof Date 
+                            ? post.data.pubDate.toLocaleDateString() 
+                            : new Date(post.data.pubDate).toLocaleDateString()
+                        ) : (
+                          post.data.gitCreatedDate ? (
+                            safeFormatDate(post.data.gitCreatedDate) + 
+                            <span class="date-source">(from git)</span>
+                          ) : 'No date'
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p class="post-description">{post.data.description}</p>
+                  
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="post-tags">
+                      {post.data.tags.filter(tag => tag !== tagName).map(tag => (
+                        <a href={getPath(`navigation/tags/${tag}`)} class="tag">{tag}</a>
+                      ))}
+                      <span class="current-tag">{tagName}</span>
+                    </div>
+                  )}
+                  
+                  {post.data.mocs && post.data.mocs.length > 0 && (
+                    <div class="in-mocs">
+                      <span class="in-label">In MOCs:</span>
+                      {post.data.mocs.map((moc, index) => (
+                        <>
+                          <a href={getPath(`navigation/mocs/${slugify(moc)}`)} class="in-moc">{moc}</a>
+                          {index < post.data.mocs.length - 1 ? ", " : ""}
+                        </>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+  }
+  
+  .breadcrumbs a {
+    color: var(--accent-light);
+    text-decoration: none;
+  }
+  
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+  
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .description {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+  }
+  
+  .actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .action-btn:hover {
+    background-color: var(--accent-dark);
+    color: var(--text-primary);
+  }
+  
+  .related-tags-container {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: var(--bg-secondary);
+  }
+  
+  .related-tags-container h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .related-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .post-list h2 {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+  }
+  
+  .post-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .post-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease;
+    background-color: var(--bg-primary);
+  }
+  
+  .post-card:hover {
+    box-shadow: 0 5px 15px var(--border-color);
+  }
+  
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .post-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+  }
+  
+  .post-title:hover {
+    color: var(--accent-light);
+  }
+  
+  .post-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  
+  .date-source {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-left: 0.3rem;
+  }
+  
+  .post-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tag {
+    background-color: var(--bg-secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .tag:hover {
+    background-color: var(--accent-dark);
+    color: var(--text-primary);
+  }
+  
+  .current-tag {
+    background-color: var(--accent-light);
+    color: var(--bg-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .in-mocs {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .in-label {
+    color: var(--text-secondary);
+  }
+  
+  .in-moc {
+    color: var(--accent-light);
+    text-decoration: none;
+  }
+  
+  .in-moc:hover {
+    text-decoration: underline;
+  }
+  
+  .status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .status-indicator.evergreen {
+    background-color: #27ae60;
+  }
+  
+  .status-indicator.fleeting {
+    background-color: #e74c3c;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    color: var(--text-secondary);
+  }
+  
+  @media (max-width: 768px) {
+    .post-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .post-date {
+      margin-left: 1rem;
+    }
+  }
+</style> 

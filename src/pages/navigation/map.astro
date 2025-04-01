@@ -1,7 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getAllMocs, getPostsByMoc, slugify, getPostSlug } from '../utils/moc-utils';
+import { getAllMocs, getPostsByMoc, slugify, getPostSlug } from '../../utils/moc-utils';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
@@ -43,9 +43,11 @@ const mocsByPostCount = mocs.map(moc => {
     <p class="description">Explore content by topic areas, discover connections</p>
     
     <div class="tabs">
-      <a href={getPath('map')} class="tab active">Content Map</a>
-      <a href={getPath('graph')} class="tab">Graph View</a>
-      <a href={getPath('tags')} class="tab">All Tags</a>
+      <a href={getPath('')} class="tab">Home</a>
+      <a href={getPath('navigation/map')} class="tab active">Content Map</a>
+      <a href={getPath('navigation/graph')} class="tab">Graph View</a>
+      <a href={getPath('navigation/tags')} class="tab">All Tags</a>
+      <a href={getPath('search')} class="tab">Search</a>
     </div>
     
     <section id="mocs">
@@ -58,22 +60,25 @@ const mocsByPostCount = mocs.map(moc => {
           {mocsByPostCount.map(moc => (
             <div class="moc-card">
               <h2 class="moc-title">
-                <a href={getPath(`mocs/${slugify(moc.name)}`)}>{moc.name}</a>
+                <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>{moc.name}</a>
               </h2>
-              <div class="moc-posts-count">{moc.count} {moc.count === 1 ? 'post' : 'posts'}</div>
+              <div class="moc-meta">
+                <span class="moc-posts-count">{moc.count} {moc.count === 1 ? 'post' : 'posts'}</span>
+                <span class="moc-icon">📚</span>
+              </div>
               
               <ul class="moc-post-list">
                 {moc.posts.slice(0, 3).map(post => (
                   <li>
                     <a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
-                      <span class={`status-dot ${post.data.status}`}></span>
+                      <span class={`status-dot ${post.data.status || 'fleeting'}`}></span>
                       {post.data.title}
                     </a>
                   </li>
                 ))}
                 {moc.posts.length > 3 && (
                   <li class="more-posts">
-                    <a href={getPath(`mocs/${slugify(moc.name)}`)}>
+                    <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>
                       + {moc.posts.length - 3} more...
                     </a>
                   </li>
@@ -145,49 +150,48 @@ const mocsByPostCount = mocs.map(moc => {
     box-shadow: 0 5px 15px var(--border-color);
   }
   
-  .moc-count {
-    color: var(--text-secondary);
+  .moc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
+    color: var(--text-secondary);
   }
   
-  .preview-list {
+  .moc-icon {
+    font-size: 1.2rem;
+  }
+  
+  .moc-post-list {
     list-style: none;
     padding: 0;
     margin: 0;
   }
   
-  .preview-list li {
+  .moc-post-list li {
     margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border-bottom: 1px dashed var(--border-color);
   }
   
-  .preview-list li:last-child {
-    border-bottom: none;
+  .moc-post-list li:last-child {
     margin-bottom: 0;
     padding-bottom: 0;
+    border-bottom: none;
   }
   
-  .preview-list a {
+  .moc-post-list a {
+    color: var(--text-primary);
     text-decoration: none;
-    color: var(--accent-light);
     display: flex;
     align-items: center;
   }
   
-  .preview-list a:hover {
-    text-decoration: underline;
+  .moc-post-list a:hover {
+    color: var(--accent-light);
   }
   
-  .date {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-  }
-  
-  .status-indicator {
+  .status-dot {
     display: inline-block;
     width: 8px;
     height: 8px;
@@ -195,12 +199,17 @@ const mocsByPostCount = mocs.map(moc => {
     margin-right: 8px;
   }
   
-  .status-indicator.evergreen {
+  .status-dot.evergreen {
     background-color: #27ae60;
   }
   
-  .status-indicator.fleeting {
+  .status-dot.fleeting {
     background-color: #e74c3c;
+  }
+  
+  .more-posts a {
+    color: var(--accent-light);
+    font-style: italic;
   }
   
   .empty-state {
@@ -212,21 +221,18 @@ const mocsByPostCount = mocs.map(moc => {
     color: var(--text-secondary);
   }
   
-  pre {
-    background-color: var(--bg-secondary);
-    padding: 1rem;
-    border-radius: 4px;
-    overflow-x: auto;
-    text-align: left;
-  }
-  
-  code {
-    font-family: monospace;
-  }
-  
   @media (max-width: 768px) {
     .moc-grid {
       grid-template-columns: 1fr;
+    }
+    
+    .tabs {
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
     }
   }
 </style> 
