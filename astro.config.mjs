@@ -13,11 +13,11 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // https://astro.build/config
 export default defineConfig({
-  // For GitHub Pages deployment
-  site: 'https://ponchia.github.io',
+  // For custom domain
+  site: 'https://brontolotto.observer',
 
-  // Use /blog base in production, empty in dev
-  base: isProduction ? '/blog' : '',
+  // No base path needed with custom domain
+  base: '',
 
   integrations: [
       mdx(), 
@@ -29,7 +29,7 @@ export default defineConfig({
           if (item.url.includes('/blog/')) {
             // Blog posts get higher priority
             item.priority = 0.9;
-          } else if (item.url === 'https://ponchia.github.io/blog') {
+          } else if (item.url === 'https://brontolotto.observer') {
             // Homepage gets highest priority
             item.priority = 1.0;
           }
