@@ -21,20 +21,28 @@ export default defineConfig({
 
   integrations: [
       mdx(), 
-      sitemap(), 
+      sitemap({
+        changefreq: 'weekly',
+        priority: 0.7,
+        serialize(item) {
+          // Customize priority based on URL pattern
+          if (item.url.includes('/blog/')) {
+            // Blog posts get higher priority
+            item.priority = 0.9;
+          } else if (item.url === 'https://ponchia.github.io/blog') {
+            // Homepage gets highest priority
+            item.priority = 1.0;
+          }
+          
+          return item;
+        },
+      }),
       react(),
       tailwind({
         // Disable injecting a basic `base.css` import
         applyBaseStyles: false,
       }),
-      pagefind({
-          excludeSelectors: ['aside', 'nav', 'header', 'footer'],
-          indexerPath: 'pagefind',
-          buildOutputDir: 'dist',
-          indexerOptions: {
-              bundleDirectory: "pagefind",
-          },
-      })
+      pagefind()
   ],
 
   markdown: {

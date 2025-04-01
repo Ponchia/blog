@@ -45,29 +45,58 @@ const displayPubDate = ensureDate(pubDate) || ensureDate(gitCreatedDate);
 const displayUpdatedDate = ensureDate(updatedDate) || ensureDate(gitLastModified);
 
 // Helper function to ensure hero image has the correct path
-function getImagePath(image: string): string {
-	if (!image) return '';
-	// If already a full URL, return as is
-	if (image.startsWith('http')) return image;
+function getHeroImagePath(path: string | undefined) {
+	if (!path) return undefined;
 	
-	// Get the base URL from the environment with fallback
+	// If it's already an absolute URL, return as is
+	if (path.startsWith('http')) return path;
+	
+	// Otherwise, prepend the base URL
 	const base = import.meta.env.BASE_URL || '';
-	// Normalize base URL to ensure it doesn't have a trailing slash
-	const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
-	// Remove leading slash from path if it exists
-	const cleanPath = image.startsWith('/') ? image.slice(1) : image;
-	// Join the base with the path, ensuring a single slash separator
-	return normalizedBase ? `${normalizedBase}/${cleanPath}` : `/${cleanPath}`;
+	// Remove leading slash from path if it exists for proper joining
+	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+	// Join with base path
+	return `${base}${cleanPath}`;
 }
 
-const heroImagePath = heroImage ? getImagePath(heroImage) : '';
-// Get the current URL path for the view counter
+// Get hero image path with proper base URL
+const heroImagePath = getHeroImagePath(heroImage);
+
+// Get the current path for view counter
 const currentPath = Astro.url.pathname;
 ---
 
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
+		
+		<!-- Schema.org structured data for BlogPosting -->
+		<script type="application/ld+json" set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "BlogPosting",
+			"headline": title,
+			"description": description,
+			"image": heroImagePath ? new URL(heroImagePath, Astro.site).toString() : undefined,
+			"datePublished": displayPubDate?.toISOString() || undefined,
+			"dateModified": displayUpdatedDate?.toISOString() || displayPubDate?.toISOString() || undefined,
+			"author": {
+				"@type": "Person",
+				"name": "Ponchia"
+			},
+			"publisher": {
+				"@type": "Organization",
+				"name": "Ponchia's Blog",
+				"logo": {
+					"@type": "ImageObject",
+					"url": new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString()
+				}
+			},
+			"mainEntityOfPage": {
+				"@type": "WebPage",
+				"@id": Astro.url.toString()
+			}
+		})}></script>
+		
 		<!-- GoatCounter Analytics -->
 		<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 		
@@ -219,7 +248,7 @@ const currentPath = Astro.url.pathname;
 				</div>
 				{heroImagePath && (
 					<div class="hero-image">
-						<img width={1020} height={510} src={heroImagePath} alt="" />
+						<img width={1020} height={510} src={heroImagePath} alt={`Hero image for article: ${title}`} />
 					</div>
 				)}
 				<div class="prose blog-content">
