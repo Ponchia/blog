@@ -2,9 +2,8 @@ name: Deploy Astro to GitHub Pages
 
 on:
   push:
-    tags:
-      - 'v*'      # Version tags like v1.0.0
-      - 'release-*' # Release tags like release-2023-05-01
+    branches:
+      - main      # Deploy when pushing to main branch
   workflow_dispatch:
 
 permissions:
