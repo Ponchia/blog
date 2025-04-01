@@ -1,0 +1,16 @@
+# robots.txt for https://ponchia.github.io/blog/
+# Optimized for search engine crawling and indexing
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://ponchia.github.io/blog/sitemap-index.xml
+
+# Optional: Specify crawl delay for specific bots
+# User-agent: Googlebot
+# Crawl-delay: 1
+
+# Optional: Disallow specific paths
+# Disallow: /private/
+# Disallow: /drafts/ 
