@@ -20,6 +20,7 @@ const posts = await getCollection('blog');
 
 // Generate graph data
 const graphData = generateGraphData(posts);
+// eslint-disable-next-line no-console
 console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${graphData.links.length} links`);
 ---
 

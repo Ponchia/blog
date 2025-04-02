@@ -18,10 +18,12 @@ function getPath(path: string) {
 const posts = await getCollection('blog');
 
 // Log any posts that have issues with slug extraction
+// eslint-disable-next-line no-console
 console.log('Posts with potential slug issues:');
 posts.forEach(post => {
   const slug = getPostSlug(post);
   if (!slug) {
+    // eslint-disable-next-line no-console
     console.log(`Post "${post.data.title}" could not generate a slug`);
   }
 });

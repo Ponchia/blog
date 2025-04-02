@@ -9,7 +9,7 @@ import OptimizedImage from './OptimizedImage.astro';
     <div class="before">
       <h4>Before: Standard Markdown Image</h4>
       <pre><code>![Alt text](/blog-placeholder-4.jpg)</code></pre>
-      <img src="/blog-placeholder-4.jpg" alt="Standard Markdown image" class="sample-image" />
+      <img src="/blog-placeholder-4.jpg" alt="Standard Markdown format" class="sample-image" />
       <p class="note">Standard format, larger file size.</p>
     </div>
     
@@ -17,14 +17,14 @@ import OptimizedImage from './OptimizedImage.astro';
       <h4>After: Using OptimizedImage Component</h4>
       <pre><code>&lt;OptimizedImage 
   src="/blog-placeholder-4.webp" 
-  alt="Optimized image" 
+  alt="Optimized format" 
   width={600}
   height={400}
   format="webp"
 /&gt;</code></pre>
       <OptimizedImage 
         src="/blog-placeholder-4.webp" 
-        alt="Optimized image" 
+        alt="Optimized format" 
         width={600}
         height={400}
         format="webp"

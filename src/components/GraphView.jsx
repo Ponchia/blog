@@ -82,6 +82,7 @@ export default function GraphView({ graphData }) {
     }
   }, []);
   
+  // eslint-disable-next-line no-console
   console.log("GraphView component rendering with data:", graphData);
   
   const [error, setError] = useState(null);
@@ -210,6 +211,7 @@ export default function GraphView({ graphData }) {
                 link.type === 'in-moc' ? themeColors.moc : themeColors.hasTag;
         }}
         onNodeClick={(node) => {
+          // eslint-disable-next-line no-console
           console.log("Node clicked:", node);
           // Handle node click - navigate to the appropriate page
           if (node.type === 'post') {

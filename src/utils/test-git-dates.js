@@ -13,6 +13,7 @@ import path from 'path';
 // Path to blog content directory
 const BLOG_DIR = path.join(process.cwd(), 'src', 'content', 'blog');
 
+// eslint-disable-next-line no-console
 console.log('Testing Git date functionality for blog posts...\n');
 
 // Get all Markdown and MDX files in the blog directory
@@ -22,6 +23,7 @@ const blogFiles = fs.readdirSync(BLOG_DIR)
 blogFiles.forEach(file => {
   const filePath = path.join(BLOG_DIR, file);
   
+  // eslint-disable-next-line no-console
   console.log(`\n=== ${file} ===`);
   
   // Get first commit date (creation date)
@@ -31,11 +33,14 @@ blogFiles.forEach(file => {
     
     if (firstCommitTimestamp) {
       const firstCommitDate = new Date(parseInt(firstCommitTimestamp) * 1000);
+      // eslint-disable-next-line no-console
       console.log(`Creation date: ${firstCommitDate.toISOString()}`);
     } else {
+      // eslint-disable-next-line no-console
       console.log('Creation date: Not found in Git history');
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error getting creation date:', error.message);
   }
   
@@ -46,11 +51,14 @@ blogFiles.forEach(file => {
     
     if (lastCommitTimestamp) {
       const lastCommitDate = new Date(parseInt(lastCommitTimestamp) * 1000);
+      // eslint-disable-next-line no-console
       console.log(`Last modified: ${lastCommitDate.toISOString()}`);
     } else {
+      // eslint-disable-next-line no-console
       console.log('Last modified: Not found in Git history');
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error getting last modified date:', error.message);
   }
   
@@ -64,19 +72,24 @@ blogFiles.forEach(file => {
       
       const pubDateMatch = frontmatter.match(/pubDate:\s*['"]?(.*?)['"]?\s*$/m);
       if (pubDateMatch) {
+        // eslint-disable-next-line no-console
         console.log(`Manual pubDate: ${pubDateMatch[1]}`);
       } else {
+        // eslint-disable-next-line no-console
         console.log('Manual pubDate: Not specified');
       }
       
       const updatedDateMatch = frontmatter.match(/updatedDate:\s*['"]?(.*?)['"]?\s*$/m);
       if (updatedDateMatch) {
+        // eslint-disable-next-line no-console
         console.log(`Manual updatedDate: ${updatedDateMatch[1]}`);
       } else {
+        // eslint-disable-next-line no-console
         console.log('Manual updatedDate: Not specified');
       }
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error reading file frontmatter:', error.message);
   }
 }); 

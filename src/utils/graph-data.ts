@@ -42,6 +42,7 @@ export interface GraphData {
  */
 export function generateGraphData(posts: BlogPost[]): GraphData {
   if (!posts || posts.length === 0) {
+    // eslint-disable-next-line no-console
     console.log("No posts provided to generateGraphData");
     return { nodes: [], links: [] };
   }
@@ -135,6 +136,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
     links: [...postMocLinks, ...postTagLinks, ...relatedLinks],
   };
   
+  // eslint-disable-next-line no-console
   console.log(`Generated graph data: ${result.nodes.length} nodes, ${result.links.length} links`);
   return result;
 } 
