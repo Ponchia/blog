@@ -6,23 +6,6 @@ export async function GET(context) {
 	const posts = await getCollection('blog');
 	const site = context.site;
 	
-	// Helper to create consistent paths with full URL (including site and base path)
-	const getFullUrl = (path) => {
-		if (!site) return path;
-		
-		// Create URL object from site
-		const siteUrl = new URL(site);
-		
-		// Use Astro's import.meta.env.BASE_URL to get the base path
-		const basePath = import.meta.env.BASE_URL || '';
-		
-		// Ensure path doesn't have leading slash
-		const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-		
-		// Construct the full URL: site + base + path
-		return new URL(`${basePath}/${cleanPath}`, siteUrl).toString();
-	};
-	
 	// Create a proper site URL with the base path included
 	const fullSiteUrl = site ? new URL(import.meta.env.BASE_URL || '', site).toString() : undefined;
 	

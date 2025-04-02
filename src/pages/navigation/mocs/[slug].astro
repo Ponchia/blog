@@ -1,7 +1,8 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getAllMocs, getPostsByMoc, slugify, getPostSlug, getAllTags } from '../../../utils/moc-utils';
+import type { CollectionEntry } from 'astro:content';
+import { getAllMocs, getPostsByMoc, slugify, getPostSlug } from '../../../utils/moc-utils';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
@@ -48,7 +49,7 @@ export async function getStaticPaths() {
 }
 
 // Get MoC description from the common topics in this MoC
-function generateMocDescription(posts: any[], mocName: string) {
+function generateMocDescription(posts: CollectionEntry<'blog'>[], mocName: string) {
   const allTags = new Set<string>();
   posts.forEach(post => {
     if (post.data.tags) {
