@@ -8,9 +8,6 @@ import pagefind from 'astro-pagefind';
 import { remarkReadingTime } from './remark-reading-time.mjs';
 import { remarkGitDates } from './remark-git-dates.mjs';
 
-// Determine if we're in production or dev
-const isProduction = process.env.NODE_ENV === 'production';
-
 // https://astro.build/config
 export default defineConfig({
   // For custom domain
@@ -23,6 +20,20 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto', // Inline small stylesheets
     assets: 'assets', // Custom directory for optimized assets
+  },
+  
+  // Image optimization settings
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        // Image optimization settings
+        quality: 80, // 0-100, lower means smaller file size but lower quality
+        format: ['webp', 'avif', 'png', 'jpeg'], // Formats to generate, in order of preference
+        gif: { lossless: false }, // Compress GIFs
+        svg: { optimization: true } // Optimize SVGs
+      }
+    },
   },
 
   integrations: [

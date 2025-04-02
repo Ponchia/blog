@@ -14,6 +14,7 @@ A modern, responsive blog built with Astro, React, and MDX, featuring Giscus com
 - 🌙 Light/dark mode support (via preferred color scheme)
 - 📈 Privacy-friendly analytics with GoatCounter
 - 🔍 Interactive content visualization with PyScript
+- 🖼️ Automatic image optimization (WebP, AVIF)
 
 ## Getting Started
 
@@ -74,6 +75,34 @@ import Counter from '../../components/Counter';
 ```
 
 Note: React components for MDX should be created in separate files (e.g., `src/components/`) and then imported into your MDX files. Client directives like `client:visible` make the components interactive on the client side.
+
+## Image Optimization
+
+This blog automatically optimizes images using Astro's built-in image optimization:
+
+### Using the OptimizedImage Component
+
+```jsx
+import OptimizedImage from '../components/OptimizedImage.astro';
+
+<OptimizedImage 
+  src="/path/to/image.jpg"
+  alt="Description of image"
+  width={800}
+  height={600}
+  format="webp"
+/>
+```
+
+### Batch Image Conversion
+
+Convert existing images to modern formats:
+
+```bash
+npm run optimize-images
+```
+
+For detailed information about image optimization, see [IMAGE_OPTIMIZATION.md](./IMAGE_OPTIMIZATION.md).
 
 ## Comments Setup
 
@@ -150,3 +179,40 @@ You can deploy this blog to any static hosting service like Netlify, Vercel, or 
 
 - Styling: Update styles in `src/styles/global.css`
 - Layout: Edit components in `src/components/`
+
+## Project Structure
+
+```text
+├── public/           # Static assets
+├── src/
+│   ├── assets/       # Optimized images
+│   ├── components/   # React and Astro components
+│   ├── content/      # Blog posts and content collections
+│   ├── layouts/      # Page layouts
+│   └── pages/        # Page routes
+├── astro.config.mjs  # Astro configuration
+├── README.md
+└── package.json
+```
+
+## Contributing
+
+Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to work on this project, including:
+- Conventional commit standards
+- Testing requirements
+- Deployment considerations
+- Base URL configuration
+
+## Commands
+
+| Command                | Action                                       |
+| :--- | :---- |
+| `npm install`          | Installs dependencies                        |
+| `npm run dev`          | Starts local dev server at `localhost:4321`  |
+| `npm run build`        | Build your production site to `./dist/`      |
+| `npm run preview`      | Preview your build locally                   |
+| `npm run optimize-images` | Convert images to WebP and AVIF formats   |
+
+## License
+
+MIT

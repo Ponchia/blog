@@ -1,0 +1,105 @@
+---
+title: 'Optimizing Images with Astro'
+description: 'A guide to image optimization in Astro blogs for better performance'
+pubDate: 'Apr 02 2025'
+tags: ['astro', 'images', 'optimization', 'performance']
+mocs: ['Development', 'Performance']
+status: 'evergreen'
+heroImage: '/blog-placeholder-5.webp'
+---
+
+import ImageDemo from '../../components/ImageDemo.astro';
+import OptimizedImage from '../../components/OptimizedImage.astro';
+import MarkdownImageOptimizer from '../../components/MarkdownImageOptimizer.astro';
+
+# Optimizing Images with Astro
+
+Images often account for the largest portion of a webpage's size. By properly optimizing them, you can significantly improve your blog's performance, load times, and user experience.
+
+## Why Optimize Images?
+
+- **Faster load times**: Smaller images mean faster page loads
+- **Better Core Web Vitals**: Improved LCP (Largest Contentful Paint)
+- **Lower bandwidth usage**: Save users' data
+- **Better SEO**: Speed is a ranking factor for search engines
+
+## Modern Image Formats
+
+Traditional formats like JPEG and PNG have served us well, but newer formats provide better compression:
+
+| Format | Advantage | Size Reduction | Browser Support |
+|--------|-----------|---------------|----------------|
+| WebP   | Good compression, transparency | 25-34% smaller than JPEG | 95%+ |
+| AVIF   | Excellent compression | Up to 50% smaller than JPEG | 70%+ |
+
+## How Our Blog Handles Image Optimization
+
+This blog automatically optimizes images using Astro's built-in image optimization:
+
+<ImageDemo />
+
+## Using the OptimizedImage Component
+
+You can easily use the `OptimizedImage` component in your Astro and MDX files:
+
+```jsx
+import OptimizedImage from '../components/OptimizedImage.astro';
+
+<OptimizedImage 
+  src="/path/to/image.jpg"
+  alt="Description of image"
+  width={800}
+  height={600}
+  format="webp"
+/>
+```
+
+## Example Comparison
+
+Here's another example showing an optimized image:
+
+<OptimizedImage 
+  src="/blog-placeholder-2.webp"
+  alt="Another example of an optimized image"
+  width={700}
+  height={400}
+  format="webp"
+  class="rounded-lg shadow-md"
+/>
+
+## Optimizing Images in Markdown Content
+
+When writing blog posts in MDX, you can combine the flexibility of Markdown with the power of optimized images:
+
+<MarkdownImageOptimizer />
+
+## How It Works Behind the Scenes
+
+1. The `OptimizedImage` component uses `getImage()` from Astro's built-in image services
+2. Images are processed with Sharp, a high-performance image processing library
+3. The most optimal format is served based on browser support
+4. Original images are preserved as fallbacks for older browsers
+
+## Batch Converting Your Images
+
+We've also created a utility script to batch convert your existing images to modern formats:
+
+```bash
+npm run optimize-images
+```
+
+This script:
+- Scans the `/public` directory for images
+- Converts them to WebP and AVIF formats
+- Preserves the originals for backward compatibility
+- Saves the optimized versions to the assets directory
+
+## Next Steps
+
+Now that you understand how image optimization works on this blog, try:
+
+1. Using the `OptimizedImage` component in your next blog post
+2. Running the optimization script on your existing images
+3. Checking the performance improvements in tools like Lighthouse
+
+By implementing these optimizations, your blog will load faster and provide a better experience for your readers. 
