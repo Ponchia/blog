@@ -3,7 +3,9 @@
   "include": [
     ".astro/types.d.ts",
     "src/**/*",
-    "e2e/**/*"
+    "e2e/**/*",
+    "playwright-a11y.config.ts",
+    "scripts/**/*"
   ],
   "exclude": [
     "dist"

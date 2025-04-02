@@ -12,6 +12,7 @@ test.describe('Accessibility Tests', () => {
     
     // Report violations but don't fail the test for now
     // This allows us to gather information about issues that need to be fixed
+    // eslint-disable-next-line no-console
     console.log('Homepage accessibility violations:', accessibilityScanResults.violations);
   });
   
@@ -31,6 +32,7 @@ test.describe('Accessibility Tests', () => {
         .analyze();
       
       // Report violations but don't fail the test for now
+      // eslint-disable-next-line no-console
       console.log('Blog post accessibility violations:', accessibilityScanResults.violations);
     } else {
       test.skip(true, 'No blog posts found to test for accessibility');
@@ -45,6 +47,7 @@ test.describe('Accessibility Tests', () => {
       .analyze();
     
     // Report violations but don't fail the test for now
+    // eslint-disable-next-line no-console
     console.log('About page accessibility violations:', accessibilityScanResults.violations);
   });
 }); 

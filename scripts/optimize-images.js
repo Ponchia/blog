@@ -13,6 +13,7 @@ const assetsDir = path.resolve(rootDir, 'src', 'assets', 'images');
 // Ensure assets directory exists
 if (!fs.existsSync(assetsDir)) {
   fs.mkdirSync(assetsDir, { recursive: true });
+  // eslint-disable-next-line no-console
   console.log(`Created assets directory: ${assetsDir}`);
 }
 
@@ -32,13 +33,15 @@ async function processImage(filePath) {
     return;
   }
   
+  // eslint-disable-next-line no-console
   console.log(`Processing: ${fileName}`);
   
   // Read the image
   const image = sharp(filePath);
   
   // Get image metadata
-  const metadata = await image.metadata();
+  // We don't need metadata for now, but keeping commented in case needed later
+  // const metadata = await image.metadata();
   
   // Convert to each target format
   for (const format of targetFormats) {
@@ -49,8 +52,10 @@ async function processImage(filePath) {
         .toFormat(format, { quality: 80 })
         .toFile(outputPath);
       
+      // eslint-disable-next-line no-console
       console.log(`Created: ${outputPath} (${format})`);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(`Failed to convert ${fileName} to ${format}:`, error);
     }
   }
@@ -58,6 +63,7 @@ async function processImage(filePath) {
   // Also copy the original to assets directory
   const outputOriginal = path.join(assetsDir, fileName);
   fs.copyFileSync(filePath, outputOriginal);
+  // eslint-disable-next-line no-console
   console.log(`Copied original: ${outputOriginal}`);
 }
 
@@ -81,12 +87,16 @@ async function processDirectory(directory) {
 }
 
 // Start processing
+// eslint-disable-next-line no-console
 console.log('Starting image optimization...');
 processDirectory(publicDir)
   .then(() => {
+    // eslint-disable-next-line no-console
     console.log('Image optimization complete!');
+    // eslint-disable-next-line no-console
     console.log(`Optimized images saved to: ${assetsDir}`);
   })
   .catch((error) => {
+    // eslint-disable-next-line no-console
     console.error('Error during image optimization:', error);
   }); 
