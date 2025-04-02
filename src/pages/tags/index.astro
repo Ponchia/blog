@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 import { getAllTags, slugify } from '../../utils/moc-utils';
 
 // Path helper function to ensure base URL is properly used
-function getPath(path) {
+function getPath(path: string) {
   const base = import.meta.env.BASE_URL || '';
   // Ensure base ends with slash if not empty and path doesn't start with slash
   const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
@@ -15,26 +15,6 @@ function getPath(path) {
 }
 
 const posts = await getCollection('blog');
-
-// For demonstration, let's add some tag data to the existing posts
-// In a real scenario, you would properly tag posts in their frontmatter
-posts.forEach((post, index) => {
-  // Just for demo: add some tags to the first few posts
-  if (index === 0) {
-    post.data.mocs = ['Getting Started', 'Tutorials'];
-    post.data.related = ['second-post'];
-    post.data.tags = ['astro', 'blogging'];
-    post.data.status = 'evergreen';
-  } else if (index === 1) {
-    post.data.mocs = ['Tutorials', 'Advanced Concepts'];
-    post.data.tags = ['astro', 'mdx'];
-    post.data.status = 'evergreen';
-  } else if (index === 2) {
-    post.data.mocs = ['Advanced Concepts'];
-    post.data.tags = ['markdown', 'styling'];
-    post.data.status = 'fleeting';
-  }
-});
 
 // Get all tags and count occurrences
 const tags = getAllTags(posts);
