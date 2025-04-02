@@ -1,3 +1,4 @@
+---
 import { getImage } from 'astro:assets';
 
 interface Props {
@@ -23,7 +24,7 @@ const {
 } = Astro.props;
 
 // Process the image using sharp
-let optimizedImage;
+let optimizedImage = { src: typeof src === 'object' && 'src' in src ? src.src : src };
 try {
   // For ImageMetadata objects (import from assets)
   if (typeof src === 'object' && 'src' in src) {
@@ -50,6 +51,7 @@ try {
   // Fallback to original
   optimizedImage = { src: typeof src === 'object' && 'src' in src ? src.src : src };
 }
+---
 
 <img 
   src={optimizedImage.src} 
