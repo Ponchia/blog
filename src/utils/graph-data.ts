@@ -61,11 +61,11 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
   const allMocs = new Set<string>();
   posts.forEach(post => {
     if (post.data.mocs && Array.isArray(post.data.mocs)) {
-      post.data.mocs.forEach(moc => allMocs.add(moc));
+      post.data.mocs.forEach((moc: string) => allMocs.add(moc));
     }
   });
   
-  const mocNodes: Node[] = Array.from(allMocs).map(moc => ({
+  const mocNodes: Node[] = Array.from(allMocs).map((moc: string) => ({
     id: `moc-${slugify(moc)}`,
     label: moc,
     type: 'moc',
@@ -75,11 +75,11 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
   const allTags = new Set<string>();
   posts.forEach(post => {
     if (post.data.tags && Array.isArray(post.data.tags)) {
-      post.data.tags.forEach(tag => allTags.add(tag));
+      post.data.tags.forEach((tag: string) => allTags.add(tag));
     }
   });
   
-  const tagNodes: Node[] = Array.from(allTags).map(tag => ({
+  const tagNodes: Node[] = Array.from(allTags).map((tag: string) => ({
     id: `tag-${slugify(tag)}`,
     label: tag,
     type: 'tag',
