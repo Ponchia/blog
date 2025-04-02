@@ -97,9 +97,6 @@ const currentPath = Astro.url.pathname;
 			}
 		})}></script>
 		
-		<!-- GoatCounter Analytics -->
-		<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-		
 		<!-- Theme initialization script - must be in head to avoid FOUC -->
 		<script is:inline>
 			// Get theme from localStorage or system preference
@@ -248,17 +245,28 @@ const currentPath = Astro.url.pathname;
 				</div>
 				{heroImagePath && (
 					<div class="hero-image">
-						<img width={1020} height={510} src={heroImagePath} alt={`Hero image for article: ${title}`} />
+						<img 
+							width={1020} 
+							height={510} 
+							src={heroImagePath} 
+							alt={`Hero image for article: ${title}`}
+							loading="eager"
+							fetchpriority="high"
+							decoding="async"
+						/>
 					</div>
 				)}
 				<div class="prose blog-content">
 					<slot />
 				</div>
 				<div class="comments-section">
-					<Comments client:load />
+					<Comments client:idle />
 				</div>
 			</article>
 		</main>
 		<Footer />
+		
+		<!-- GoatCounter Analytics -->
+		<script data-goatcounter="https://ponchia.goatcounter.com/count" defer src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>

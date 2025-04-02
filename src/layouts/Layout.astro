@@ -44,9 +44,6 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 			}
 		})}></script>
 		
-		<!-- GoatCounter Analytics -->
-		<script data-goatcounter="https://ponchia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-		
 		<!-- Theme initialization script - must be in head to avoid FOUC -->
 		<script is:inline>
 			// Get theme from localStorage or system preference
@@ -86,6 +83,9 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 				}
 			});
 		</script>
+
+		<!-- GoatCounter Analytics -->
+		<script data-goatcounter="https://ponchia.goatcounter.com/count" defer src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>
 

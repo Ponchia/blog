@@ -19,6 +19,12 @@ export default defineConfig({
   // No base path needed with custom domain
   base: '',
 
+  // Add build configuration for optimizations
+  build: {
+    inlineStylesheets: 'auto', // Inline small stylesheets
+    assets: 'assets', // Custom directory for optimized assets
+  },
+
   integrations: [
       mdx(), 
       sitemap({
