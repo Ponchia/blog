@@ -1,12 +1,10 @@
 ---
-title: 'Git Flow vs. Trunk-Based Development: A Comprehensive Comparison'
-description: 'A detailed comparison of Git Flow and Trunk-Based Development branching strategies, exploring their principles, workflows, best practices, and when to use each approach.'
-pubDate: 'Apr 2 2025'
-heroImage: '/blog/git-flow-vs-tbd.jpg'
-mocs: ['Version Control', 'Development Practices']
-tags: ['git', 'version control', 'development', 'devops', 'best practices']
-status: 'evergreen'
-related: []
+title: 'Git Flow vs. Trunk-Based Development: Choosing the Right Branching Strategy'
+description: 'An in-depth comparison of Git Flow and Trunk-Based Development branching strategies, with practical guidelines for choosing the right approach for your team.'
+pubDate: 'Apr 02 2024'
+heroImage: '/blog/git_flow_vs_tbd.jpg'
+tags: ['git', 'workflow', 'development', 'continuous-integration']
+draft: true
 ---
 
 import Alert from '../../components/Alert.astro';

@@ -6,7 +6,10 @@ import FormattedDate from '../../components/FormattedDate.astro';
 import ViewCounter from '../../components/ViewCounter.astro';
 import { render } from 'astro:content';
 
-const postsData = await getCollection('blog');
+const postsData = await getCollection('blog', ({ data }) => {
+	// Filter out posts with draft: true
+	return !data.draft;
+});
 const postsWithMetadata = await Promise.all(
 	postsData.map(async (post) => {
 		const { remarkPluginFrontmatter } = await render(post);

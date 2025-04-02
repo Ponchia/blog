@@ -3,7 +3,10 @@ import { getCollection } from 'astro:content';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 export async function GET(context) {
-	const posts = await getCollection('blog');
+	const posts = await getCollection('blog', ({ data }) => {
+		// Filter out posts with draft: true
+		return !data.draft;
+	});
 	const site = context.site;
 	
 	// Create a proper site URL with the base path included

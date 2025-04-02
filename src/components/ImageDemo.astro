@@ -1,0 +1,49 @@
+---
+import OptimizedImage from './OptimizedImage.astro';
+---
+
+<div class="image-demo">
+  <h3>Original Image</h3>
+  <img 
+    src="/blog-placeholder-1.jpg" 
+    alt="Original blog placeholder" 
+    width="600"
+    height="400"
+    class="rounded-md shadow-md mb-4"
+  />
+  
+  <h3>Optimized Image (WebP)</h3>
+  <OptimizedImage 
+    src="/blog-placeholder-1.jpg" 
+    alt="Optimized blog placeholder" 
+    width={600}
+    height={400}
+    format="webp"
+    class="rounded-md shadow-md mb-4"
+  />
+  
+  <div class="text-sm text-gray-600 mt-2 bg-gray-100 p-3 rounded">
+    <p>Using the OptimizedImage component automatically converts images to modern formats:</p>
+    <ul class="list-disc ml-5 mt-2">
+      <li>WebP for most browsers (about 25-34% smaller than JPEG)</li>
+      <li>AVIF for browsers that support it (about 50% smaller than JPEG)</li>
+      <li>Fallback to original format for older browsers</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .image-demo {
+    max-width: 100%;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+  }
+  
+  h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+</style> 
