@@ -88,7 +88,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
   const postMocLinks: Link[] = [];
   posts.forEach(post => {
     if (post.data.mocs && Array.isArray(post.data.mocs)) {
-      post.data.mocs.forEach(moc => {
+      post.data.mocs.forEach((moc: string) => {
         postMocLinks.push({
           source: getPostSlug(post),
           target: `moc-${slugify(moc)}`,
@@ -102,7 +102,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
   const postTagLinks: Link[] = [];
   posts.forEach(post => {
     if (post.data.tags && Array.isArray(post.data.tags)) {
-      post.data.tags.forEach(tag => {
+      post.data.tags.forEach((tag: string) => {
         postTagLinks.push({
           source: getPostSlug(post),
           target: `tag-${slugify(tag)}`,
@@ -116,7 +116,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
   const relatedLinks: Link[] = [];
   posts.forEach(post => {
     if (post.data.related && Array.isArray(post.data.related)) {
-      post.data.related.forEach(relatedSlug => {
+      post.data.related.forEach((relatedSlug: string) => {
         // Find the related post
         const relatedPost = posts.find(p => getPostSlug(p) === relatedSlug);
         if (relatedPost) {

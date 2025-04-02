@@ -41,7 +41,7 @@ export function getAllMocs(allPosts: BlogPost[]): string[] {
   const mocSet = new Set<string>();
   allPosts.forEach(post => {
     if (post.data.mocs) {
-      post.data.mocs.forEach(moc => mocSet.add(moc));
+      post.data.mocs.forEach((moc: string) => mocSet.add(moc));
     }
   });
   return Array.from(mocSet);
@@ -74,7 +74,7 @@ export function getAllTags(allPosts: BlogPost[]): string[] {
   const tagSet = new Set<string>();
   allPosts.forEach(post => {
     if (post.data.tags) {
-      post.data.tags.forEach(tag => tagSet.add(tag));
+      post.data.tags.forEach((tag: string) => tagSet.add(tag));
     }
   });
   return Array.from(tagSet);
