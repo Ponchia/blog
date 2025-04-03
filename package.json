@@ -4,6 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "copy-optimized-images": "node copy-images.js",
+    "prebuild": "npm run copy-optimized-images",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -41,7 +43,7 @@
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
     "@axe-core/playwright": "^4.8.5",
-    "@playwright/test": "^1.45.0",
+    "@playwright/test": "^1.51.1",
     "@tailwindcss/typography": "^0.5.16",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",

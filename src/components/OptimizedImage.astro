@@ -40,10 +40,9 @@ try {
   else if (typeof src === 'string') {
     if (src.startsWith('http')) {
       // External URL - can't optimize these with getImage
-      // Return a normal img tag
       optimizedImage = { src };
     } else {
-      // Assuming local path in public directory
+      // Simply use the original path, images should be in public directory
       optimizedImage = { src };
     }
   }
