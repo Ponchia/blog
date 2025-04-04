@@ -36,9 +36,7 @@ This blog automatically optimizes images using Astro's built-in image optimizati
 
 You can easily use the `OptimizedImage` component in your Astro and MDX files:
 
-```jsx
-import OptimizedImage from '../components/OptimizedImage.astro';
-
+```astro
 <OptimizedImage 
   src="/path/to/image.jpg"
   alt="Description of image"
@@ -58,11 +56,13 @@ When writing blog posts in MDX, you can combine the flexibility of Markdown with
 ![Example description](/blog-placeholder-3.jpg)
 ```
 
-### Using the Component
+This will render as a standard image, but you won't get the optimization benefits.
 
-```jsx
-import OptimizedImage from '../components/OptimizedImage.astro';
+### Using the Component for Better Optimization
 
+For better optimization, you can use the OptimizedImage component:
+
+```astro
 <OptimizedImage 
   src="/blog-placeholder-3.jpg" 
   alt="Optimized example" 
