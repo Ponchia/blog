@@ -50,5 +50,6 @@ module.exports = {
     'playwright.config.*',
     'tailwind.config.*',
     'postcss.config.*',
+    'copy-images.js',
   ],
 }; 
