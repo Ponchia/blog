@@ -65,13 +65,13 @@ function getPathWithBase(path: string): string {
 		return `/${path}`;
 	}
 	
-	// For image paths, remove leading slash if present
+	// For image paths, ensure they start with / for root-relative paths
 	if (path.startsWith('/')) {
-		return path.substring(1);
+		return path; // Keep the leading slash
 	}
 	
-	// Otherwise, return as is
-	return path;
+	// Otherwise, add a leading slash to make it root-relative
+	return `/${path}`;
 }
 ---
 
