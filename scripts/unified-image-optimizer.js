@@ -66,9 +66,6 @@ async function processImage(filePath) {
   // Read the image
   const image = sharp(filePath);
   
-  // Get image metadata
-  const metadata = await image.metadata();
-  
   // Convert to each target format
   for (const format of targetFormats) {
     const outputPath = path.join(assetsDir, `${baseName}.${format}`);
@@ -80,7 +77,7 @@ async function processImage(filePath) {
       
       log(`Created: ${outputPath} (${format})`);
     } catch (error) {
-      console.error(`Failed to convert ${fileName} to ${format}:`, error);
+      log(`Failed to convert ${fileName} to ${format}: ${error}`, true);
     }
   }
   
@@ -136,7 +133,7 @@ async function copyToPublic() {
         filesCopied++;
         log(`Copied: ${file}`);
       } catch (error) {
-        console.error(`Error copying ${file}: ${error.message}`);
+        log(`Error copying ${file}: ${error.message}`, true);
       }
     }
   });
@@ -180,43 +177,43 @@ async function watchDirectories() {
 
 // Main function
 async function main() {
-  console.log('🖼️  Unified Image Optimizer');
-  console.log('==========================');
+  log('🖼️  Unified Image Optimizer', true);
+  log('==========================', true);
   
   // Determine which directory to process
   const targetDir = options.path ? path.resolve(rootDir, options.path) : publicDir;
   
   if (!fs.existsSync(targetDir)) {
-    console.error(`Error: Directory does not exist: ${targetDir}`);
+    log(`Error: Directory does not exist: ${targetDir}`, true);
     process.exit(1);
   }
   
-  console.log(`Target directory: ${targetDir}`);
-  console.log(`Output directory: ${assetsDir}`);
-  console.log(`Target formats: ${targetFormats.join(', ')}`);
-  console.log(`Quality setting: ${quality}`);
-  console.log('---------------------------');
+  log(`Target directory: ${targetDir}`, true);
+  log(`Output directory: ${assetsDir}`, true);
+  log(`Target formats: ${targetFormats.join(', ')}`, true);
+  log(`Quality setting: ${quality}`, true);
+  log('---------------------------', true);
   
   // Process images
   const processedCount = await processDirectory(targetDir);
-  console.log(`Processed ${processedCount} images.`);
+  log(`Processed ${processedCount} images.`, true);
   
   // Copy to public if needed
   if (!options.skipCopy) {
     const copiedCount = await copyToPublic();
-    console.log(`Copied ${copiedCount} optimized images to public directory.`);
+    log(`Copied ${copiedCount} optimized images to public directory.`, true);
   }
   
   // Watch mode
   if (options.watch) {
     await watchDirectories();
   } else {
-    console.log('Done! 🎉');
+    log('Done! 🎉', true);
   }
 }
 
 // Run the main function
 main().catch(error => {
-  console.error('Error:', error);
+  log(`Error: ${error}`, true);
   process.exit(1);
 });
