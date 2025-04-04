@@ -7,6 +7,7 @@ import tailwind from '@astrojs/tailwind';
 import pagefind from 'astro-pagefind';
 import { remarkReadingTime } from './remark-reading-time.mjs';
 import { remarkGitDates } from './remark-git-dates.mjs';
+import { remarkOptimizeImages } from './remark-optimize-images.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -63,6 +64,6 @@ export default defineConfig({
   ],
 
   markdown: {
-      remarkPlugins: [remarkReadingTime, remarkGitDates],
+      remarkPlugins: [remarkReadingTime, remarkGitDates, remarkOptimizeImages],
   },
 });
