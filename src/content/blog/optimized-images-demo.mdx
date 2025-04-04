@@ -8,10 +8,6 @@ status: 'evergreen'
 heroImage: '/blog-placeholder-5.webp'
 ---
 
-import ImageDemo from '../../components/ImageDemo.astro';
-import OptimizedImage from '../../components/OptimizedImage.astro';
-import MarkdownImageOptimizer from '../../components/MarkdownImageOptimizer.astro';
-
 # Optimizing Images with Astro
 
 Images often account for the largest portion of a webpage's size. By properly optimizing them, you can significantly improve your blog's performance, load times, and user experience.
@@ -34,9 +30,7 @@ Traditional formats like JPEG and PNG have served us well, but newer formats pro
 
 ## How Our Blog Handles Image Optimization
 
-This blog automatically optimizes images using Astro's built-in image optimization:
-
-<ImageDemo />
+This blog automatically optimizes images using Astro's built-in image optimization.
 
 ## Using the OptimizedImage Component
 
@@ -54,24 +48,29 @@ import OptimizedImage from '../components/OptimizedImage.astro';
 />
 ```
 
-## Example Comparison
-
-Here's another example showing an optimized image:
-
-<OptimizedImage 
-  src="/blog-placeholder-2.webp"
-  alt="Another example of an optimized image"
-  width={700}
-  height={400}
-  format="webp"
-  class="rounded-lg shadow-md"
-/>
-
 ## Optimizing Images in Markdown Content
 
 When writing blog posts in MDX, you can combine the flexibility of Markdown with the power of optimized images:
 
-<MarkdownImageOptimizer />
+### Standard Markdown Image
+
+```md
+![Example description](/blog-placeholder-3.jpg)
+```
+
+### Using the Component
+
+```jsx
+import OptimizedImage from '../components/OptimizedImage.astro';
+
+<OptimizedImage 
+  src="/blog-placeholder-3.jpg" 
+  alt="Optimized example" 
+  width={400} 
+  height={300} 
+  format="webp" 
+/>
+```
 
 ## How It Works Behind the Scenes
 
@@ -102,4 +101,4 @@ Now that you understand how image optimization works on this blog, try:
 2. Running the optimization script on your existing images
 3. Checking the performance improvements in tools like Lighthouse
 
-By implementing these optimizations, your blog will load faster and provide a better experience for your readers. 
+By implementing these optimizations, your blog will load faster and provide a better experience for your readers.

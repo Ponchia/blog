@@ -1,0 +1,84 @@
+import OptimizedImage from './OptimizedImage.astro';
+
+<div class="markdown-image-optimizer">
+  <div class="demo-section">
+    <h3>Standard Markdown Image</h3>
+    <div class="code-example">
+      <pre><code>![Example description](/blog-placeholder-3.jpg)</code></pre>
+    </div>
+    <div class="result">
+      <img src="/blog-placeholder-3.jpg" alt="Standard example" width="400" />
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Optimized Component</h3>
+    <div class="code-example">
+      <pre><code>&lt;OptimizedImage 
+  src="/blog-placeholder-3.jpg" 
+  alt="Optimized example" 
+  width={400} 
+  height={300} 
+  format="webp" 
+/&gt;</code></pre>
+    </div>
+    <div class="result">
+      <OptimizedImage 
+        src="/blog-placeholder-3.jpg" 
+        alt="Optimized example" 
+        width={400} 
+        height={300} 
+        format="webp" 
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  .markdown-image-optimizer {
+    display: grid;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .demo-section {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background-color: var(--bg-secondary);
+  }
+  
+  .code-example {
+    background-color: #1e1e1e;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+  }
+  
+  .code-example pre {
+    margin: 0;
+  }
+  
+  .code-example code {
+    color: #d4d4d4;
+    font-family: monospace;
+  }
+  
+  .result {
+    display: flex;
+    justify-content: center;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 1rem;
+  }
+  
+  .result img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+</style> 

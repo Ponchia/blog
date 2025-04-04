@@ -12,9 +12,10 @@ export async function GET(context) {
 	// Create a proper site URL with the base path included
 	const fullSiteUrl = site ? new URL(import.meta.env.BASE_URL || '', site).toString() : undefined;
 	
-	// For production, use the correct domain with /blog base path
-	const isProduction = process.env.NODE_ENV === 'production';
-	const correctBasePath = isProduction ? '/blog' : '';
+	// IMPORTANT: This needs to match the actual deployed structure
+	// The RSS stylesheet must be available at both /rss/styles.xsl and /blog/rss/styles.xsl
+	// to handle both custom domain and GitHub Pages deployments
+	const stylesheetPath = '/rss/styles.xsl';
 	
 	return rss({
 		title: SITE_TITLE,
@@ -23,10 +24,12 @@ export async function GET(context) {
 		site: fullSiteUrl,
 		items: posts.map((post) => {
 			const postPath = `blog/${post.id}`;
+			// Use BASE_URL for path construction
+			const basePath = import.meta.env.BASE_URL || '';
 			return {
 				...post.data,
 				// Generate the correct full URL for each post with base path
-				link: site ? new URL(`${correctBasePath}/${postPath}`, site).toString() : postPath,
+				link: site ? new URL(`${basePath}/${postPath}`, site).toString() : postPath,
 				// Add category tags for better RSS feed discovery
 				categories: post.data.tags || [],
 				// Use custom pubDate format to ensure valid dates
@@ -37,8 +40,8 @@ export async function GET(context) {
 				content: post.data.description,
 			};
 		}),
-		// Set the proper XML stylesheet with base path
-		stylesheet: `${correctBasePath}/rss/styles.xsl`,
+		// Always use the consistent stylesheet path
+		stylesheet: stylesheetPath,
 		// Set customized RSS namespaces
 		customData: `<language>en-us</language>`,
 	});
