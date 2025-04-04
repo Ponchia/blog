@@ -1,11 +1,11 @@
-# robots.txt for https://ponchia.github.io/blog/
+# robots.txt for https://brontolotto.observer/
 # Optimized for search engine crawling and indexing
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://ponchia.github.io/blog/sitemap-index.xml
+Sitemap: https://brontolotto.observer/sitemap-index.xml
 
 # Optional: Specify crawl delay for specific bots
 # User-agent: Googlebot
@@ -13,4 +13,4 @@ Sitemap: https://ponchia.github.io/blog/sitemap-index.xml
 
 # Optional: Disallow specific paths
 # Disallow: /private/
-# Disallow: /drafts/ 
+# Disallow: /drafts/
