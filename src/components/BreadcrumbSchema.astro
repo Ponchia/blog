@@ -1,0 +1,50 @@
+---
+/**
+ * BreadcrumbSchema Component
+ * 
+ * Adds structured data for breadcrumb navigation without visual elements.
+ * This helps search engines understand the site hierarchy for better rich snippets.
+ * 
+ * @param {Array} trail - Array of objects with name and url properties representing the breadcrumb path
+ */
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+interface Props {
+  trail: BreadcrumbItem[];
+}
+
+const { trail } = Astro.props;
+
+// Ensure all URLs are absolute
+const getAbsoluteUrl = (path: string) => {
+  // If already absolute URL, return as is
+  if (path.startsWith('http')) return path;
+  
+  // Make sure site URL ends with slash
+  const siteUrl = Astro.site?.toString() || 'https://brontolotto.observer/';
+  const baseUrl = siteUrl.endsWith('/') ? siteUrl : `${siteUrl}/`;
+  
+  // Remove leading slash from path if present
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  
+  return `${baseUrl}${cleanPath}`;
+};
+
+// Create breadcrumb list data structure
+const breadcrumbListData = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": trail.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    "item": getAbsoluteUrl(item.url)
+  }))
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbListData)}></script>

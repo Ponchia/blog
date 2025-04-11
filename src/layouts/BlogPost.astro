@@ -7,6 +7,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Comments from '../components/Comments';
 import ViewCounter from '../components/ViewCounter.astro';
 import OptimizedImage from '../components/OptimizedImage.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
 
@@ -70,7 +71,14 @@ const currentPath = Astro.url.pathname;
 	<head>
 		<BaseHead title={title} description={description} />
 		
-		<!-- Schema.org structured data for BlogPosting -->
+		<!-- Add breadcrumb schema -->
+		<BreadcrumbSchema trail={[
+			{ name: "Home", url: "/" },
+			{ name: "Blog", url: "/blog" },
+			{ name: title, url: Astro.url.pathname }
+		]} />
+		
+		<!-- Enhanced Schema.org structured data for BlogPosting -->
 		<script type="application/ld+json" set:html={JSON.stringify({
 			"@context": "https://schema.org",
 			"@type": "BlogPosting",
@@ -81,7 +89,8 @@ const currentPath = Astro.url.pathname;
 			"dateModified": displayUpdatedDate?.toISOString() || displayPubDate?.toISOString() || undefined,
 			"author": {
 				"@type": "Person",
-				"name": "Ponchia"
+				"name": "Ponchia",
+				"url": Astro.site?.toString() || "https://brontolotto.observer"
 			},
 			"publisher": {
 				"@type": "Organization",
@@ -94,7 +103,10 @@ const currentPath = Astro.url.pathname;
 			"mainEntityOfPage": {
 				"@type": "WebPage",
 				"@id": Astro.url.toString()
-			}
+			},
+			"articleBody": "This is a blog post about " + description,
+			"keywords": Astro.props.tags?.join(", "),
+			"wordCount": minutesRead ? parseInt(minutesRead) * 200 : undefined
 		})}></script>
 		
 		<!-- Theme initialization script - must be in head to avoid FOUC -->

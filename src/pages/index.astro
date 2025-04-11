@@ -36,9 +36,30 @@ const recentPosts = [...posts]
 		return dateB.valueOf() - dateA.valueOf();
 	})
 	.slice(0, 4);
+
+// Generate website structured data
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": SITE_TITLE,
+  "description": SITE_DESCRIPTION,
+  "url": Astro.site?.toString(),
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${Astro.site}search?q={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<head>
+		<!-- Website Schema -->
+		<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
+	</head>
 	<main>
 		<h1>Knowledge Base</h1>
 		<p class="description">Explore content by topic areas, discover connections, and find related information</p>

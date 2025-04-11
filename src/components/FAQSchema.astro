@@ -1,0 +1,52 @@
+---
+/**
+ * FAQSchema Component
+ * 
+ * Adds structured data for FAQ sections to improve search visibility.
+ * This helps Google display rich results for FAQ content.
+ * 
+ * @param {Array} questions - Array of objects with question and answer properties
+ */
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  questions: FAQItem[];
+}
+
+const { questions } = Astro.props;
+
+// Only render if there are actually questions
+if (questions && questions.length > 0) {
+  const faqData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": questions.map(item => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  };
+}
+---
+
+{questions && questions.length > 0 && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": questions.map(item => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  })}></script>
+)}
