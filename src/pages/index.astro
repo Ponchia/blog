@@ -56,10 +56,8 @@ const websiteSchema = {
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-	<head>
-		<!-- Website Schema -->
-		<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
-	</head>
+	{/* Website Schema - properly included without an extra head tag */}
+	<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
 	<main>
 		<h1>Knowledge Base</h1>
 		<p class="description">Explore content by topic areas, discover connections, and find related information</p>
