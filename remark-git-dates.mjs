@@ -8,6 +8,7 @@ export function remarkGitDates() {
   return function (tree, file) {
     try {
       const filepath = file.history[0];
+      const currentDate = new Date();
       
       // Get the first commit date (creation date)
       let firstCommitDate = null;
@@ -18,7 +19,15 @@ export function remarkGitDates() {
         
         // Convert Unix timestamp to ISO date
         if (firstCommitDate) {
-          firstCommitDate = new Date(parseInt(firstCommitDate) * 1000).toISOString();
+          const parsedDate = new Date(parseInt(firstCommitDate) * 1000);
+          
+          // Validate the date isn't in the future before using it
+          if (parsedDate <= currentDate) {
+            firstCommitDate = parsedDate.toISOString();
+          } else {
+            console.warn(`Future date detected for first commit of ${filepath}, using current date instead`);
+            firstCommitDate = currentDate.toISOString();
+          }
         }
       } catch (e) {
         console.warn(`Could not get first commit date for ${filepath}:`, e.message);
@@ -33,7 +42,15 @@ export function remarkGitDates() {
         
         // Convert Unix timestamp to ISO date
         if (lastModifiedDate) {
-          lastModifiedDate = new Date(parseInt(lastModifiedDate) * 1000).toISOString();
+          const parsedDate = new Date(parseInt(lastModifiedDate) * 1000);
+          
+          // Validate the date isn't in the future before using it
+          if (parsedDate <= currentDate) {
+            lastModifiedDate = parsedDate.toISOString();
+          } else {
+            console.warn(`Future date detected for last modification of ${filepath}, using current date instead`);
+            lastModifiedDate = currentDate.toISOString();
+          }
         }
       } catch (e) {
         console.warn(`Could not get last modified date for ${filepath}:`, e.message);

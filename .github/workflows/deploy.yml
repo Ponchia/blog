@@ -19,19 +19,57 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for Git dates in blog posts
+      
+      # Set system time to ensure no future dates
+      - name: Set system time to current time
+        run: |
+          echo "Current timestamp check (before):"
+          date
+          # Ensure system clock is accurate with GitHub's time
+          sudo hwclock --hctosys || echo "hwclock command not available"
+          echo "Current timestamp check (after):"
+          date
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
+      
+      # Clean install to avoid dependency issues
+      - name: Clean npm cache
+        run: npm cache clean --force
+      
       - name: Install dependencies
         run: npm ci
+      
+      # Test git dates functionality
+      - name: Debug git dates for blog files
+        run: |
+          echo "Checking git dates for blog files..."
+          for file in src/content/blog/*.mdx; do
+            echo "==== $file ===="
+            # Check first commit (creation date)
+            FIRST_COMMIT=$(git log --follow --format="%ai" --reverse "$file" | head -1)
+            echo "First commit date: $FIRST_COMMIT"
+            # Check last modification
+            LAST_COMMIT=$(git log -1 --format="%ai" "$file")
+            echo "Last commit date: $LAST_COMMIT"
+            # Ensure no future dates
+            if [[ $(date -d "$LAST_COMMIT" +%s) -gt $(date +%s) ]]; then
+              echo "WARNING: Future date detected in last commit!"
+            fi
+            echo ""
+          done
+      
       - name: Create .env file
         run: |
           echo "PUBLIC_GOATCOUNTER_API_TOKEN=${{ secrets.GOATCOUNTER_API_TOKEN }}" > .env
           echo "GOATCOUNTER_API_TOKEN=${{ secrets.GOATCOUNTER_API_TOKEN }}" >> .env
+      
       - name: Build Astro
         run: npm run build
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
