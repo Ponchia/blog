@@ -1,7 +1,33 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function PyScriptDemo({ code, packages = [] }) {
   const containerRef = useRef(null);
+  const [currentTheme, setCurrentTheme] = useState('dark');
+  
+  // Add theme detection
+  useEffect(() => {
+    // Get initial theme from DOM
+    const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    setCurrentTheme(initialTheme);
+    
+    // Create a MutationObserver to watch for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const newTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+          setCurrentTheme(newTheme);
+        }
+      });
+    });
+    
+    // Start observing theme changes on the document element
+    observer.observe(document.documentElement, { attributes: true });
+    
+    // Clean up observer on component unmount
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
   
   useEffect(() => {
     if (!containerRef.current) return;
@@ -38,10 +64,17 @@ export default function PyScriptDemo({ code, packages = [] }) {
     pyScriptEl.type = 'py';
     pyScriptEl.textContent = code;
     
-    // Add loading dialog
+    // Add loading dialog with theme-aware styling
     const dialogEl = document.createElement('dialog');
     dialogEl.id = `loading-${Math.random().toString(36).substring(7)}`;
     dialogEl.innerHTML = '<h3>Loading Python...</h3>';
+    // Apply theme-aware styling to dialog
+    dialogEl.style.color = 'var(--text-primary)';
+    dialogEl.style.backgroundColor = 'var(--bg-secondary)';
+    dialogEl.style.border = '1px solid var(--border-color)';
+    dialogEl.style.borderRadius = '0.5rem';
+    dialogEl.style.padding = '1rem';
+    
     containerRef.current.appendChild(dialogEl);
     
     // Add loading script
@@ -59,8 +92,12 @@ export default function PyScriptDemo({ code, packages = [] }) {
 
     // Cleanup function
     return () => {
-      document.head.removeChild(linkEl);
-      document.head.removeChild(scriptEl);
+      if (document.head.contains(linkEl)) {
+        document.head.removeChild(linkEl);
+      }
+      if (document.head.contains(scriptEl)) {
+        document.head.removeChild(scriptEl);
+      }
       if (containerRef.current) {
         if (containerRef.current.contains(pyScriptEl)) {
           containerRef.current.removeChild(pyScriptEl);
@@ -75,19 +112,30 @@ export default function PyScriptDemo({ code, packages = [] }) {
     };
   }, [code, packages]);
 
+  // Define theme-aware styles
+  const containerStyle = {
+    margin: '1.5rem 0',
+    padding: '1rem',
+    border: '1px solid var(--border-color)',
+    borderRadius: '0.5rem',
+    backgroundColor: currentTheme === 'light' ? '#f8f9fa' : 'var(--bg-secondary)',
+    color: 'var(--text-primary)',
+    transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease'
+  };
+
+  const headerStyle = {
+    marginBottom: '0.5rem', 
+    fontWeight: 'bold',
+    color: 'var(--text-primary)'
+  };
+
   return (
     <div 
       ref={containerRef}
       className="pyscript-demo" 
-      style={{
-        margin: '1.5rem 0',
-        padding: '1rem',
-        border: '1px solid #ddd',
-        borderRadius: '0.5rem',
-        backgroundColor: '#f8f9fa'
-      }}
+      style={containerStyle}
     >
-      <div style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>Python Output:</div>
+      <div style={headerStyle}>Python Output:</div>
       <section className="pyscript"></section>
     </div>
   );
