@@ -25,14 +25,14 @@
 :root,
 [data-theme="dark"] {
 	/* Dark theme colors */
-	--accent: #666666;
-	--accent-light: #999999;
-	--accent-dark: #333333;
+	--accent: #A0A0A0;
+	--accent-light: #FFFFFF;
+	--accent-dark: #888888;
 	--text-primary: #FFFFFF;
-	--text-secondary: #CCCCCC;
+	--text-secondary: #E0E0E0;
 	--bg-primary: #111111;
 	--bg-secondary: #222222;
-	--border-color: rgba(150, 150, 150, 0.1);
+	--border-color: rgba(200, 200, 200, 0.3);
 	--box-shadow: none;
 }
 
@@ -40,7 +40,7 @@
 [data-theme="light"] {
 	/* Light theme colors */
 	--accent: #333333;
-	--accent-light: #666666;
+	--accent-light: #555555;
 	--accent-dark: #000000;
 	--text-primary: #111111;
 	--text-secondary: #444444;
@@ -447,4 +447,25 @@ hr {
 .post-excerpt {
 	margin-top: 1rem;
 	color: var(--text-secondary);
+}
+
+/* Utility classes for consistent theme-based styling */
+.text-primary {
+	color: var(--text-primary) !important;
+	opacity: 1 !important;
+}
+
+/* Site-specific utilities */
+.sr-only {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
 }

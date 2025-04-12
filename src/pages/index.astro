@@ -59,14 +59,14 @@ const websiteSchema = {
 	{/* Website Schema - properly included without an extra head tag */}
 	<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
 	<main>
-		<h1>Knowledge Base</h1>
-		<p class="description">Explore content by topic areas, discover connections, and find related information</p>
+		<h1 class="text-primary">Knowledge Base</h1>
+		<p class="description text-primary">Explore content by topic areas, discover connections, and find related information</p>
 		
 		<div class="tabs">
-			<a href={getPath('')} class="tab active">Content Map</a>
-			<a href={getPath('navigation/graph')} class="tab">Graph View</a>
-			<a href={getPath('navigation/tags')} class="tab">All Tags</a>
-			<a href={getPath('search')} class="tab">Search</a>
+			<a href={getPath('')} class="tab active text-primary">Content Map</a>
+			<a href={getPath('navigation/graph')} class="tab text-primary">Graph View</a>
+			<a href={getPath('navigation/tags')} class="tab text-primary">All Tags</a>
+			<a href={getPath('search')} class="tab text-primary">Search</a>
 		</div>
 		
 		<section id="mocs">
@@ -155,7 +155,8 @@ const websiteSchema = {
 	
 	.description {
 		margin-bottom: 2rem;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 	}
 	
 	.tabs {
@@ -167,19 +168,22 @@ const websiteSchema = {
 	.tab {
 		padding: 0.5rem 1rem;
 		text-decoration: none;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.85;
 		border-bottom: 2px solid transparent;
 		transition: all 0.3s ease;
 	}
 	
 	.tab:hover {
 		color: var(--text-primary);
+		opacity: 1;
 		border-bottom-color: var(--border-color);
 	}
 	
 	.tab.active {
 		color: var(--text-primary);
-		border-bottom-color: var(--accent-light);
+		opacity: 1;
+		border-bottom-color: var(--accent);
 	}
 	
 	.moc-grid {
@@ -206,7 +210,8 @@ const websiteSchema = {
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 1rem;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 	}
 	
 	.moc-icon {
@@ -309,13 +314,15 @@ const websiteSchema = {
 	
 	.post-date {
 		font-size: 0.85rem;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 		margin-bottom: 0.75rem;
 	}
 	
 	.post-description {
 		font-size: 0.95rem;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 		margin-bottom: 1rem;
 		line-height: 1.5;
 	}
@@ -331,13 +338,15 @@ const websiteSchema = {
 		padding: 0.25rem 0.5rem;
 		border-radius: 4px;
 		font-size: 0.8rem;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 		text-decoration: none;
 	}
 	
 	.tag:hover {
 		background-color: var(--accent-dark);
 		color: var(--text-primary);
+		opacity: 1;
 	}
 	
 	.empty-state {
@@ -346,7 +355,8 @@ const websiteSchema = {
 		padding: 2rem;
 		text-align: center;
 		margin: 2rem 0;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 	}
 	
 	@media (max-width: 768px) {
