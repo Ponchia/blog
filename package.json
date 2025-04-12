@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "test:a11y": "playwright test -c playwright-a11y.config.ts",
     "type-check": "tsc --noEmit",
-    "images:optimize": "node scripts/unified-image-optimizer.js"
+    "images:optimize": "node scripts/unified-image-optimizer.js",
+    "images:webp": "node scripts/convert-to-webp.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.2",

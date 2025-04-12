@@ -23,4 +23,41 @@
   Cache-Control: public, max-age=3600
 
 /*/
-  Cache-Control: public, max-age=3600 
+  Cache-Control: public, max-age=3600
+
+# Cache settings for Netlify/GitHub Pages
+# https://docs.netlify.com/routing/headers/
+
+# Set long cache times for static assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache all image formats for 1 year
+*.webp
+  Cache-Control: public, max-age=31536000
+*.avif
+  Cache-Control: public, max-age=31536000
+*.png
+  Cache-Control: public, max-age=31536000
+*.jpg
+  Cache-Control: public, max-age=31536000
+*.jpeg
+  Cache-Control: public, max-age=31536000
+*.svg
+  Cache-Control: public, max-age=31536000
+*.gif
+  Cache-Control: public, max-age=31536000
+
+# Cache fonts for 1 year
+/fonts/*
+  Cache-Control: public, max-age=31536000
+
+# Cache JS/CSS for 1 month (in case of updates)
+*.js
+  Cache-Control: public, max-age=2592000
+*.css
+  Cache-Control: public, max-age=2592000
+
+# Default cache for everything else (6 hours)
+/*
+  Cache-Control: public, max-age=21600 

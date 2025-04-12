@@ -11,30 +11,65 @@ interface Props {
   loading?: 'lazy' | 'eager';
   decoding?: 'async' | 'sync' | 'auto';
   format?: 'webp' | 'avif' | 'png' | 'jpeg';
+  sizes?: string;
+  isLCP?: boolean; // Is this the Largest Contentful Paint element?
 }
 
 const {
   src,
   alt,
-  width,
+  width = 800,
   height,
   class: className = '',
   loading = 'lazy',
   decoding = 'async',
   format = 'webp',
+  sizes = '(min-width: 1024px) 800px, 100vw',
+  isLCP = false,
 } = Astro.props;
+
+// For LCP images, override the loading strategy
+const effectiveLoading = isLCP ? 'eager' : loading;
+const fetchPriority = isLCP ? 'high' : 'auto';
+
+// Define breakpoints for responsive images
+const breakpoints = [320, 640, 960, 1200, 1600];
 
 // Process the image using sharp
 let optimizedImage = { src: typeof src === 'object' && 'src' in src ? src.src : src };
+let srcSet = '';
+
 try {
   // For ImageMetadata objects (import from assets)
   if (typeof src === 'object' && 'src' in src) {
-    optimizedImage = await getImage({
+    const mainImage = await getImage({
       src: src,
       width: width,
       height: height,
       format: format,
     });
+    
+    optimizedImage = mainImage;
+    
+    // Generate srcset for responsive images
+    const srcSetImages = await Promise.all(
+      breakpoints.map(async (bpWidth) => {
+        // Skip breakpoints larger than our target width
+        if (bpWidth > width) return null;
+        
+        const image = await getImage({
+          src: src,
+          width: bpWidth,
+          height: Math.round(bpWidth * (height || 1) / (width || 1)),
+          format: format,
+        });
+        
+        return `${image.src} ${bpWidth}w`;
+      })
+    );
+    
+    // Filter out any null entries and join with commas
+    srcSet = srcSetImages.filter(Boolean).join(', ');
   }
   // For string URLs (public directory or external)
   else if (typeof src === 'string') {
@@ -42,8 +77,21 @@ try {
       // External URL - can't optimize these with getImage
       optimizedImage = { src };
     } else {
-      // Simply use the original path, images should be in public directory
-      optimizedImage = { src };
+      // For public directory images, we can't use getImage directly
+      // but we can ensure we're returning the right format 
+      
+      // First remove any leading slash
+      const cleanPath = src.startsWith('/') ? src.substring(1) : src;
+      
+      // Check if we're requesting WebP format and the source isn't already WebP
+      if (format === 'webp' && !cleanPath.endsWith('.webp')) {
+        // Try to use a .webp version if one exists with the same name
+        const webpPath = cleanPath.replace(/\.(png|jpe?g|gif)$/i, '.webp');
+        optimizedImage = { src: `/${webpPath}` };
+      } else {
+        // Just use the path as is
+        optimizedImage = { src: `/${cleanPath}` };
+      }
     }
   }
 } catch (error) {
@@ -59,6 +107,9 @@ try {
   width={width}
   height={height}
   class={className}
-  loading={loading}
+  loading={effectiveLoading}
   decoding={decoding}
+  fetchpriority={fetchPriority}
+  sizes={sizes}
+  srcset={srcSet || undefined}
 />

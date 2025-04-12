@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 import ViewCounter from '../../components/ViewCounter.astro';
 import { render } from 'astro:content';
+import EnhancedOptimizedImage from '../../components/EnhancedOptimizedImage.astro';
 
 const postsData = await getCollection('blog', ({ data }) => {
   // Filter out posts with draft: true
@@ -103,12 +104,17 @@ function getPathWithBase(path: string): string {
                 <a href={postUrl} class="post-card">
                   <div class="card-image-container">
                     {imgSrc && (
-                      <img
+                      <EnhancedOptimizedImage
                         width={720}
                         height={360}
                         src={imgSrc}
                         alt={post.data.title}
-                        loading="lazy"
+                        loading={index === 0 ? "eager" : "lazy"}
+                        format="webp"
+                        isLCP={index === 0}
+                        sizes={index === 0 ? 
+                          "(min-width: 900px) 720px, 100vw" : 
+                          "(min-width: 768px) 720px, 100vw"}
                       />
                     )}
                   </div>

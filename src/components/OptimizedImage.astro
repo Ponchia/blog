@@ -42,8 +42,22 @@ try {
       // External URL - can't optimize these with getImage
       optimizedImage = { src };
     } else {
-      // Simply use the original path, images should be in public directory
-      optimizedImage = { src };
+      // For public directory images, we can't use getImage directly
+      // but we can ensure we're returning the right format 
+      // by checking if WebP version exists in public
+      
+      // First remove any leading slash
+      const cleanPath = src.startsWith('/') ? src.substring(1) : src;
+      
+      // Check if we're requesting WebP format and the source isn't already WebP
+      if (format === 'webp' && !cleanPath.endsWith('.webp')) {
+        // Try to use a .webp version if one exists with the same name
+        const webpPath = cleanPath.replace(/\.(png|jpe?g|gif)$/i, '.webp');
+        optimizedImage = { src: `/${webpPath}` };
+      } else {
+        // Just use the path as is
+        optimizedImage = { src: `/${cleanPath}` };
+      }
     }
   }
 } catch (error) {
@@ -61,4 +75,5 @@ try {
   class={className}
   loading={loading}
   decoding={decoding}
+  fetchpriority={loading === 'eager' ? 'high' : 'auto'}
 />
