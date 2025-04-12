@@ -4,13 +4,20 @@
 User-agent: *
 Allow: /
 
-# Sitemap location
+# Optimize crawl efficiency - prevent crawling of search result pages and tag pages
+Disallow: /search
+Disallow: /tags
+
+# Prevent duplicate content issues
+Disallow: /*?*
+
+# Sitemap location (helps search engines discover all pages)
 Sitemap: https://brontolotto.observer/sitemap-index.xml
 
-# Optional: Specify crawl delay for specific bots
+# Optional: Specify crawl rate for specific bots
+# Note: Most modern search engines ignore this directive and use their own algorithms
 # User-agent: Googlebot
 # Crawl-delay: 1
 
-# Optional: Disallow specific paths
-# Disallow: /private/
-# Disallow: /drafts/
+# Host directive (helps with canonical domain)
+Host: brontolotto.observer

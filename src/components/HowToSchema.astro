@@ -1,0 +1,168 @@
+---
+/**
+ * HowTo Schema Component - Generates structured data for tutorial/how-to content
+ * 
+ * Usage:
+ * <HowToSchema 
+ *   name="How to Build an Astro Blog"
+ *   description="A step-by-step guide to building a blog with Astro"
+ *   image="https://example.com/hero.jpg"
+ *   steps={[
+ *     { name: "Install Astro", text: "Run npm create astro@latest" },
+ *     { name: "Create content", text: "Add markdown files to content/blog" }
+ *   ]}
+ * />
+ */
+
+import JsonLD from './JsonLD.astro';
+
+interface Step {
+  name: string;
+  text: string;
+  image?: string;
+  url?: string;
+}
+
+interface Props {
+  name: string;
+  description: string;
+  image?: string;
+  totalTime?: string; // ISO 8601 duration format, e.g. "PT2H30M" (2 hours, 30 minutes)
+  steps: Step[];
+  tools?: string[];
+  supplies?: string[];
+}
+
+const { name, description, image, totalTime, steps, tools = [], supplies = [] } = Astro.props;
+
+// Generate HowTo schema
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name,
+  description,
+  image: image || undefined,
+  totalTime: totalTime || undefined,
+  
+  // Format the steps according to Schema.org
+  step: steps.map((step, index) => ({
+    '@type': 'HowToStep',
+    url: step.url || `#step-${index + 1}`,
+    name: step.name,
+    text: step.text,
+    image: step.image || undefined,
+    position: index + 1
+  })),
+  
+  // Optional tools
+  ...(tools.length > 0 && {
+    tool: tools.map(tool => ({
+      '@type': 'HowToTool',
+      name: tool
+    }))
+  }),
+  
+  // Optional supplies/materials
+  ...(supplies.length > 0 && {
+    supply: supplies.map(supply => ({
+      '@type': 'HowToSupply',
+      name: supply
+    }))
+  })
+};
+---
+
+<!-- Render schema with JsonLD component -->
+<JsonLD data={howToSchema} />
+
+<!-- Render a visible step-by-step guide for users -->
+<div class="howto-guide">
+  <h2 class="howto-title">{name}</h2>
+  <p class="howto-description">{description}</p>
+  
+  {tools.length > 0 && (
+    <div class="howto-tools">
+      <h3>What You'll Need</h3>
+      <ul>
+        {tools.map(tool => <li>{tool}</li>)}
+      </ul>
+    </div>
+  )}
+  
+  {supplies.length > 0 && (
+    <div class="howto-supplies">
+      <h3>Materials</h3>
+      <ul>
+        {supplies.map(supply => <li>{supply}</li>)}
+      </ul>
+    </div>
+  )}
+  
+  <div class="howto-steps">
+    <h3>Steps</h3>
+    <ol>
+      {steps.map((step, index) => (
+        <li id={`step-${index + 1}`} class="howto-step">
+          <h4>{step.name}</h4>
+          <p set:html={step.text} />
+          {step.image && <img src={step.image} alt={step.name} />}
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<style>
+  .howto-guide {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-secondary);
+  }
+  
+  .howto-title {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .howto-description {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  .howto-tools, 
+  .howto-supplies {
+    margin-bottom: 1.5rem;
+  }
+  
+  .howto-tools h3,
+  .howto-supplies h3,
+  .howto-steps h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .howto-step {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed var(--border-color);
+  }
+  
+  .howto-step:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  .howto-step h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .howto-step img {
+    margin-top: 1rem;
+    max-width: 100%;
+    border-radius: 4px;
+  }
+</style> 

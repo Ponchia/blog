@@ -1,0 +1,63 @@
+---
+/**
+ * DefinitionBlock Component - Creates a visually distinct definition block
+ * that's optimized for Google's featured snippets
+ * 
+ * Usage example:
+ * <DefinitionBlock term="Astro" definition="A modern static site builder that delivers lightning-fast performance." />
+ */
+
+interface Props {
+  term: string;
+  definition: string;
+  id?: string;
+}
+
+const { term, definition, id } = Astro.props;
+---
+
+<div class="definition-block" id={id || term.toLowerCase().replace(/\s+/g, '-')}>
+  <h3 class="definition-term">What is {term}?</h3>
+  <p class="definition-text" set:html={definition} />
+</div>
+
+<style>
+  .definition-block {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-secondary);
+  }
+  
+  .definition-term {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  
+  .definition-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+  
+  .definition-text :global(strong) {
+    color: var(--accent);
+  }
+  
+  @media (max-width: 768px) {
+    .definition-block {
+      padding: 1.25rem;
+    }
+    
+    .definition-term {
+      font-size: 1.2rem;
+    }
+    
+    .definition-text {
+      font-size: 1rem;
+    }
+  }
+</style> 

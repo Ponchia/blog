@@ -8,6 +8,8 @@ import Comments from '../components/Comments';
 import ViewCounter from '../components/ViewCounter.astro';
 import EnhancedOptimizedImage from '../components/EnhancedOptimizedImage.astro';
 import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import JsonLD from '../components/JsonLD.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
 
@@ -20,6 +22,7 @@ const {
   gitLastModified,
   heroImage,
   minutesRead,
+  tags,
 } = Astro.props;
 
 // Helper function to ensure we have a valid Date object
@@ -65,11 +68,54 @@ const heroImagePath = getHeroImagePath(heroImage);
 
 // Get the current path for view counter
 const currentPath = Astro.url.pathname;
+
+// Current slug for related posts
+const currentSlug = currentPath.split('/').pop() || '';
+
+// Generate schema data for JsonLD component
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  '@id': Astro.url.toString(),
+  headline: title,
+  description: description,
+  image: heroImagePath ? new URL(heroImagePath, Astro.site).toString() : undefined,
+  datePublished: displayPubDate?.toISOString() || undefined,
+  dateModified:
+    displayUpdatedDate?.toISOString() || displayPubDate?.toISOString() || undefined,
+  author: {
+    '@type': 'Person',
+    '@id': `${Astro.site?.toString() || 'https://brontolotto.observer'}#author`,
+    name: 'Ponchia',
+    url: Astro.site?.toString() || 'https://brontolotto.observer',
+  },
+  publisher: {
+    '@type': 'Organization',
+    '@id': `${Astro.site?.toString() || 'https://brontolotto.observer'}#organization`,
+    name: "Ponchia's Blog",
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString(),
+    },
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.url.toString(),
+  },
+  isPartOf: {
+    '@type': 'Blog',
+    '@id': `${new URL('/blog', Astro.site).toString()}`,
+    name: "Ponchia's Blog"
+  },
+  articleBody: description,
+  keywords: tags?.join(', '),
+  wordCount: minutesRead ? parseInt(minutesRead) * 200 : undefined,
+};
 ---
 
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead title={title} description={description} keywords={tags?.join(', ')} />
 
     <!-- Add breadcrumb schema -->
     <BreadcrumbSchema
@@ -80,40 +126,8 @@ const currentPath = Astro.url.pathname;
       ]}
     />
 
-    <!-- Enhanced Schema.org structured data for BlogPosting -->
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: title,
-        description: description,
-        image: heroImagePath ? new URL(heroImagePath, Astro.site).toString() : undefined,
-        datePublished: displayPubDate?.toISOString() || undefined,
-        dateModified:
-          displayUpdatedDate?.toISOString() || displayPubDate?.toISOString() || undefined,
-        author: {
-          '@type': 'Person',
-          name: 'Ponchia',
-          url: Astro.site?.toString() || 'https://brontolotto.observer',
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: "Ponchia's Blog",
-          logo: {
-            '@type': 'ImageObject',
-            url: new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString(),
-          },
-        },
-        mainEntityOfPage: {
-          '@type': 'WebPage',
-          '@id': Astro.url.toString(),
-        },
-        articleBody: 'This is a blog post about ' + description,
-        keywords: Astro.props.tags?.join(', '),
-        wordCount: minutesRead ? parseInt(minutesRead) * 200 : undefined,
-      })}
-    />
+    <!-- Enhanced Schema.org structured data using JsonLD component -->
+    <JsonLD data={schemaData} />
 
     <!-- Theme initialization script - must be in head to avoid FOUC -->
     <script is:inline>
@@ -303,6 +317,10 @@ const currentPath = Astro.url.pathname;
         <div class="prose blog-content high-contrast">
           <slot />
         </div>
+        
+        <!-- Add related posts section -->
+        {tags && <RelatedPosts currentSlug={currentSlug} tags={tags} />}
+        
         <div class="comments-section">
           <Comments client:idle />
         </div>

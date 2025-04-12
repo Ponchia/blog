@@ -1,0 +1,112 @@
+---
+/**
+ * RelatedPosts Component - Shows related posts based on matching tags
+ * Usage:
+ * <RelatedPosts currentSlug={post.slug} tags={post.data.tags} />
+ */
+import { getCollection } from 'astro:content';
+
+interface Props {
+  currentSlug: string;
+  tags?: string[];
+  limit?: number;
+}
+
+const { currentSlug, tags = [], limit = 3 } = Astro.props;
+
+// Get all blog posts
+const allPosts = await getCollection('blog');
+
+// Find related posts based on matching tags
+const relatedPosts = allPosts
+  .filter(post => 
+    // Not the current post
+    post.slug !== currentSlug && 
+    // Has at least one matching tag
+    post.data.tags?.some(tag => tags.includes(tag))
+  )
+  // Sort by date (newest first)
+  .sort((a, b) => {
+    const dateA = new Date(a.data.pubDate || a.data.updatedDate || '');
+    const dateB = new Date(b.data.pubDate || b.data.updatedDate || '');
+    return dateB.getTime() - dateA.getTime();
+  })
+  // Limit to specified number
+  .slice(0, limit);
+---
+
+{relatedPosts.length > 0 && (
+  <div class="related-posts">
+    <h3>Related Posts</h3>
+    <ul>
+      {relatedPosts.map(post => (
+        <li>
+          <a href={`/blog/${post.slug}`}>
+            {post.data.title}
+          </a>
+          <span class="post-date">
+            {new Date(post.data.pubDate || post.data.updatedDate || '').toLocaleDateString(
+              'en-US',
+              { year: 'numeric', month: 'short', day: 'numeric' }
+            )}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
+<style>
+  .related-posts {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .related-posts h3 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .related-posts ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .related-posts li {
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  
+  .related-posts a {
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  
+  .related-posts a:hover {
+    text-decoration: underline;
+  }
+  
+  .post-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-left: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .related-posts li {
+      flex-direction: column;
+      margin-bottom: 1rem;
+    }
+    
+    .post-date {
+      margin-left: 0;
+      font-size: 0.8rem;
+    }
+  }
+</style> 

@@ -1,0 +1,15 @@
+---
+/**
+ * JsonLD Component - for adding structured data to pages
+ * Usage:
+ * <JsonLD data={schemaData} />
+ */
+
+interface Props {
+  data: Record<string, any>;
+}
+
+const { data } = Astro.props;
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(data)}></script> 
