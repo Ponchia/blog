@@ -54,19 +54,38 @@ The complete technology stack includes:
 
 One of the standout features is the knowledge graph visualization, powered by Force Graph:
 
-<div style={{ height: '400px', marginBottom: '2rem', border: '1px solid var(--border-color)', borderRadius: '0.5rem', overflow: 'hidden', position: 'relative' }}>
-  <GraphView 
+<div
+  style={{
+    height: '400px',
+    marginBottom: '2rem',
+    border: '1px solid var(--border-color)',
+    borderRadius: '0.5rem',
+    overflow: 'hidden',
+    position: 'relative',
+  }}
+>
+  <GraphView
     client:only="react"
     graphData={{
       nodes: [
-        { id: 'why-i-created-this-blog', label: 'Why I Created This Blog', type: 'post', status: 'evergreen' },
-        { id: 'react-components-mdx', label: 'React Components in MDX', type: 'post', status: 'evergreen' },
+        {
+          id: 'why-i-created-this-blog',
+          label: 'Why I Created This Blog',
+          type: 'post',
+          status: 'evergreen',
+        },
+        {
+          id: 'react-components-mdx',
+          label: 'React Components in MDX',
+          type: 'post',
+          status: 'evergreen',
+        },
         { id: 'moc-Getting Started', label: 'Getting Started', type: 'moc' },
         { id: 'moc-Behind the Scenes', label: 'Behind the Scenes', type: 'moc' },
         { id: 'tag-astro', label: 'astro', type: 'tag' },
         { id: 'tag-blogging', label: 'blogging', type: 'tag' },
         { id: 'tag-web development', label: 'web development', type: 'tag' },
-        { id: 'tag-open source', label: 'open source', type: 'tag' }
+        { id: 'tag-open source', label: 'open source', type: 'tag' },
       ],
       links: [
         { source: 'why-i-created-this-blog', target: 'moc-Getting Started', type: 'in-moc' },
@@ -75,8 +94,8 @@ One of the standout features is the knowledge graph visualization, powered by Fo
         { source: 'why-i-created-this-blog', target: 'tag-blogging', type: 'tagged' },
         { source: 'why-i-created-this-blog', target: 'tag-web development', type: 'tagged' },
         { source: 'why-i-created-this-blog', target: 'tag-open source', type: 'tagged' },
-        { source: 'why-i-created-this-blog', target: 'react-components-mdx', type: 'related' }
-      ]
+        { source: 'why-i-created-this-blog', target: 'react-components-mdx', type: 'related' },
+      ],
     }}
   />
 </div>
@@ -144,9 +163,9 @@ Since the blog is hosted on GitHub Pages under a subpath (`/blog`), all internal
 ```javascript
 // astro.config.mjs
 export default defineConfig({
-    site: 'https://ponchia.github.io',
-    base: isProduction ? '/blog' : '',
-    // ...
+  site: 'https://ponchia.github.io',
+  base: isProduction ? '/blog' : '',
+  // ...
 });
 ```
 
@@ -188,4 +207,4 @@ I invite you to explore the blog, check out the code, and perhaps even contribut
 
 Happy coding!
 
-{/* Updated to ensure Git history is tracked */} 
+{/* Updated to ensure Git history is tracked */}

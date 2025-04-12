@@ -19,7 +19,18 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
 ---
 
 <span class="view-counter">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-icon">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="view-icon"
+  >
     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
     <circle cx="12" cy="12" r="3"></circle>
   </svg>
@@ -34,17 +45,17 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
     color: var(--accent-light, #6b7280);
     font-size: 0.875rem;
   }
-  
+
   .view-icon {
     opacity: 0.7;
   }
-  
+
   @media (max-width: 640px) {
     .view-icon {
       width: 14px;
       height: 14px;
     }
-    
+
     .view-counter {
       font-size: 0.75rem;
     }
@@ -55,8 +66,8 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
   // Declare type for GoatCounter
   interface GoatCounter {
     count: (opts: { path?: string; event?: boolean; title?: string }) => void;
-    visit_count: (opts: { 
-      append?: string; 
+    visit_count: (opts: {
+      append?: string;
       path?: string;
       type?: 'html' | 'svg' | 'png';
       no_branding?: boolean;
@@ -65,7 +76,7 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
     }) => void;
     get_data: () => Record<string, any>;
   }
-  
+
   // Extend the Window interface to include goatcounter
   declare global {
     interface Window {
@@ -76,22 +87,22 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
   // Client-side visitor count
   document.addEventListener('DOMContentLoaded', () => {
     const counters = document.querySelectorAll('.view-counter');
-    
+
     counters.forEach(counter => {
       const countSpan = counter.querySelector('.view-count');
       const path = countSpan?.getAttribute('data-path') || '';
-      
+
       // Wait for goatcounter to be available
       const checkGoatCounter = setInterval(() => {
         if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
           clearInterval(checkGoatCounter);
-          
+
           if (countSpan instanceof HTMLElement) {
             updateCount(path, countSpan);
           }
         }
       }, 100);
-      
+
       // Set a timeout to ensure we don't wait forever
       setTimeout(() => {
         clearInterval(checkGoatCounter);
@@ -103,20 +114,20 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
       }, 5000);
     });
   });
-  
+
   // Function to fetch the count from JSON endpoint
   async function updateCount(path: string, countElement: HTMLElement) {
     if (!path) return;
-    
+
     try {
       const pathWithoutLeadingSlash = path.startsWith('/') ? path.substring(1) : path;
       const url = `https://ponchia.goatcounter.com/counter//${pathWithoutLeadingSlash}.json`;
-      
+
       const response = await fetch(url);
-      
+
       if (response.ok) {
         const data = await response.json();
-        
+
         if (data.count) {
           countElement.textContent = data.count;
         } else {
@@ -129,4 +140,4 @@ if (normalizedPath.includes('/blog/') && !normalizedPath.startsWith('/blog/blog/
       countElement.textContent = '1';
     }
   }
-</script> 
+</script>

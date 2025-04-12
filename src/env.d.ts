@@ -1,2 +1,2 @@
 /// <reference types="astro/client" />
-/// <reference types="@astrojs/mdx/client" /> 
+/// <reference types="@astrojs/mdx/client" />

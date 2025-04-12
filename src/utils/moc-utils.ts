@@ -10,7 +10,7 @@ type BlogPost = CollectionEntry<'blog'>;
 export function getPostSlug(post: BlogPost): string {
   // If post has any slug property (from Collection Entry), use it
   if ('slug' in post && typeof post.slug === 'string') return post.slug;
-  
+
   // Otherwise extract from id which is typically in format like 'src/content/blog/first-post.md'
   if (post.id) {
     const parts = post.id.split('/');
@@ -18,7 +18,7 @@ export function getPostSlug(post: BlogPost): string {
     // Remove file extension
     return filename.replace(/\.(md|mdx)$/, '');
   }
-  
+
   // Fallback to empty string if we can't determine
   return '';
 }
@@ -28,10 +28,7 @@ export function getPostSlug(post: BlogPost): string {
  */
 export function getPostsByMoc(allPosts: BlogPost[], mocName: string): BlogPost[] {
   // Make sure we're only returning posts that have the MOC
-  return allPosts.filter(post => 
-    post.data.mocs && 
-    post.data.mocs.includes(mocName)
-  );
+  return allPosts.filter(post => post.data.mocs && post.data.mocs.includes(mocName));
 }
 
 /**
@@ -52,19 +49,15 @@ export function getAllMocs(allPosts: BlogPost[]): string[] {
  */
 export function getRelatedPosts(allPosts: BlogPost[], currentPost: BlogPost): BlogPost[] {
   if (!currentPost.data.related) return [];
-  
-  return allPosts.filter(post => 
-    currentPost.data.related?.includes(getPostSlug(post))
-  );
+
+  return allPosts.filter(post => currentPost.data.related?.includes(getPostSlug(post)));
 }
 
 /**
  * Get posts with a specific tag
  */
 export function getPostsByTag(allPosts: BlogPost[], tag: string): BlogPost[] {
-  return allPosts.filter(post => 
-    post.data.tags && post.data.tags.includes(tag)
-  );
+  return allPosts.filter(post => post.data.tags && post.data.tags.includes(tag));
 }
 
 /**
@@ -101,7 +94,7 @@ export function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 }
 
@@ -111,31 +104,31 @@ export function formatDate(date: Date): string {
  */
 export function safeFormatDate(date: Date | undefined | null, format = 'short'): string {
   if (!date) return '';
-  
+
   // Convert string to Date if needed
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   // Ensure it's a valid date
   if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
     return '';
   }
-  
+
   try {
     if (format === 'short') {
       return dateObj.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     } else {
       return dateObj.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       });
     }
   } catch (e) {
     console.error('Error formatting date:', e);
     return '';
   }
-} 
+}

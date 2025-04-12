@@ -89,7 +89,7 @@ The blockquote element represents content that is quoted from another source, op
 
 | Italics   | Bold     | Code   |
 | --------- | -------- | ------ |
-| *italics* | **bold** | `code` |
+| _italics_ | **bold** | `code` |
 
 ## Code Blocks
 
@@ -97,7 +97,7 @@ The blockquote element represents content that is quoted from another source, op
 
 we can use 3 backticks ``` in new line and write snippet and close with 3 backticks on new line and to highlight language specific syntax, write one word of language name after first 3 backticks, for eg. html, javascript, css, markdown, typescript, txt, bash
 
-```markdown
+````markdown
 ```html
 <!doctype html>
 <html lang="en">
@@ -110,7 +110,9 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
   </body>
 </html>
 ```
-```
+````
+
+````
 
 ### Output
 
@@ -125,7 +127,7 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
     <p>Test</p>
   </body>
 </html>
-```
+````
 
 ## List Types
 
@@ -157,9 +159,9 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
 
 #### Output
 
-* List item
-* Another item
-* And another item
+- List item
+- Another item
+- And another item
 
 ### Nested list
 
@@ -177,13 +179,13 @@ we can use 3 backticks ``` in new line and write snippet and close with 3 backti
 
 #### Output
 
-* Fruit
-  * Apple
-  * Orange
-  * Banana
-* Dairy
-  * Milk
-  * Cheese
+- Fruit
+  - Apple
+  - Orange
+  - Banana
+- Dairy
+  - Milk
+  - Cheese
 
 ## Other Elements — abbr, sub, sup, kbd, mark
 

@@ -11,14 +11,14 @@ export default {
           secondary: '#F5F5F5',
           text: {
             primary: '#111111',
-            secondary: '#444444'
+            secondary: '#444444',
           },
           accent: {
             DEFAULT: '#333333',
             light: '#666666',
-            dark: '#000000'
+            dark: '#000000',
           },
-          border: 'rgba(0, 0, 0, 0.1)'
+          border: 'rgba(0, 0, 0, 0.1)',
         },
         // Dark theme colors
         dark: {
@@ -26,15 +26,15 @@ export default {
           secondary: '#222222',
           text: {
             primary: '#FFFFFF',
-            secondary: '#CCCCCC'
+            secondary: '#CCCCCC',
           },
           accent: {
             DEFAULT: '#666666',
             light: '#999999',
-            dark: '#333333'
+            dark: '#333333',
           },
-          border: 'rgba(150, 150, 150, 0.1)'
-        }
+          border: 'rgba(150, 150, 150, 0.1)',
+        },
       },
       typography: {
         DEFAULT: {
@@ -56,17 +56,15 @@ export default {
               fontFamily: '"Playfair Display", serif',
             },
             'code::before': {
-              content: '""'
+              content: '""',
             },
             'code::after': {
-              content: '""'
-            }
-          }
-        }
-      }
-    }
+              content: '""',
+            },
+          },
+        },
+      },
+    },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ]
-} 
+  plugins: [require('@tailwindcss/typography')],
+};

@@ -5,8 +5,8 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 interface Props {
-	title?: string;
-	description?: string;
+  title?: string;
+  description?: string;
 }
 
 const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
@@ -14,92 +14,101 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		
-		<!-- Schema.org structured data for the Organization -->
-		<script type="application/ld+json" set:html={JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "Organization",
-			"name": "Ponchia's Blog",
-			"url": Astro.site?.toString(),
-			"logo": new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString(),
-			"description": SITE_DESCRIPTION,
-			"sameAs": [
-				"https://github.com/ponchia/blog"
-			]
-		})}></script>
-		
-		<!-- WebSite schema for enhanced SEO -->
-		<script type="application/ld+json" set:html={JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "WebSite",
-			"name": SITE_TITLE,
-			"url": Astro.site?.toString(),
-			"description": SITE_DESCRIPTION,
-			"potentialAction": {
-				"@type": "SearchAction",
-				"target": new URL(`${import.meta.env.BASE_URL}search?q={search_term_string}`, Astro.site).toString(),
-				"query-input": "required name=search_term_string"
-			}
-		})}></script>
-		
-		<!-- Theme initialization script - must be in head to avoid FOUC -->
-		<script is:inline>
-			// Get theme from localStorage or system preference
-			function getTheme() {
-				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-					return localStorage.getItem('theme');
-				}
-				return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-			}
-			
-			// Apply theme to document immediately
-			const theme = getTheme();
-			document.documentElement.setAttribute('data-theme', theme);
-		</script>
-	</head>
-	<body>
-		<Header />
-		<main class="fade-in">
-			<slot />
-		</main>
-		<Footer />
+  <head>
+    <BaseHead title={title} description={description} />
 
-		<!-- Search shortcut script -->
-		<script>
-			// Add keyboard shortcut for search (Ctrl+K or Cmd+K)
-			document.addEventListener('keydown', (e) => {
-				// Check if Ctrl/Cmd + K is pressed
-				if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-					e.preventDefault();
-					
-					// Determine the base URL
-					const base = import.meta.env.BASE_URL || '';
-					const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
-					
-					// Navigate to search page
-					window.location.href = `${baseWithSlash}search`;
-				}
-			});
-		</script>
+    <!-- Schema.org structured data for the Organization -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: "Ponchia's Blog",
+        url: Astro.site?.toString(),
+        logo: new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString(),
+        description: SITE_DESCRIPTION,
+        sameAs: ['https://github.com/ponchia/blog'],
+      })}
+    />
 
-		<!-- GoatCounter Analytics -->
-		<script data-goatcounter="https://ponchia.goatcounter.com/count" defer src="//gc.zgo.at/count.js"></script>
-	</body>
+    <!-- WebSite schema for enhanced SEO -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: SITE_TITLE,
+        url: Astro.site?.toString(),
+        description: SITE_DESCRIPTION,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: new URL(
+            `${import.meta.env.BASE_URL}search?q={search_term_string}`,
+            Astro.site
+          ).toString(),
+          'query-input': 'required name=search_term_string',
+        },
+      })}
+    />
+
+    <!-- Theme initialization script - must be in head to avoid FOUC -->
+    <script is:inline>
+      // Get theme from localStorage or system preference
+      function getTheme() {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      // Apply theme to document immediately
+      const theme = getTheme();
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
+  </head>
+  <body>
+    <Header />
+    <main class="fade-in">
+      <slot />
+    </main>
+    <Footer />
+
+    <!-- Search shortcut script -->
+    <script>
+      // Add keyboard shortcut for search (Ctrl+K or Cmd+K)
+      document.addEventListener('keydown', e => {
+        // Check if Ctrl/Cmd + K is pressed
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+
+          // Determine the base URL
+          const base = import.meta.env.BASE_URL || '';
+          const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+
+          // Navigate to search page
+          window.location.href = `${baseWithSlash}search`;
+        }
+      });
+    </script>
+
+    <!-- GoatCounter Analytics -->
+    <script
+      data-goatcounter="https://ponchia.goatcounter.com/count"
+      defer
+      src="//gc.zgo.at/count.js"></script>
+    <style>
+      main {
+        width: 100%;
+        max-width: var(--content-width);
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+      }
+
+      @media (max-width: 768px) {
+        main {
+          padding: 2rem 1rem;
+        }
+      }
+    </style>
+  </body>
 </html>
-
-<style>
-	main {
-		width: 100%;
-		max-width: var(--content-width);
-		margin: 0 auto;
-		padding: 3rem 1.5rem;
-	}
-
-	@media (max-width: 768px) {
-		main {
-			padding: 2rem 1rem;
-		}
-	}
-</style> 

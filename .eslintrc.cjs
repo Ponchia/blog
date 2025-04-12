@@ -34,7 +34,10 @@ module.exports = {
   rules: {
     // Common rules
     'no-console': ['warn', { allow: ['warn', 'error'] }],
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' },
+    ],
   },
   env: {
     browser: true,
@@ -52,4 +55,4 @@ module.exports = {
     'postcss.config.*',
     'copy-images.js',
   ],
-}; 
+};

@@ -4,9 +4,9 @@
 import '../styles/global.css';
 
 interface Props {
-	title: string;
-	description: string;
-	image?: string;
+  title: string;
+  description: string;
+  image?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -14,12 +14,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 
 // Ensure image URL includes base path
-const imageUrl = image.startsWith('http') ? image : `${import.meta.env.BASE_URL}${image.startsWith('/') ? image.slice(1) : image}`;
+const imageUrl = image.startsWith('http')
+  ? image
+  : `${import.meta.env.BASE_URL}${image.startsWith('/') ? image.slice(1) : image}`;
 
 // Create consistent path helper for assets
 const assetPath = (path: string) => {
-	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-	return `${import.meta.env.BASE_URL}${cleanPath}`;
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${import.meta.env.BASE_URL}${cleanPath}`;
 };
 ---
 
@@ -29,18 +31,42 @@ const assetPath = (path: string) => {
 <link rel="icon" type="image/svg+xml" href={assetPath('favicon.svg')} />
 <link rel="sitemap" href={assetPath('sitemap-index.xml')} />
 <link
-	rel="alternate"
-	type="application/rss+xml"
-	title={`${title} RSS Feed`}
-	href={assetPath('rss.xml')}
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${title} RSS Feed`}
+  href={assetPath('rss.xml')}
 />
 <meta name="generator" content={Astro.generator} />
 
 <!-- Font preloads for improved performance -->
-<link rel="preload" href={assetPath('fonts/atkinson-regular.woff')} as="font" type="font/woff" crossorigin />
-<link rel="preload" href={assetPath('fonts/atkinson-bold.woff')} as="font" type="font/woff" crossorigin />
-<link rel="preload" href={assetPath('fonts/playfair-regular.woff2')} as="font" type="font/woff2" crossorigin />
-<link rel="preload" href={assetPath('fonts/playfair-bold.woff2')} as="font" type="font/woff2" crossorigin />
+<link
+  rel="preload"
+  href={assetPath('fonts/atkinson-regular.woff')}
+  as="font"
+  type="font/woff"
+  crossorigin
+/>
+<link
+  rel="preload"
+  href={assetPath('fonts/atkinson-bold.woff')}
+  as="font"
+  type="font/woff"
+  crossorigin
+/>
+<link
+  rel="preload"
+  href={assetPath('fonts/playfair-regular.woff2')}
+  as="font"
+  type="font/woff2"
+  crossorigin
+/>
+<link
+  rel="preload"
+  href={assetPath('fonts/playfair-bold.woff2')}
+  as="font"
+  type="font/woff2"
+  crossorigin
+/>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

@@ -30,20 +30,22 @@ posts.forEach(post => {
 
 // Get all MOCs and sort by post count for display
 const mocs = getAllMocs(posts);
-const mocsByPostCount = mocs.map(moc => {
-  return {
-    name: moc,
-    count: getPostsByMoc(posts, moc).length,
-    posts: getPostsByMoc(posts, moc)
-  };
-}).sort((a, b) => b.count - a.count);
+const mocsByPostCount = mocs
+  .map(moc => {
+    return {
+      name: moc,
+      count: getPostsByMoc(posts, moc).length,
+      posts: getPostsByMoc(posts, moc),
+    };
+  })
+  .sort((a, b) => b.count - a.count);
 ---
 
 <Layout title="Map of Content">
   <main>
     <h1>Map of Content</h1>
     <p class="description">Explore content by topic areas, discover connections</p>
-    
+
     <div class="tabs">
       <a href={getPath('')} class="tab">Home</a>
       <a href={getPath('navigation/map')} class="tab active">Content Map</a>
@@ -51,45 +53,49 @@ const mocsByPostCount = mocs.map(moc => {
       <a href={getPath('navigation/tags')} class="tab">All Tags</a>
       <a href={getPath('search')} class="tab">Search</a>
     </div>
-    
+
     <section id="mocs">
-      {mocsByPostCount.length === 0 ? (
-        <div class="empty-state">
-          <p>No Maps of Content (MOCs) found. Start by adding MOCs to your posts.</p>
-        </div>
-      ) : (
-        <div class="moc-grid">
-          {mocsByPostCount.map(moc => (
-            <div class="moc-card">
-              <h2 class="moc-title">
-                <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>{moc.name}</a>
-              </h2>
-              <div class="moc-meta">
-                <span class="moc-posts-count">{moc.count} {moc.count === 1 ? 'post' : 'posts'}</span>
-                <span class="moc-icon">📚</span>
+      {
+        mocsByPostCount.length === 0 ? (
+          <div class="empty-state">
+            <p>No Maps of Content (MOCs) found. Start by adding MOCs to your posts.</p>
+          </div>
+        ) : (
+          <div class="moc-grid">
+            {mocsByPostCount.map(moc => (
+              <div class="moc-card">
+                <h2 class="moc-title">
+                  <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>{moc.name}</a>
+                </h2>
+                <div class="moc-meta">
+                  <span class="moc-posts-count">
+                    {moc.count} {moc.count === 1 ? 'post' : 'posts'}
+                  </span>
+                  <span class="moc-icon">📚</span>
+                </div>
+
+                <ul class="moc-post-list">
+                  {moc.posts.slice(0, 3).map(post => (
+                    <li>
+                      <a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
+                        <span class={`status-dot ${post.data.status || 'fleeting'}`} />
+                        {post.data.title}
+                      </a>
+                    </li>
+                  ))}
+                  {moc.posts.length > 3 && (
+                    <li class="more-posts">
+                      <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>
+                        + {moc.posts.length - 3} more...
+                      </a>
+                    </li>
+                  )}
+                </ul>
               </div>
-              
-              <ul class="moc-post-list">
-                {moc.posts.slice(0, 3).map(post => (
-                  <li>
-                    <a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
-                      <span class={`status-dot ${post.data.status || 'fleeting'}`}></span>
-                      {post.data.title}
-                    </a>
-                  </li>
-                ))}
-                {moc.posts.length > 3 && (
-                  <li class="more-posts">
-                    <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>
-                      + {moc.posts.length - 3} more...
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )
+      }
     </section>
   </main>
 </Layout>
@@ -100,22 +106,22 @@ const mocsByPostCount = mocs.map(moc => {
     margin: 0 auto;
     padding: 1rem;
   }
-  
+
   h1 {
     margin-bottom: 0.5rem;
   }
-  
+
   .description {
     margin-bottom: 2rem;
     color: var(--text-secondary);
   }
-  
+
   .tabs {
     display: flex;
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--border-color);
   }
-  
+
   .tab {
     padding: 0.5rem 1rem;
     text-decoration: none;
@@ -123,23 +129,23 @@ const mocsByPostCount = mocs.map(moc => {
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
   }
-  
+
   .tab:hover {
     color: var(--text-primary);
     border-bottom-color: var(--border-color);
   }
-  
+
   .tab.active {
     color: var(--text-primary);
     border-bottom-color: var(--accent-light);
   }
-  
+
   .moc-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2rem;
   }
-  
+
   .moc-card {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -147,11 +153,11 @@ const mocsByPostCount = mocs.map(moc => {
     transition: box-shadow 0.3s ease;
     background-color: var(--bg-primary);
   }
-  
+
   .moc-card:hover {
     box-shadow: 0 5px 15px var(--border-color);
   }
-  
+
   .moc-meta {
     display: flex;
     justify-content: space-between;
@@ -159,40 +165,40 @@ const mocsByPostCount = mocs.map(moc => {
     margin-bottom: 1rem;
     color: var(--text-secondary);
   }
-  
+
   .moc-icon {
     font-size: 1.2rem;
   }
-  
+
   .moc-post-list {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  
+
   .moc-post-list li {
     margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px dashed var(--border-color);
   }
-  
+
   .moc-post-list li:last-child {
     margin-bottom: 0;
     padding-bottom: 0;
     border-bottom: none;
   }
-  
+
   .moc-post-list a {
     color: var(--text-primary);
     text-decoration: none;
     display: flex;
     align-items: center;
   }
-  
+
   .moc-post-list a:hover {
     color: var(--accent-light);
   }
-  
+
   .status-dot {
     display: inline-block;
     width: 8px;
@@ -200,20 +206,20 @@ const mocsByPostCount = mocs.map(moc => {
     border-radius: 50%;
     margin-right: 8px;
   }
-  
+
   .status-dot.evergreen {
     background-color: #27ae60;
   }
-  
+
   .status-dot.fleeting {
     background-color: #e74c3c;
   }
-  
+
   .more-posts a {
     color: var(--accent-light);
     font-style: italic;
   }
-  
+
   .empty-state {
     background-color: var(--bg-secondary);
     border-radius: 8px;
@@ -222,19 +228,19 @@ const mocsByPostCount = mocs.map(moc => {
     margin: 2rem 0;
     color: var(--text-secondary);
   }
-  
+
   @media (max-width: 768px) {
     .moc-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .tabs {
       flex-wrap: wrap;
     }
-    
+
     .tab {
       padding: 0.5rem 0.75rem;
       font-size: 0.9rem;
     }
   }
-</style> 
+</style>

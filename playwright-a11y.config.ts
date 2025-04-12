@@ -27,4 +27,4 @@ export default defineConfig({
     stdout: 'pipe',
     stderr: 'pipe',
   },
-}); 
+});

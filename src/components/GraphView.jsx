@@ -34,9 +34,9 @@ export default function GraphView({ graphData }) {
     evergreen: '#27ae60',
     fleeting: '#e74c3c',
     related: '#8e44ad',
-    hasTag: '#d35400'
+    hasTag: '#d35400',
   });
-  
+
   // Update theme colors when theme changes
   useEffect(() => {
     if (!isBrowser) return;
@@ -50,7 +50,7 @@ export default function GraphView({ graphData }) {
         evergreen: '#27ae60', // Keep consistent for visual mapping
         fleeting: '#e74c3c', // Keep consistent for visual mapping
         related: '#8e44ad', // Keep consistent for visual mapping
-        hasTag: '#d35400' // Keep consistent for visual mapping
+        hasTag: '#d35400', // Keep consistent for visual mapping
       });
     };
 
@@ -58,8 +58,8 @@ export default function GraphView({ graphData }) {
     updateThemeColors();
 
     // Listen for theme changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
         if (mutation.attributeName === 'data-theme') {
           updateThemeColors();
         }
@@ -69,22 +69,24 @@ export default function GraphView({ graphData }) {
     observer.observe(document.documentElement, { attributes: true });
     return () => observer.disconnect();
   }, []);
-  
+
   // Load ForceGraph component dynamically only on client-side
   useEffect(() => {
     if (isBrowser) {
-      import('react-force-graph-2d').then(module => {
-        setForceGraph(() => module.default);
-      }).catch(err => {
-        console.error("Failed to load ForceGraph:", err);
-        setError("Failed to load graph visualization library.");
-      });
+      import('react-force-graph-2d')
+        .then(module => {
+          setForceGraph(() => module.default);
+        })
+        .catch(err => {
+          console.error('Failed to load ForceGraph:', err);
+          setError('Failed to load graph visualization library.');
+        });
     }
   }, []);
-  
+
   // eslint-disable-next-line no-console
-  console.log("GraphView component rendering with data:", graphData);
-  
+  console.log('GraphView component rendering with data:', graphData);
+
   const [error, setError] = useState(null);
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -93,24 +95,24 @@ export default function GraphView({ graphData }) {
   // Update dimensions on mount and window resize
   useEffect(() => {
     if (!isBrowser) return;
-    
+
     const updateDimensions = () => {
       const container = containerRef.current;
       if (container && container.parentElement) {
         const { width, height } = container.parentElement.getBoundingClientRect();
-        setDimensions({ 
-          width: width || 800, 
-          height: height || 600 
+        setDimensions({
+          width: width || 800,
+          height: height || 600,
         });
       }
     };
 
     // Initial update
     updateDimensions();
-    
+
     // Add event listener
     window.addEventListener('resize', updateDimensions);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
@@ -127,21 +129,30 @@ export default function GraphView({ graphData }) {
 
   // If not in browser environment, render a placeholder
   if (!isBrowser) {
-    return <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Graph visualization loading...</div>;
+    return (
+      <div
+        style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      >
+        Graph visualization loading...
+      </div>
+    );
   }
-  
+
   // If ForceGraph hasn't loaded yet
   if (!ForceGraph) {
     return (
-      <div ref={containerRef} style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100%',
-        width: '100%',
-        fontSize: '1.2rem',
-        color: themeColors.text
-      }}>
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          fontSize: '1.2rem',
+          color: themeColors.text,
+        }}
+      >
         Loading graph visualization...
       </div>
     );
@@ -150,15 +161,18 @@ export default function GraphView({ graphData }) {
   // If there's no data to display
   if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
     return (
-      <div ref={containerRef} style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100%',
-        width: '100%',
-        fontSize: '1.2rem',
-        color: themeColors.text
-      }}>
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          fontSize: '1.2rem',
+          color: themeColors.text,
+        }}
+      >
         No graph data available. Add some MOCs and tags to your posts.
       </div>
     );
@@ -167,15 +181,18 @@ export default function GraphView({ graphData }) {
   // If there's an error
   if (error) {
     return (
-      <div ref={containerRef} style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100%',
-        width: '100%',
-        fontSize: '1.2rem',
-        color: themeColors.error
-      }}>
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          fontSize: '1.2rem',
+          color: themeColors.error,
+        }}
+      >
         {error}
       </div>
     );
@@ -189,30 +206,34 @@ export default function GraphView({ graphData }) {
         width={dimensions.width}
         height={dimensions.height}
         nodeId="id"
-        nodeLabel={(node) => `${node.label} (${node.type})`}
-        nodeVal={(node) => {
+        nodeLabel={node => `${node.label} (${node.type})`}
+        nodeVal={node => {
           // Base sizes by type
           return node.type === 'moc' ? 8 : node.type === 'tag' ? 6 : 7;
         }}
-        nodeColor={(node) => {
+        nodeColor={node => {
           // Default colors based on node type
           if (node.type === 'post') {
             return node.status === 'evergreen' ? themeColors.evergreen : themeColors.fleeting;
           } else if (node.type === 'moc') {
             return themeColors.moc;
-          } else { // tag
+          } else {
+            // tag
             return themeColors.tag;
           }
         }}
         linkWidth={1.5}
-        linkColor={(link) => {
+        linkColor={link => {
           // Colors based on link type
-          return link.type === 'related' ? themeColors.related : 
-                link.type === 'in-moc' ? themeColors.moc : themeColors.hasTag;
+          return link.type === 'related'
+            ? themeColors.related
+            : link.type === 'in-moc'
+              ? themeColors.moc
+              : themeColors.hasTag;
         }}
-        onNodeClick={(node) => {
+        onNodeClick={node => {
           // eslint-disable-next-line no-console
-          console.log("Node clicked:", node);
+          console.log('Node clicked:', node);
           // Handle node click - navigate to the appropriate page
           if (node.type === 'post') {
             window.location.href = getPath(`blog/${node.id}`);
@@ -227,4 +248,4 @@ export default function GraphView({ graphData }) {
       />
     </div>
   );
-} 
+}

@@ -12,7 +12,14 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['**/node_modules/**', '**/.astro/**', '**/dist/**', 'e2e/**', '**/*.d.ts', '**/*.test.{js,ts,jsx,tsx}']
-    }
-  }
-}); 
+      exclude: [
+        '**/node_modules/**',
+        '**/.astro/**',
+        '**/dist/**',
+        'e2e/**',
+        '**/*.d.ts',
+        '**/*.test.{js,ts,jsx,tsx}',
+      ],
+    },
+  },
+});

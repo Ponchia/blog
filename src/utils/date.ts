@@ -20,7 +20,7 @@ export function getFormattedDate(date: Date): string {
 export function getRelativeTimeString(date: Date, now = new Date()): string {
   const diffInMs = now.getTime() - date.getTime();
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  
+
   if (diffInDays === 0) {
     return 'Today';
   } else if (diffInDays === 1) {
@@ -34,4 +34,4 @@ export function getRelativeTimeString(date: Date, now = new Date()): string {
     const years = Math.floor(diffInDays / 365);
     return `${years} ${years === 1 ? 'year' : 'years'} ago`;
   }
-} 
+}

@@ -5,154 +5,165 @@ import ThemeToggle from './ThemeToggle';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
-	const base = import.meta.env.BASE_URL || '';
-	// Ensure base ends with slash if not empty
-	const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
-	// Remove leading slash from path if it exists
-	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-	// Join base with path
-	return `${baseWithSlash}${cleanPath}`;
+  const base = import.meta.env.BASE_URL || '';
+  // Ensure base ends with slash if not empty
+  const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+  // Remove leading slash from path if it exists
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Join base with path
+  return `${baseWithSlash}${cleanPath}`;
 }
 ---
 
 <header>
-	<nav>
-		<h2><a href={getPath('')}>{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href={getPath('')}>Home</HeaderLink>
-			<HeaderLink href={getPath('blog')}>Blog</HeaderLink>
-			<HeaderLink href={getPath('about')}>About</HeaderLink>
-		</div>
-		<div class="right-section">
-			<HeaderLink href={getPath('search')} class="search-link">
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
-					<circle cx="11" cy="11" r="8"></circle>
-					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-				</svg>
-				<span class="sr-only">Search</span>
-			</HeaderLink>
-			<ThemeToggle client:idle />
-		</div>
-	</nav>
+  <nav>
+    <h2><a href={getPath('')}>{SITE_TITLE}</a></h2>
+    <div class="internal-links">
+      <HeaderLink href={getPath('')}>Home</HeaderLink>
+      <HeaderLink href={getPath('blog')}>Blog</HeaderLink>
+      <HeaderLink href={getPath('about')}>About</HeaderLink>
+    </div>
+    <div class="right-section">
+      <HeaderLink href={getPath('search')} class="search-link">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="search-icon"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span class="sr-only">Search</span>
+      </HeaderLink>
+      <ThemeToggle client:idle />
+    </div>
+  </nav>
 </header>
 <style>
-	header {
-		margin: 0;
-		padding: 1.5rem;
-		background: var(--bg-primary);
-		position: sticky;
-		top: 0;
-		z-index: 100;
-		transition: all 0.3s ease;
-		border-bottom: 1px solid var(--border-color);
-	}
-	
-	h2 {
-		margin: 0;
-		font-size: 1.5rem;
-		font-family: 'Playfair Display', serif;
-		letter-spacing: 1px;
-	}
+  header {
+    margin: 0;
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-color);
+  }
 
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-		color: var(--text-primary);
-		transition: color 0.2s ease;
-	}
-	
-	h2 a:hover {
-		color: var(--accent-light);
-	}
-	
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		max-width: var(--content-width);
-		margin: 0 auto;
-	}
-	
-	nav a {
-		padding: 0.5rem 0.75rem;
-		color: var(--text-primary);
-		font-weight: 500;
-		text-decoration: none;
-		transition: all 0.2s ease;
-		position: relative;
-	}
-	
-	nav a::after {
-		content: '';
-		position: absolute;
-		bottom: -2px;
-		left: 0;
-		width: 0;
-		height: 1px;
-		background-color: var(--accent-light);
-		transition: width 0.3s ease;
-	}
-	
-	nav a:hover {
-		color: var(--accent-light);
-	}
-	
-	nav a:hover::after {
-		width: 100%;
-	}
-	
-	nav a.active {
-		color: var(--accent-light);
-	}
-	
-	nav a.active::after {
-		width: 100%;
-	}
-	
-	.right-section {
-		display: flex;
-		align-items: center;
-	}
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+  }
 
-	.search-link {
-		display: flex;
-		align-items: center;
-		padding: 0.5rem;
-		margin-right: 0.5rem;
-	}
+  h2 a,
+  h2 a.active {
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+  }
 
-	.search-icon {
-		transition: transform 0.2s ease;
-	}
+  h2 a:hover {
+    color: var(--accent-light);
+  }
 
-	.search-link:hover .search-icon {
-		transform: scale(1.1);
-	}
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--content-width);
+    margin: 0 auto;
+  }
 
-	.sr-only {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border-width: 0;
-	}
+  nav a {
+    padding: 0.5rem 0.75rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
 
-	@media (max-width: 768px) {
-		header {
-			padding: 1rem;
-		}
-		
-		h2 {
-			font-size: 1.3rem;
-		}
-		
-		nav a {
-			padding: 0.5rem 0.4rem;
-			font-size: 0.9rem;
-		}
-	}
+  nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--accent-light);
+    transition: width 0.3s ease;
+  }
+
+  nav a:hover {
+    color: var(--accent-light);
+  }
+
+  nav a:hover::after {
+    width: 100%;
+  }
+
+  nav a.active {
+    color: var(--accent-light);
+  }
+
+  nav a.active::after {
+    width: 100%;
+  }
+
+  .right-section {
+    display: flex;
+    align-items: center;
+  }
+
+  .search-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .search-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .search-link:hover .search-icon {
+    transform: scale(1.1);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  @media (max-width: 768px) {
+    header {
+      padding: 1rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+
+    nav a {
+      padding: 0.5rem 0.4rem;
+      font-size: 0.9rem;
+    }
+  }
 </style>

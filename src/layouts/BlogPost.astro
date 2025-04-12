@@ -11,34 +11,34 @@ import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
 
-const { 
-	title, 
-	description, 
-	pubDate, 
-	updatedDate, 
-	gitCreatedDate, 
-	gitLastModified, 
-	heroImage, 
-	minutesRead
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  gitCreatedDate,
+  gitLastModified,
+  heroImage,
+  minutesRead,
 } = Astro.props;
 
 // Helper function to ensure we have a valid Date object
 function ensureDate(dateValue: Date | string | undefined | null): Date | null {
-	if (!dateValue) return null;
-	
-	if (dateValue instanceof Date) return dateValue;
-	
-	// If it's a string, try to convert it to a Date
-	try {
-		const parsedDate = new Date(dateValue);
-		if (!isNaN(parsedDate.getTime())) {
-			return parsedDate;
-		}
-	} catch (e) {
-		console.error("Invalid date format:", dateValue);
-	}
-	
-	return null;
+  if (!dateValue) return null;
+
+  if (dateValue instanceof Date) return dateValue;
+
+  // If it's a string, try to convert it to a Date
+  try {
+    const parsedDate = new Date(dateValue);
+    if (!isNaN(parsedDate.getTime())) {
+      return parsedDate;
+    }
+  } catch (e) {
+    console.error('Invalid date format:', dateValue);
+  }
+
+  return null;
 }
 
 // Use manual pubDate if available, otherwise use Git created date
@@ -48,16 +48,16 @@ const displayUpdatedDate = ensureDate(updatedDate) || ensureDate(gitLastModified
 
 // Helper function to ensure hero image has the correct path
 function getHeroImagePath(path: string | undefined) {
-	if (!path) return undefined;
-	
-	// If it's already an absolute URL, return as is
-	if (path.startsWith('http')) return path;
-	
-	// Remove leading slash if present to standardize
-	const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-	
-	// Always return with a leading slash to ensure the path is absolute
-	return `/${cleanPath}`;
+  if (!path) return undefined;
+
+  // If it's already an absolute URL, return as is
+  if (path.startsWith('http')) return path;
+
+  // Remove leading slash if present to standardize
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+  // Always return with a leading slash to ensure the path is absolute
+  return `/${cleanPath}`;
 }
 
 // Get hero image path with proper base URL
@@ -68,241 +68,250 @@ const currentPath = Astro.url.pathname;
 ---
 
 <html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		
-		<!-- Add breadcrumb schema -->
-		<BreadcrumbSchema trail={[
-			{ name: "Home", url: "/" },
-			{ name: "Blog", url: "/blog" },
-			{ name: title, url: Astro.url.pathname }
-		]} />
-		
-		<!-- Enhanced Schema.org structured data for BlogPosting -->
-		<script type="application/ld+json" set:html={JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "BlogPosting",
-			"headline": title,
-			"description": description,
-			"image": heroImagePath ? new URL(heroImagePath, Astro.site).toString() : undefined,
-			"datePublished": displayPubDate?.toISOString() || undefined,
-			"dateModified": displayUpdatedDate?.toISOString() || displayPubDate?.toISOString() || undefined,
-			"author": {
-				"@type": "Person",
-				"name": "Ponchia",
-				"url": Astro.site?.toString() || "https://brontolotto.observer"
-			},
-			"publisher": {
-				"@type": "Organization",
-				"name": "Ponchia's Blog",
-				"logo": {
-					"@type": "ImageObject",
-					"url": new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString()
-				}
-			},
-			"mainEntityOfPage": {
-				"@type": "WebPage",
-				"@id": Astro.url.toString()
-			},
-			"articleBody": "This is a blog post about " + description,
-			"keywords": Astro.props.tags?.join(", "),
-			"wordCount": minutesRead ? parseInt(minutesRead) * 200 : undefined
-		})}></script>
-		
-		<!-- Theme initialization script - must be in head to avoid FOUC -->
-		<script is:inline>
-			// Get theme from localStorage or system preference
-			function getTheme() {
-				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-					return localStorage.getItem('theme');
-				}
-				return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-			}
-			
-			// Apply theme to document immediately
-			const theme = getTheme();
-			document.documentElement.setAttribute('data-theme', theme);
-		</script>
-		
-		<style>
-			main {
-				width: 100%;
-				max-width: var(--content-width);
-				margin: 0 auto;
-				padding: 4rem 1.5rem;
-			}
-			.hero-image {
-				width: 100%;
-				margin-bottom: 3rem;
-				position: relative;
-				overflow: hidden;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				width: 100%;
-				height: auto;
-				transition: transform 0.5s ease;
-			}
-			.hero-image:hover img {
-				transform: scale(1.02);
-			}
-			.prose {
-				width: 100%;
-				margin: auto;
-				color: var(--text-primary);
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0.5em 0;
-				font-size: 2.5em;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: var(--text-primary);
-			}
-			.post-meta {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 1rem;
-				align-items: center;
-				margin-bottom: 0.75rem;
-				color: var(--text-primary);
-				font-size: 1rem;
-				opacity: 1;
-			}
-			.post-meta > * {
-				display: flex;
-				align-items: center;
-				color: var(--text-primary);
-			}
-			.reading-time {
-				display: inline-block;
-				padding-left: 1rem;
-				border-left: 1px solid var(--accent);
-				color: var(--text-primary);
-				font-size: 1rem;
-				opacity: 1;
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-			.comments-section {
-				width: 100%;
-				margin: 5rem auto 0;
-				padding-top: 2rem;
-				border-top: 1px solid var(--border-color);
-			}
-			.date-source {
-				font-size: 0.8rem;
-				color: var(--text-primary);
-				opacity: 1;
-				margin-left: 0.5rem;
-			}
+  <head>
+    <BaseHead title={title} description={description} />
 
-			@media (max-width: 768px) {
-				main {
-					padding: 2.5rem 1rem;
-				}
-				.title h1 {
-					font-size: 2.5rem;
-				}
-				.comments-section {
-					margin-top: 4rem;
-				}
-				.post-meta {
-					gap: 0.75rem;
-				}
-			}
+    <!-- Add breadcrumb schema -->
+    <BreadcrumbSchema
+      trail={[
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: '/blog' },
+        { name: title, url: Astro.url.pathname },
+      ]}
+    />
 
-			:global(.prose) {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: var(--text-primary);
-			}
-			
-			:global(.prose p),
-			:global(.prose li),
-			:global(.prose h1),
-			:global(.prose h2),
-			:global(.prose h3),
-			:global(.prose h4),
-			:global(.prose h5),
-			:global(.prose h6) {
-				color: var(--text-primary) !important;
-			}
-			
-			:global(.prose a) {
-				color: var(--accent) !important;
-			}
-		</style>
-	</head>
+    <!-- Enhanced Schema.org structured data for BlogPosting -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: title,
+        description: description,
+        image: heroImagePath ? new URL(heroImagePath, Astro.site).toString() : undefined,
+        datePublished: displayPubDate?.toISOString() || undefined,
+        dateModified:
+          displayUpdatedDate?.toISOString() || displayPubDate?.toISOString() || undefined,
+        author: {
+          '@type': 'Person',
+          name: 'Ponchia',
+          url: Astro.site?.toString() || 'https://brontolotto.observer',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: "Ponchia's Blog",
+          logo: {
+            '@type': 'ImageObject',
+            url: new URL(`${import.meta.env.BASE_URL}favicon.svg`, Astro.site).toString(),
+          },
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': Astro.url.toString(),
+        },
+        articleBody: 'This is a blog post about ' + description,
+        keywords: Astro.props.tags?.join(', '),
+        wordCount: minutesRead ? parseInt(minutesRead) * 200 : undefined,
+      })}
+    />
 
-	<body>
-		<Header />
-		<main class="fade-in">
-			<article class="blog-post prose dark:prose-invert">
-				<div class="title">
-					<div class="post-meta text-primary">
-						{displayPubDate && (
-							<div class="text-primary">
-								<FormattedDate date={displayPubDate} />
-								{!pubDate && gitCreatedDate && (
-									<span class="date-source text-primary">(from git)</span>
-								)}
-							</div>
-						)}
-						{
-							minutesRead && (
-								<div class="reading-time text-primary">{minutesRead}</div>
-							)
-						}
-						<ViewCounter slug={currentPath} />
-					</div>
-					{
-						displayUpdatedDate && (
-							<div class="last-updated-on text-primary">
-								Last updated on <FormattedDate date={displayUpdatedDate} />
-								{!updatedDate && gitLastModified && (
-									<span class="date-source text-primary">(from git)</span>
-								)}
-							</div>
-						)
-					}
-					<h1 class="text-primary">{title}</h1>
-				</div>
-				{heroImagePath && (
-					<div class="hero-image">
-						<OptimizedImage 
-							src={heroImagePath} 
-							alt={title}
-							width={1020} 
-							height={510} 
-							format="webp"
-							loading="eager"
-							decoding="async"
-							class="hero-img"
-						/>
-					</div>
-				)}
-				<div class="prose blog-content high-contrast">
-					<slot />
-				</div>
-				<div class="comments-section">
-					<Comments client:idle />
-				</div>
-			</article>
-		</main>
-		<Footer />
-		
-		<!-- GoatCounter Analytics -->
-		<script data-goatcounter="https://ponchia.goatcounter.com/count" defer src="//gc.zgo.at/count.js"></script>
-	</body>
+    <!-- Theme initialization script - must be in head to avoid FOUC -->
+    <script is:inline>
+      // Get theme from localStorage or system preference
+      function getTheme() {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      // Apply theme to document immediately
+      const theme = getTheme();
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
+
+    <style>
+      main {
+        width: 100%;
+        max-width: var(--content-width);
+        margin: 0 auto;
+        padding: 4rem 1.5rem;
+      }
+      .hero-image {
+        width: 100%;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-image img {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        height: auto;
+        transition: transform 0.5s ease;
+      }
+      .hero-image:hover img {
+        transform: scale(1.02);
+      }
+      .prose {
+        width: 100%;
+        margin: auto;
+        color: var(--text-primary);
+      }
+      .title {
+        margin-bottom: 1em;
+        padding: 1em 0;
+        text-align: center;
+        line-height: 1;
+      }
+      .title h1 {
+        margin: 0.5em 0;
+        font-size: 2.5em;
+      }
+      .date {
+        margin-bottom: 0.5em;
+        color: var(--text-primary);
+      }
+      .post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        opacity: 1;
+      }
+      .post-meta > * {
+        display: flex;
+        align-items: center;
+        color: var(--text-primary);
+      }
+      .reading-time {
+        display: inline-block;
+        padding-left: 1rem;
+        border-left: 1px solid var(--accent);
+        color: var(--text-primary);
+        font-size: 1rem;
+        opacity: 1;
+      }
+      .last-updated-on {
+        font-style: italic;
+      }
+      .comments-section {
+        width: 100%;
+        margin: 5rem auto 0;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+      }
+      .date-source {
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        opacity: 1;
+        margin-left: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        main {
+          padding: 2.5rem 1rem;
+        }
+        .title h1 {
+          font-size: 2.5rem;
+        }
+        .comments-section {
+          margin-top: 4rem;
+        }
+        .post-meta {
+          gap: 0.75rem;
+        }
+      }
+
+      :global(.prose) {
+        width: 720px;
+        max-width: calc(100% - 2em);
+        margin: auto;
+        padding: 1em;
+        color: var(--text-primary);
+      }
+
+      :global(.prose p),
+      :global(.prose li),
+      :global(.prose h1),
+      :global(.prose h2),
+      :global(.prose h3),
+      :global(.prose h4),
+      :global(.prose h5),
+      :global(.prose h6) {
+        color: var(--text-primary) !important;
+      }
+
+      :global(.prose a) {
+        color: var(--accent) !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+    <main class="fade-in">
+      <article class="blog-post prose dark:prose-invert">
+        <div class="title">
+          <div class="post-meta text-primary">
+            {
+              displayPubDate && (
+                <div class="text-primary">
+                  <FormattedDate date={displayPubDate} />
+                  {!pubDate && gitCreatedDate && (
+                    <span class="date-source text-primary">(from git)</span>
+                  )}
+                </div>
+              )
+            }
+            {minutesRead && <div class="reading-time text-primary">{minutesRead}</div>}
+            <ViewCounter slug={currentPath} />
+          </div>
+          {
+            displayUpdatedDate && (
+              <div class="last-updated-on text-primary">
+                Last updated on <FormattedDate date={displayUpdatedDate} />
+                {!updatedDate && gitLastModified && (
+                  <span class="date-source text-primary">(from git)</span>
+                )}
+              </div>
+            )
+          }
+          <h1 class="text-primary">{title}</h1>
+        </div>
+        {
+          heroImagePath && (
+            <div class="hero-image">
+              <OptimizedImage
+                src={heroImagePath}
+                alt={title}
+                width={1020}
+                height={510}
+                format="webp"
+                loading="eager"
+                decoding="async"
+                class="hero-img"
+              />
+            </div>
+          )
+        }
+        <div class="prose blog-content high-contrast">
+          <slot />
+        </div>
+        <div class="comments-section">
+          <Comments client:idle />
+        </div>
+      </article>
+    </main>
+    <Footer />
+
+    <!-- GoatCounter Analytics -->
+    <script
+      data-goatcounter="https://ponchia.goatcounter.com/count"
+      defer
+      src="//gc.zgo.at/count.js"></script>
+  </body>
 </html>

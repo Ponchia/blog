@@ -22,7 +22,7 @@ export default defineConfig({
     inlineStylesheets: 'auto', // Inline small stylesheets
     assets: 'assets', // Custom directory for optimized assets
   },
-  
+
   // Image optimization settings
   image: {
     service: {
@@ -32,38 +32,38 @@ export default defineConfig({
         quality: 80, // 0-100, lower means smaller file size but lower quality
         format: ['webp', 'avif', 'png', 'jpeg'], // Formats to generate, in order of preference
         gif: { lossless: false }, // Compress GIFs
-        svg: { optimization: true } // Optimize SVGs
-      }
+        svg: { optimization: true }, // Optimize SVGs
+      },
     },
   },
 
   integrations: [
-      mdx(), 
-      sitemap({
-        changefreq: 'weekly',
-        priority: 0.7,
-        serialize(item) {
-          // Customize priority based on URL pattern
-          if (item.url.includes('/blog/')) {
-            // Blog posts get higher priority
-            item.priority = 0.9;
-          } else if (item.url === 'https://brontolotto.observer') {
-            // Homepage gets highest priority
-            item.priority = 1.0;
-          }
-          
-          return item;
-        },
-      }),
-      react(),
-      tailwind({
-        // Disable injecting a basic `base.css` import
-        applyBaseStyles: false,
-      }),
-      pagefind()
+    mdx(),
+    sitemap({
+      changefreq: 'weekly',
+      priority: 0.7,
+      serialize(item) {
+        // Customize priority based on URL pattern
+        if (item.url.includes('/blog/')) {
+          // Blog posts get higher priority
+          item.priority = 0.9;
+        } else if (item.url === 'https://brontolotto.observer') {
+          // Homepage gets highest priority
+          item.priority = 1.0;
+        }
+
+        return item;
+      },
+    }),
+    react(),
+    tailwind({
+      // Disable injecting a basic `base.css` import
+      applyBaseStyles: false,
+    }),
+    pagefind(),
   ],
 
   markdown: {
-      remarkPlugins: [remarkReadingTime, remarkGitDates, remarkOptimizeImages],
+    remarkPlugins: [remarkReadingTime, remarkGitDates, remarkOptimizeImages],
   },
 });

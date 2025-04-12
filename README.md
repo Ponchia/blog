@@ -85,13 +85,13 @@ This blog automatically optimizes images using Astro's built-in image optimizati
 ```jsx
 import OptimizedImage from '../components/OptimizedImage.astro';
 
-<OptimizedImage 
+<OptimizedImage
   src="/path/to/image.jpg"
   alt="Description of image"
   width={800}
   height={600}
   format="webp"
-/>
+/>;
 ```
 
 ### Batch Image Conversion
@@ -143,8 +143,11 @@ The script is already added to the layout files. If you need to update the confi
 2. Update the script in the layout files with your site code:
 
 ```html
-<script data-goatcounter="https://YOUR-SITE-CODE.goatcounter.com/count" 
-        async src="//gc.zgo.at/count.js"></script>
+<script
+  data-goatcounter="https://YOUR-SITE-CODE.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"
+></script>
 ```
 
 Your analytics dashboard will be available at `https://YOUR-SITE-CODE.goatcounter.com/`.
@@ -156,6 +159,7 @@ Your analytics dashboard will be available at `https://YOUR-SITE-CODE.goatcounte
 The blog is pre-configured for GitHub Pages deployment:
 
 1. Update `site` and `base` in `astro.config.mjs` with your GitHub username:
+
 ```js
 export default defineConfig({
   site: 'https://yourusername.github.io',
@@ -198,6 +202,7 @@ You can deploy this blog to any static hosting service like Netlify, Vercel, or 
 ## Contributing
 
 Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to work on this project, including:
+
 - Conventional commit standards
 - Testing requirements
 - Deployment considerations
@@ -205,13 +210,13 @@ Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to wo
 
 ## Commands
 
-| Command                | Action                                       |
-| :--- | :---- |
-| `npm install`          | Installs dependencies                        |
-| `npm run dev`          | Starts local dev server at `localhost:4321`  |
-| `npm run build`        | Build your production site to `./dist/`      |
-| `npm run preview`      | Preview your build locally                   |
-| `npm run optimize-images` | Convert images to WebP and AVIF formats   |
+| Command                   | Action                                      |
+| :------------------------ | :------------------------------------------ |
+| `npm install`             | Installs dependencies                       |
+| `npm run dev`             | Starts local dev server at `localhost:4321` |
+| `npm run build`           | Build your production site to `./dist/`     |
+| `npm run preview`         | Preview your build locally                  |
+| `npm run optimize-images` | Convert images to WebP and AVIF formats     |
 
 ## License
 

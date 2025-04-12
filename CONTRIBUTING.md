@@ -5,6 +5,7 @@ This document outlines the rules and best practices for contributing to this Ast
 ## Project Overview
 
 This is an Astro-based blog deployed on GitHub Pages at:
+
 - Base URL: [https://ponchia.github.io/blog/](https://ponchia.github.io/blog/)
 
 ## Development Workflow
@@ -34,6 +35,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) standards
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation changes
@@ -45,6 +47,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) standards
 - `ci`: Changes to CI configuration files and scripts
 
 **When to Commit:**
+
 - Commit after completing logical units of work
 - Commit when you've made significant progress
 - Commit before switching to a different task
@@ -53,6 +56,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) standards
 ### Code Standards
 
 1. **Avoid Hardcoded Solutions**
+
    - Consider the general context of the application
    - Make solutions reusable when possible
    - Use configuration files for environment-specific settings
@@ -66,10 +70,12 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) standards
 Always test your changes before submitting them:
 
 1. **Local Testing**
+
    - Use `npm run dev` to test locally
    - Verify your changes work across different screen sizes
 
 2. **Automated Testing**
+
    - Use Playwright for end-to-end testing:
      ```bash
      npx playwright test
@@ -85,6 +91,7 @@ Always test your changes before submitting them:
 The site is deployed to GitHub Pages when changes are tagged for release.
 
 1. **Tagging for Deployment**
+
    - Deployment is triggered only when commits are tagged with:
      - Version tags: `v*` (e.g., `v1.0.0`)
      - Release tags: `release-*` (e.g., `release-2023-05-01`)
@@ -95,6 +102,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
      ```
 
 2. **Preview Changes**
+
    - Use `npm run build` followed by `npm run preview` to preview the production build locally
    - Make sure all assets are loaded correctly with the `/blog` base path
 
@@ -105,6 +113,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
 ### Features & Components
 
 1. **Graph Data**
+
    - The blog generates a visualization graph with nodes and links
    - Changes to content may affect the graph structure
 
@@ -127,6 +136,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
 ### Dependency Management
 
 1. **Tailwind CSS Setup**
+
    - Use the official Astro integration:
      ```bash
      npm install -D @astrojs/tailwind@^6.0.2 tailwindcss@^3.0.24 @tailwindcss/typography postcss autoprefixer
@@ -135,7 +145,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
      ```js
      tailwind({
        applyBaseStyles: false,
-     })
+     });
      ```
    - Create `postcss.config.mjs`:
      ```js
@@ -144,7 +154,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
          tailwindcss: {},
          autoprefixer: {},
        },
-     }
+     };
      ```
 
 2. **Version Compatibility**
@@ -157,9 +167,11 @@ The site is deployed to GitHub Pages when changes are tagged for release.
 ### Testing and Verification
 
 1. **Development Server**
+
    ```bash
    npm run dev -- --port 4322 --host
    ```
+
    - Watch the console for:
      - Compilation errors
      - CSS processing issues
@@ -167,16 +179,19 @@ The site is deployed to GitHub Pages when changes are tagged for release.
      - Slug conflicts
 
 2. **Component Testing**
+
    - Test components in both light and dark modes
    - Verify Tailwind classes are applied correctly
    - Check responsive behavior across breakpoints
    - Ensure proper hydration of interactive components
 
 3. **Build Testing**
+
    ```bash
    npm run build
    npm run preview
    ```
+
    - Verify production build:
      - Check console for warnings/errors
      - Test all interactive features
@@ -196,6 +211,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
 ### Troubleshooting Guide
 
 1. **Dependency Issues**
+
    - Clear npm cache:
      ```bash
      npm cache clean --force
@@ -208,6 +224,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
    - Check for conflicting peer dependencies in package.json
 
 2. **Build Problems**
+
    - Verify Astro configuration:
      - Check base URL settings
      - Confirm integration settings
@@ -218,6 +235,7 @@ The site is deployed to GitHub Pages when changes are tagged for release.
      ```
 
 3. **CSS/Styling Issues**
+
    - Confirm Tailwind directives in global CSS
    - Check PostCSS configuration
    - Verify theme configuration
@@ -227,4 +245,4 @@ The site is deployed to GitHub Pages when changes are tagged for release.
    - Check import paths (use relative paths from root)
    - Verify client directives (client:load, client:visible)
    - Test hydration behavior
-   - Monitor console for component-specific errors 
+   - Monitor console for component-specific errors

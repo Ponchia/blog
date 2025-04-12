@@ -21,7 +21,10 @@ program
   .version('1.0.0')
   .option('-w, --watch', 'Watch for new images and optimize them')
   .option('-p, --path <path>', 'Target specific directory for optimization')
-  .option('-f, --formats <formats>', 'Comma-separated list of formats to generate (default: "webp,avif")')
+  .option(
+    '-f, --formats <formats>',
+    'Comma-separated list of formats to generate (default: "webp,avif")'
+  )
   .option('-q, --quality <number>', 'Quality setting for optimized images (0-100)', '80')
   .option('--skip-copy', 'Skip copying optimized images to public directory')
   .option('--verbose', 'Show detailed logs');
@@ -56,50 +59,48 @@ async function processImage(filePath) {
   const fileName = path.basename(filePath);
   const fileExt = path.extname(fileName).toLowerCase();
   const baseName = path.basename(fileName, fileExt);
-  
+
   if (!validExtensions.includes(fileExt)) {
     return false;
   }
-  
+
   log(`Processing: ${fileName}`);
-  
+
   // Read the image
   const image = sharp(filePath);
-  
+
   // Convert to each target format
   for (const format of targetFormats) {
     const outputPath = path.join(assetsDir, `${baseName}.${format}`);
-    
+
     try {
-      await image
-        .toFormat(format, { quality })
-        .toFile(outputPath);
-      
+      await image.toFormat(format, { quality }).toFile(outputPath);
+
       log(`Created: ${outputPath} (${format})`);
     } catch (error) {
       log(`Failed to convert ${fileName} to ${format}: ${error}`, true);
     }
   }
-  
+
   // Also copy the original to assets directory
   const outputOriginal = path.join(assetsDir, fileName);
   fs.copyFileSync(filePath, outputOriginal);
   log(`Copied original: ${outputOriginal}`);
-  
+
   return true;
 }
 
 // Find and process all images in a directory
 async function processDirectory(directory) {
   log(`Scanning directory: ${directory}`);
-  
+
   const files = fs.readdirSync(directory);
   let processedCount = 0;
-  
+
   for (const file of files) {
     const filePath = path.join(directory, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       // Skip certain directories
       if (file !== 'fonts' && file !== 'rss' && !file.startsWith('.')) {
@@ -110,7 +111,7 @@ async function processDirectory(directory) {
       if (wasProcessed) processedCount++;
     }
   }
-  
+
   return processedCount;
 }
 
@@ -123,11 +124,11 @@ async function copyToPublic() {
 
   fs.readdirSync(assetsDir).forEach(file => {
     const ext = path.extname(file).toLowerCase();
-    
+
     if (optimizedExtensions.includes(ext)) {
       const sourcePath = path.join(assetsDir, file);
       const destPath = path.join(publicDir, file);
-      
+
       try {
         fs.copyFileSync(sourcePath, destPath);
         filesCopied++;
@@ -145,25 +146,25 @@ async function copyToPublic() {
 // Watch for new images
 async function watchDirectories() {
   const directoriesToWatch = [publicDir];
-  
+
   // Add content directory to watch for images in MDX files
   directoriesToWatch.push(contentDir);
-  
+
   log('Watching for new images...', true);
-  
+
   for (const dir of directoriesToWatch) {
     fs.watch(dir, { recursive: true }, async (eventType, filename) => {
       if (!filename) return;
-      
+
       const filePath = path.join(dir, filename);
-      
+
       // Only process if it's a file and has a valid extension
       try {
         const stat = fs.statSync(filePath);
         if (stat.isFile() && validExtensions.includes(path.extname(filename).toLowerCase())) {
           log(`Change detected: ${filename}`);
           await processImage(filePath);
-          
+
           if (!options.skipCopy) {
             await copyToPublic();
           }
@@ -179,31 +180,31 @@ async function watchDirectories() {
 async function main() {
   log('🖼️  Unified Image Optimizer', true);
   log('==========================', true);
-  
+
   // Determine which directory to process
   const targetDir = options.path ? path.resolve(rootDir, options.path) : publicDir;
-  
+
   if (!fs.existsSync(targetDir)) {
     log(`Error: Directory does not exist: ${targetDir}`, true);
     process.exit(1);
   }
-  
+
   log(`Target directory: ${targetDir}`, true);
   log(`Output directory: ${assetsDir}`, true);
   log(`Target formats: ${targetFormats.join(', ')}`, true);
   log(`Quality setting: ${quality}`, true);
   log('---------------------------', true);
-  
+
   // Process images
   const processedCount = await processDirectory(targetDir);
   log(`Processed ${processedCount} images.`, true);
-  
+
   // Copy to public if needed
   if (!options.skipCopy) {
     const copiedCount = await copyToPublic();
     log(`Copied ${copiedCount} optimized images to public directory.`, true);
   }
-  
+
   // Watch mode
   if (options.watch) {
     await watchDirectories();

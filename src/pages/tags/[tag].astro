@@ -20,21 +20,21 @@ function getPath(path: string) {
 export async function getStaticPaths() {
   const postsData = await getCollection('blog');
   const postsWithMetadata = await Promise.all(
-    postsData.map(async (post) => {
+    postsData.map(async post => {
       const { remarkPluginFrontmatter } = await render(post);
       // Merge remarkPluginFrontmatter into post.data
       post.data = { ...post.data, ...remarkPluginFrontmatter };
       return post;
     })
   );
-  
+
   const posts = postsWithMetadata;
   const tags = getAllTags(posts);
-  
+
   return tags.map(tag => {
     return {
       params: { tag },
-      props: { tagName: tag, posts: getPostsByTag(posts, tag) }
+      props: { tagName: tag, posts: getPostsByTag(posts, tag) },
     };
   });
 }
@@ -47,13 +47,23 @@ const { tagName, posts } = Astro.props;
     <div class="breadcrumbs">
       <a href={getPath('map')}>Maps of Content</a> &rsaquo; <span>Tag: {tagName}</span>
     </div>
-    
+
     <h1>Tag: {tagName}</h1>
     <p class="description">Explore posts tagged with "{tagName}"</p>
-    
+
     <div class="actions">
       <a href={getPath('graph')} class="action-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="12" cy="12" r="10"></circle>
           <circle cx="12" cy="12" r="4"></circle>
           <line x1="21.17" y1="8" x2="12" y2="8"></line>
@@ -63,66 +73,74 @@ const { tagName, posts } = Astro.props;
         View in Graph
       </a>
     </div>
-    
+
     <div class="post-list">
       <h2>Posts ({posts.length})</h2>
-      
-      {posts.length === 0 ? (
-        <div class="empty-state">
-          <p>No posts found with this tag.</p>
-        </div>
-      ) : (
-        <ul>
-          {posts.map(post => {
-            // Get effective publication date
-            const displayDate = post.data.pubDate || post.data.gitCreatedDate;
-            
-            return (
-              <li>
-                <div class="post-card">
-                  <div class="post-header">
-                    <a href={getPath(`blog/${post.id}`)} class="post-title">
-                      <span class={`status-indicator ${post.data.status}`}></span>
-                      {post.data.title}
-                    </a>
-                    {displayDate && (
-                      <div class="post-date">
-                        {safeFormatDate(displayDate)}
-                        {!post.data.pubDate && post.data.gitCreatedDate && (
-                          <span class="date-source">(from git)</span>
-                        )}
+
+      {
+        posts.length === 0 ? (
+          <div class="empty-state">
+            <p>No posts found with this tag.</p>
+          </div>
+        ) : (
+          <ul>
+            {posts.map(post => {
+              // Get effective publication date
+              const displayDate = post.data.pubDate || post.data.gitCreatedDate;
+
+              return (
+                <li>
+                  <div class="post-card">
+                    <div class="post-header">
+                      <a href={getPath(`blog/${post.id}`)} class="post-title">
+                        <span class={`status-indicator ${post.data.status}`} />
+                        {post.data.title}
+                      </a>
+                      {displayDate && (
+                        <div class="post-date">
+                          {safeFormatDate(displayDate)}
+                          {!post.data.pubDate && post.data.gitCreatedDate && (
+                            <span class="date-source">(from git)</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <p class="post-description">{post.data.description}</p>
+
+                    {post.data.tags && post.data.tags.length > 0 && (
+                      <div class="post-tags">
+                        {post.data.tags
+                          .filter(tag => tag !== tagName)
+                          .map(tag => (
+                            <a href={getPath(`tags/${tag}`)} class="tag">
+                              {tag}
+                            </a>
+                          ))}
+                        <span class="current-tag">{tagName}</span>
+                      </div>
+                    )}
+
+                    {post.data.mocs && post.data.mocs.length > 0 && (
+                      <div class="in-mocs">
+                        <span class="in-label">In MOCs:</span>
+                        {post.data.mocs.map((moc, index) => (
+                          <>
+                            <a href={getPath(`mocs/${slugify(moc)}`)} class="in-moc">
+                              {moc}
+                            </a>
+                            {index < post.data.mocs.length - 1 ? ', ' : ''}
+                          </>
+                        ))}
                       </div>
                     )}
                   </div>
-                  
-                  <p class="post-description">{post.data.description}</p>
-                  
-                  {post.data.tags && post.data.tags.length > 0 && (
-                    <div class="post-tags">
-                      {post.data.tags.filter(tag => tag !== tagName).map(tag => (
-                        <a href={getPath(`tags/${tag}`)} class="tag">{tag}</a>
-                      ))}
-                      <span class="current-tag">{tagName}</span>
-                    </div>
-                  )}
-                  
-                  {post.data.mocs && post.data.mocs.length > 0 && (
-                    <div class="in-mocs">
-                      <span class="in-label">In MOCs:</span>
-                      {post.data.mocs.map((moc, index) => (
-                        <>
-                          <a href={getPath(`mocs/${slugify(moc)}`)} class="in-moc">{moc}</a>
-                          {index < post.data.mocs.length - 1 ? ", " : ""}
-                        </>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
     </div>
   </main>
 </Layout>
@@ -133,36 +151,36 @@ const { tagName, posts } = Astro.props;
     margin: 0 auto;
     padding: 1rem;
   }
-  
+
   .breadcrumbs {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .breadcrumbs a {
     color: var(--accent-light);
     text-decoration: none;
   }
-  
+
   .breadcrumbs a:hover {
     text-decoration: underline;
   }
-  
+
   h1 {
     margin-bottom: 0.5rem;
   }
-  
+
   .description {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .actions {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
   }
-  
+
   .action-btn {
     display: flex;
     align-items: center;
@@ -175,18 +193,18 @@ const { tagName, posts } = Astro.props;
     font-size: 0.9rem;
     transition: background-color 0.3s ease;
   }
-  
+
   .action-btn:hover {
     background-color: var(--accent);
     color: var(--bg-primary);
   }
-  
+
   .post-list h2 {
     margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
   }
-  
+
   .post-list ul {
     list-style: none;
     padding: 0;
@@ -194,7 +212,7 @@ const { tagName, posts } = Astro.props;
     display: grid;
     gap: 1.5rem;
   }
-  
+
   .post-card {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -202,18 +220,18 @@ const { tagName, posts } = Astro.props;
     transition: box-shadow 0.3s ease;
     background-color: var(--bg-primary);
   }
-  
+
   .post-card:hover {
     box-shadow: 0 5px 15px var(--border-color);
   }
-  
+
   .post-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
   }
-  
+
   .post-title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -223,37 +241,37 @@ const { tagName, posts } = Astro.props;
     align-items: center;
     margin-right: 1rem;
   }
-  
+
   .post-title:hover {
     color: var(--accent-light);
   }
-  
+
   .post-date {
     font-size: 0.85rem;
     color: var(--text-secondary);
     white-space: nowrap;
   }
-  
+
   .date-source {
     font-size: 0.8rem;
     opacity: 0.7;
     margin-left: 0.3rem;
   }
-  
+
   .post-description {
     color: var(--text-primary);
     opacity: 0.9;
     margin-bottom: 1rem;
     line-height: 1.5;
   }
-  
+
   .post-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .tag {
     background-color: var(--bg-secondary);
     padding: 0.25rem 0.5rem;
@@ -263,12 +281,12 @@ const { tagName, posts } = Astro.props;
     opacity: 0.9;
     text-decoration: none;
   }
-  
+
   .tag:hover {
     background-color: var(--accent);
     color: var(--bg-primary);
   }
-  
+
   .current-tag {
     background-color: var(--accent);
     color: var(--bg-primary);
@@ -276,7 +294,7 @@ const { tagName, posts } = Astro.props;
     border-radius: 4px;
     font-size: 0.8rem;
   }
-  
+
   .in-mocs {
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -285,21 +303,21 @@ const { tagName, posts } = Astro.props;
     align-items: center;
     gap: 0.5rem;
   }
-  
+
   .in-label {
     color: var(--text-secondary);
     opacity: 0.8;
   }
-  
+
   .in-moc {
     color: var(--accent-light);
     text-decoration: none;
   }
-  
+
   .in-moc:hover {
     text-decoration: underline;
   }
-  
+
   .status-indicator {
     display: inline-block;
     width: 8px;
@@ -307,15 +325,15 @@ const { tagName, posts } = Astro.props;
     border-radius: 50%;
     margin-right: 8px;
   }
-  
+
   .status-indicator.evergreen {
     background-color: #27ae60;
   }
-  
+
   .status-indicator.fleeting {
     background-color: #e74c3c;
   }
-  
+
   .empty-state {
     text-align: center;
     padding: 2rem;
@@ -323,15 +341,15 @@ const { tagName, posts } = Astro.props;
     border-radius: 8px;
     color: #666;
   }
-  
+
   @media (max-width: 768px) {
     .post-header {
       flex-direction: column;
       gap: 0.5rem;
     }
-    
+
     .post-date {
       margin-left: 1rem;
     }
   }
-</style> 
+</style>

@@ -1,6 +1,6 @@
 ---
-import "@pagefind/default-ui/css/ui.css";
-import { join } from "node:path";
+import '@pagefind/default-ui/css/ui.css';
+import { join } from 'node:path';
 
 interface Props {
   id?: string;
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { id, className } = Astro.props;
-const bundlePath = join(import.meta.env.BASE_URL, "pagefind/");
+const bundlePath = join(import.meta.env.BASE_URL, 'pagefind/');
 const divProps = {
   ...(id ? { id } : {}),
   ...(className ? { class: className } : {}),
@@ -17,33 +17,35 @@ const divProps = {
 
 <div {...divProps} data-pagefind-ui data-bundle-path={bundlePath}></div>
 <div id="search-error" class="search-error" style="display: none;">
-  <p>Search index not found. Please run <code>npm run build</code> first to generate the search index.</p>
+  <p>
+    Search index not found. Please run <code>npm run build</code> first to generate the search index.
+  </p>
 </div>
 
 <script>
-  import { PagefindUI } from "@pagefind/default-ui";
-  window.addEventListener("DOMContentLoaded", () => {
-    const allSelector = "[data-pagefind-ui]";
-    const errorElement = document.getElementById("search-error");
-    
+  import { PagefindUI } from '@pagefind/default-ui';
+  window.addEventListener('DOMContentLoaded', () => {
+    const allSelector = '[data-pagefind-ui]';
+    const errorElement = document.getElementById('search-error');
+
     for (const el of document.querySelectorAll(allSelector)) {
       const elSelector = [
         ...(el.id ? [`#${el.id}`] : []),
-        ...[...el.classList.values()].map((c) => `.${c}`),
+        ...[...el.classList.values()].map(c => `.${c}`),
         allSelector,
-      ].join("");
-      const bundlePath = el.getAttribute("data-bundle-path");
-      
+      ].join('');
+      const bundlePath = el.getAttribute('data-bundle-path');
+
       try {
         // Check if search index exists
         fetch(`${bundlePath}pagefind.js`, { method: 'HEAD' })
           .then(response => {
             if (!response.ok) {
-              if (errorElement) errorElement.style.display = "block";
-              console.error("Search index not found. Please run `npm run build` to generate it.");
+              if (errorElement) errorElement.style.display = 'block';
+              console.error('Search index not found. Please run `npm run build` to generate it.');
               return;
             }
-            
+
             // Initialize search if the index exists
             const pagefindUI = new PagefindUI({
               element: elSelector,
@@ -58,30 +60,30 @@ const divProps = {
             // Handle query params for sharing search results
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
-            const query = params.get("q");
+            const query = params.get('q');
 
             // If query exists on page load
             if (query && input) {
               input.value = query;
-              input.dispatchEvent(new Event("input", { bubbles: true }));
+              input.dispatchEvent(new Event('input', { bubbles: true }));
             }
 
             // Update URL when input changes
-            input?.addEventListener("input", (e) => {
+            input?.addEventListener('input', e => {
               const input = e.target as HTMLInputElement;
               const url = new URL(window.location.href);
               const params = new URLSearchParams(url.search);
-              params.set("q", input.value);
-              window.history.replaceState({}, "", `${url.pathname}?${params}`);
+              params.set('q', input.value);
+              window.history.replaceState({}, '', `${url.pathname}?${params}`);
             });
           })
           .catch(error => {
-            if (errorElement) errorElement.style.display = "block";
-            console.error("Error checking search index:", error);
+            if (errorElement) errorElement.style.display = 'block';
+            console.error('Error checking search index:', error);
           });
       } catch (error) {
-        if (errorElement) errorElement.style.display = "block";
-        console.error("Error initializing search:", error);
+        if (errorElement) errorElement.style.display = 'block';
+        console.error('Error initializing search:', error);
       }
     }
   });
@@ -126,4 +128,4 @@ const divProps = {
     border-radius: 4px;
     font-family: monospace;
   }
-</style> 
+</style>

@@ -162,4 +162,4 @@ test('page should be accessible', async ({ page }) => {
 - Add visual regression testing with Playwright
 - Implement testing coverage thresholds
 - Add performance testing with Lighthouse CI
-- Integrate tests with deployment workflow for CI/CD 
+- Integrate tests with deployment workflow for CI/CD

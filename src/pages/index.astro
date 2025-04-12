@@ -6,13 +6,13 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 // Create path helpers for navigation links
 function getPath(path: string) {
-	const base = import.meta.env.BASE_URL || '';
-	// Ensure base ends with slash if not empty
-	const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
-	// Remove leading slash from path if it exists
-	const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-	// Join base with path
-	return `${baseWithSlash}${cleanPath}`;
+  const base = import.meta.env.BASE_URL || '';
+  // Ensure base ends with slash if not empty
+  const baseWithSlash = base && !base.endsWith('/') ? `${base}/` : base;
+  // Remove leading slash from path if it exists
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Join base with path
+  return `${baseWithSlash}${cleanPath}`;
 }
 
 // Get all posts
@@ -20,357 +20,372 @@ const posts = await getCollection('blog');
 
 // Get all MOCs and sort by post count for display
 const mocs = getAllMocs(posts);
-const mocsByPostCount = mocs.map(moc => {
-	return {
-		name: moc,
-		count: getPostsByMoc(posts, moc).length,
-		posts: getPostsByMoc(posts, moc)
-	};
-}).sort((a, b) => b.count - a.count);
+const mocsByPostCount = mocs
+  .map(moc => {
+    return {
+      name: moc,
+      count: getPostsByMoc(posts, moc).length,
+      posts: getPostsByMoc(posts, moc),
+    };
+  })
+  .sort((a, b) => b.count - a.count);
 
 // Get recent posts
 const recentPosts = [...posts]
-	.sort((a, b) => {
-		const dateA = a.data.pubDate instanceof Date ? a.data.pubDate : new Date(a.data.pubDate || 0);
-		const dateB = b.data.pubDate instanceof Date ? b.data.pubDate : new Date(b.data.pubDate || 0);
-		return dateB.valueOf() - dateA.valueOf();
-	})
-	.slice(0, 4);
+  .sort((a, b) => {
+    const dateA = a.data.pubDate instanceof Date ? a.data.pubDate : new Date(a.data.pubDate || 0);
+    const dateB = b.data.pubDate instanceof Date ? b.data.pubDate : new Date(b.data.pubDate || 0);
+    return dateB.valueOf() - dateA.valueOf();
+  })
+  .slice(0, 4);
 
 // Generate website structured data
 const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": SITE_TITLE,
-  "description": SITE_DESCRIPTION,
-  "url": Astro.site?.toString(),
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": `${Astro.site}search?q={search_term_string}`
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  url: Astro.site?.toString(),
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${Astro.site}search?q={search_term_string}`,
     },
-    "query-input": "required name=search_term_string"
-  }
+    'query-input': 'required name=search_term_string',
+  },
 };
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-	{/* Website Schema - properly included without an extra head tag */}
-	<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
-	<main>
-		<h1 class="text-primary">Knowledge Base</h1>
-		<p class="description text-primary">Explore content by topic areas, discover connections, and find related information</p>
-		
-		<div class="tabs">
-			<a href={getPath('')} class="tab active text-primary">Content Map</a>
-			<a href={getPath('navigation/graph')} class="tab text-primary">Graph View</a>
-			<a href={getPath('navigation/tags')} class="tab text-primary">All Tags</a>
-			<a href={getPath('search')} class="tab text-primary">Search</a>
-		</div>
-		
-		<section id="mocs">
-			{mocsByPostCount.length === 0 ? (
-				<div class="empty-state">
-					<p>No Maps of Content (MOCs) found. Start by adding MOCs to your posts.</p>
-				</div>
-			) : (
-				<div class="moc-grid">
-					{mocsByPostCount.map(moc => (
-						<div class="moc-card">
-							<h2 class="moc-title">
-								<a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>{moc.name}</a>
-							</h2>
-							<div class="moc-meta">
-								<span class="moc-posts-count">{moc.count} {moc.count === 1 ? 'post' : 'posts'}</span>
-								<span class="moc-icon">📚</span>
-							</div>
-							
-							<ul class="moc-post-list">
-								{moc.posts.slice(0, 3).map(post => (
-									<li>
-										<a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
-											<span class={`status-dot ${post.data.status || 'fleeting'}`}></span>
-											{post.data.title}
-										</a>
-									</li>
-								))}
-								{moc.posts.length > 3 && (
-									<li class="more-posts">
-										<a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>
-											+ {moc.posts.length - 3} more...
-										</a>
-									</li>
-								)}
-							</ul>
-						</div>
-					))}
-				</div>
-			)}
-		</section>
-		
-		<section id="recent-posts">
-			<h2 class="section-heading">Recent Posts</h2>
-			<div class="recent-posts-grid">
-				{recentPosts.map(post => (
-					<div class="recent-post-card">
-						<h3 class="post-title">
-							<a href={getPath(`blog/${getPostSlug(post)}`)}>
-								<span class={`status-dot ${post.data.status || 'fleeting'}`}></span>
-								{post.data.title}
-							</a>
-						</h3>
-						<div class="post-date">
-							{post.data.pubDate ? (
-								post.data.pubDate instanceof Date 
-									? post.data.pubDate.toLocaleDateString() 
-									: new Date(post.data.pubDate).toLocaleDateString()
-							) : 'No date'}
-						</div>
-						<p class="post-description">{post.data.description}</p>
-						{post.data.tags && (
-							<div class="post-tags">
-								{post.data.tags.slice(0, 3).map(tag => (
-									<a href={getPath(`navigation/tags/${tag}`)} class="tag">{tag}</a>
-								))}
-							</div>
-						)}
-					</div>
-				))}
-			</div>
-		</section>
-	</main>
+  {/* Website Schema - properly included without an extra head tag */}
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  <main>
+    <h1 class="text-primary">Knowledge Base</h1>
+    <p class="description text-primary">
+      Explore content by topic areas, discover connections, and find related information
+    </p>
+
+    <div class="tabs">
+      <a href={getPath('')} class="tab active text-primary">Content Map</a>
+      <a href={getPath('navigation/graph')} class="tab text-primary">Graph View</a>
+      <a href={getPath('navigation/tags')} class="tab text-primary">All Tags</a>
+      <a href={getPath('search')} class="tab text-primary">Search</a>
+    </div>
+
+    <section id="mocs">
+      {
+        mocsByPostCount.length === 0 ? (
+          <div class="empty-state">
+            <p>No Maps of Content (MOCs) found. Start by adding MOCs to your posts.</p>
+          </div>
+        ) : (
+          <div class="moc-grid">
+            {mocsByPostCount.map(moc => (
+              <div class="moc-card">
+                <h2 class="moc-title">
+                  <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>{moc.name}</a>
+                </h2>
+                <div class="moc-meta">
+                  <span class="moc-posts-count">
+                    {moc.count} {moc.count === 1 ? 'post' : 'posts'}
+                  </span>
+                  <span class="moc-icon">📚</span>
+                </div>
+
+                <ul class="moc-post-list">
+                  {moc.posts.slice(0, 3).map(post => (
+                    <li>
+                      <a href={getPath(`blog/${getPostSlug(post)}`)} title={post.data.title}>
+                        <span class={`status-dot ${post.data.status || 'fleeting'}`} />
+                        {post.data.title}
+                      </a>
+                    </li>
+                  ))}
+                  {moc.posts.length > 3 && (
+                    <li class="more-posts">
+                      <a href={getPath(`navigation/mocs/${slugify(moc.name)}`)}>
+                        + {moc.posts.length - 3} more...
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+    <section id="recent-posts">
+      <h2 class="section-heading">Recent Posts</h2>
+      <div class="recent-posts-grid">
+        {
+          recentPosts.map(post => (
+            <div class="recent-post-card">
+              <h3 class="post-title">
+                <a href={getPath(`blog/${getPostSlug(post)}`)}>
+                  <span class={`status-dot ${post.data.status || 'fleeting'}`} />
+                  {post.data.title}
+                </a>
+              </h3>
+              <div class="post-date">
+                {post.data.pubDate
+                  ? post.data.pubDate instanceof Date
+                    ? post.data.pubDate.toLocaleDateString()
+                    : new Date(post.data.pubDate).toLocaleDateString()
+                  : 'No date'}
+              </div>
+              <p class="post-description">{post.data.description}</p>
+              {post.data.tags && (
+                <div class="post-tags">
+                  {post.data.tags.slice(0, 3).map(tag => (
+                    <a href={getPath(`navigation/tags/${tag}`)} class="tag">
+                      {tag}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </main>
 </Layout>
 
 <style>
-	main {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 1rem;
-	}
-	
-	h1 {
-		margin-bottom: 0.5rem;
-	}
-	
-	.description {
-		margin-bottom: 2rem;
-		color: var(--text-primary);
-		opacity: 0.9;
-	}
-	
-	.tabs {
-		display: flex;
-		margin-bottom: 2rem;
-		border-bottom: 1px solid var(--border-color);
-	}
-	
-	.tab {
-		padding: 0.5rem 1rem;
-		text-decoration: none;
-		color: var(--text-primary);
-		opacity: 0.85;
-		border-bottom: 2px solid transparent;
-		transition: all 0.3s ease;
-	}
-	
-	.tab:hover {
-		color: var(--text-primary);
-		opacity: 1;
-		border-bottom-color: var(--border-color);
-	}
-	
-	.tab.active {
-		color: var(--text-primary);
-		opacity: 1;
-		border-bottom-color: var(--accent);
-	}
-	
-	.moc-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-		gap: 2rem;
-		margin-bottom: 3rem;
-	}
-	
-	.moc-card {
-		border: 1px solid var(--border-color);
-		border-radius: 8px;
-		padding: 1.5rem;
-		transition: box-shadow 0.3s ease;
-		background-color: var(--bg-primary);
-	}
-	
-	.moc-card:hover {
-		box-shadow: 0 5px 15px var(--border-color);
-	}
-	
-	.moc-meta {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1rem;
-		color: var(--text-primary);
-		opacity: 0.9;
-	}
-	
-	.moc-icon {
-		font-size: 1.2rem;
-	}
-	
-	.moc-post-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-	
-	.moc-post-list li {
-		margin-bottom: 0.75rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 1px dashed var(--border-color);
-	}
-	
-	.moc-post-list li:last-child {
-		margin-bottom: 0;
-		padding-bottom: 0;
-		border-bottom: none;
-	}
-	
-	.moc-post-list a {
-		color: var(--text-primary);
-		text-decoration: none;
-		display: flex;
-		align-items: center;
-		transition: color 0.3s ease;
-	}
-	
-	.moc-post-list a:hover {
-		color: var(--accent-light);
-	}
-	
-	.status-dot {
-		display: inline-block;
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		margin-right: 8px;
-	}
-	
-	.status-dot.evergreen {
-		background-color: #27ae60;
-	}
-	
-	.status-dot.fleeting {
-		background-color: #e74c3c;
-	}
-	
-	.more-posts a {
-		color: var(--accent-light);
-		font-style: italic;
-	}
-	
-	.section-heading {
-		position: relative;
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 2px solid var(--border-color);
-	}
-	
-	.recent-posts-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 1.5rem;
-	}
-	
-	.recent-post-card {
-		border: 1px solid var(--border-color);
-		border-radius: 8px;
-		padding: 1.5rem;
-		background-color: var(--bg-primary);
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
-	}
-	
-	.recent-post-card:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-	}
-	
-	.post-title {
-		margin-top: 0;
-		margin-bottom: 0.5rem;
-		font-size: 1.25rem;
-	}
-	
-	.post-title a {
-		color: var(--text-primary);
-		text-decoration: none;
-		display: flex;
-		align-items: center;
-	}
-	
-	.post-title a:hover {
-		color: var(--accent-light);
-	}
-	
-	.post-date {
-		font-size: 0.85rem;
-		color: var(--text-primary);
-		opacity: 0.9;
-		margin-bottom: 0.75rem;
-	}
-	
-	.post-description {
-		font-size: 0.95rem;
-		color: var(--text-primary);
-		opacity: 0.9;
-		margin-bottom: 1rem;
-		line-height: 1.5;
-	}
-	
-	.post-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-	
-	.tag {
-		background-color: var(--bg-secondary);
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
-		font-size: 0.8rem;
-		color: var(--text-primary);
-		opacity: 0.9;
-		text-decoration: none;
-	}
-	
-	.tag:hover {
-		background-color: var(--accent-dark);
-		color: var(--text-primary);
-		opacity: 1;
-	}
-	
-	.empty-state {
-		background-color: var(--bg-secondary);
-		border-radius: 8px;
-		padding: 2rem;
-		text-align: center;
-		margin: 2rem 0;
-		color: var(--text-primary);
-		opacity: 0.9;
-	}
-	
-	@media (max-width: 768px) {
-		.moc-grid, .recent-posts-grid {
-			grid-template-columns: 1fr;
-		}
-		
-		.tabs {
-			flex-wrap: wrap;
-		}
-		
-		.tab {
-			padding: 0.5rem 0.75rem;
-			font-size: 0.9rem;
-		}
-	}
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .description {
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+  }
+
+  .tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .tab {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    opacity: 0.85;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .tab:hover {
+    color: var(--text-primary);
+    opacity: 1;
+    border-bottom-color: var(--border-color);
+  }
+
+  .tab.active {
+    color: var(--text-primary);
+    opacity: 1;
+    border-bottom-color: var(--accent);
+  }
+
+  .moc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .moc-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease;
+    background-color: var(--bg-primary);
+  }
+
+  .moc-card:hover {
+    box-shadow: 0 5px 15px var(--border-color);
+  }
+
+  .moc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+  }
+
+  .moc-icon {
+    font-size: 1.2rem;
+  }
+
+  .moc-post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .moc-post-list li {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .moc-post-list li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .moc-post-list a {
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+  }
+
+  .moc-post-list a:hover {
+    color: var(--accent-light);
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  .status-dot.evergreen {
+    background-color: #27ae60;
+  }
+
+  .status-dot.fleeting {
+    background-color: #e74c3c;
+  }
+
+  .more-posts a {
+    color: var(--accent-light);
+    font-style: italic;
+  }
+
+  .section-heading {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .recent-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .recent-post-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: var(--bg-primary);
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .recent-post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .post-title {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .post-title a {
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .post-title a:hover {
+    color: var(--accent-light);
+  }
+
+  .post-date {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+    margin-bottom: 0.75rem;
+  }
+
+  .post-description {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background-color: var(--bg-secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+    text-decoration: none;
+  }
+
+  .tag:hover {
+    background-color: var(--accent-dark);
+    color: var(--text-primary);
+    opacity: 1;
+  }
+
+  .empty-state {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+    color: var(--text-primary);
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .moc-grid,
+    .recent-posts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tabs {
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+    }
+  }
 </style>

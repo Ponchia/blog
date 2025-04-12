@@ -7,9 +7,7 @@
     "playwright-a11y.config.ts",
     "scripts/**/*"
   ],
-  "exclude": [
-    "dist"
-  ],
+  "exclude": ["dist"],
   "compilerOptions": {
     "strictNullChecks": true,
     "jsx": "react-jsx",

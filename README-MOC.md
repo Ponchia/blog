@@ -46,13 +46,13 @@ To add a post to a MOC, include the `mocs` field in your post frontmatter:
 
 ```markdown
 ---
-title: "Getting Started with Astro"
+title: 'Getting Started with Astro'
 pubDate: 2022-07-01
-description: "A guide to getting started with Astro"
-mocs: ["Getting Started", "Tutorials"]
-related: ["second-post"]
-tags: ["astro", "blogging"]
-status: "evergreen"
+description: 'A guide to getting started with Astro'
+mocs: ['Getting Started', 'Tutorials']
+related: ['second-post']
+tags: ['astro', 'blogging']
+status: 'evergreen'
 ---
 ```
 
@@ -70,6 +70,7 @@ The graph view (`/graph`) provides an interactive visualization of the connectio
 - **Links** represent relationships between nodes (belongs to MOC, related to post, has tag)
 
 Node colors indicate type:
+
 - Blue: Posts
 - Green: MOCs
 - Orange: Tags
@@ -108,4 +109,4 @@ Each tag has a dedicated page (`/tags/[tag]`) that lists all posts with that tag
 
 - Astro
 - React (for the graph visualization component)
-- Force Graph library 
+- Force Graph library

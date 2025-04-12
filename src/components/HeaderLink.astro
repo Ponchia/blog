@@ -9,8 +9,8 @@ const baseURL = import.meta.env.BASE_URL;
 
 // Normalize paths for comparison
 function normalizePath(path: string) {
-	// Ensure trailing slash for consistency
-	return path.endsWith('/') ? path : `${path}/`;
+  // Ensure trailing slash for consistency
+  return path.endsWith('/') ? path : `${path}/`;
 }
 
 // Get the current path for comparison
@@ -19,33 +19,34 @@ const currentPath = normalizePath(pathname);
 // Get the link path for comparison
 let linkPath: string;
 if (typeof href === 'string') {
-	linkPath = normalizePath(href);
+  linkPath = normalizePath(href);
 } else {
-	linkPath = normalizePath(baseURL);
+  linkPath = normalizePath(baseURL);
 }
 
 // Check if active
-const isActive = currentPath === linkPath || 
-	(linkPath !== normalizePath(baseURL) && currentPath.startsWith(linkPath));
+const isActive =
+  currentPath === linkPath ||
+  (linkPath !== normalizePath(baseURL) && currentPath.startsWith(linkPath));
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
-	<slot />
+  <slot />
 </a>
 <style>
-	a {
-		display: inline-block;
-		text-decoration: none;
-		font-weight: 500;
-		letter-spacing: 0.5px;
-		position: relative;
-		padding: 0.5rem;
-		color: var(--text-primary);
-		transition: color 0.2s ease;
-	}
-	
-	a.active {
-		font-weight: 700;
-		color: var(--accent-light);
-	}
+  a {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding: 0.5rem;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+  }
+
+  a.active {
+    font-weight: 700;
+    color: var(--accent-light);
+  }
 </style>

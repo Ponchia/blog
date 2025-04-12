@@ -14,9 +14,9 @@ import PyScriptDemo from '../../components/PyScriptDemo';
 
 # Python in Your Browser with PyScript
 
-<OptimizedImage 
-  src="/web_python.png" 
-  alt="Python in the browser - illustration showing Python logo with data visualizations on desktop and mobile screens" 
+<OptimizedImage
+  src="/web_python.png"
+  alt="Python in the browser - illustration showing Python logo with data visualizations on desktop and mobile screens"
   width={1200}
   height={800}
   format="png"
@@ -39,19 +39,23 @@ from pyscript import display
 from datetime import datetime
 
 # Simple hello world
+
 display("Hello, World from Python in the browser!")
 
 # Let's add something slightly more interesting
+
 for i in range(1, 6):
-    display(f"Counting: {i}")
+display(f"Counting: {i}")
 
 # Create a simple function
+
 def greet(name):
-    return f"Hello, {name}! Welcome to PyScript."
+return f"Hello, {name}! Welcome to PyScript."
 
 display(greet("Reader"))
 
 # Display current date and time
+
 now = datetime.now()
 display("Current time: " + now.strftime("%m/%d/%Y, %H:%M:%S"))
 `} />
@@ -72,59 +76,71 @@ import asyncio
 display("Packages are pre-loaded and ready to use!")
 
 # Create a simple bar chart
+
 display("Creating bar chart visualization...")
 categories = ['A', 'B', 'C', 'D', 'E']
 values = [22, 35, 14, 28, 19]
 
 # Create figure and axis
+
 fig1, ax1 = plt.subplots(figsize=(8, 4))
 bars = ax1.bar(categories, values, color='#4285F4')
 
 # Add title and labels
+
 ax1.set_title('Sample Data Visualization')
 ax1.set_xlabel('Categories')
 ax1.set_ylabel('Values')
 
 # Add value labels on top of each bar
+
 for bar in bars:
-    height = bar.get_height()
-    ax1.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-             f'{height}', ha='center', va='bottom')
+height = bar.get_height()
+ax1.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+f'{height}', ha='center', va='bottom')
 
 # Add a grid for better readability
+
 ax1.grid(axis='y', linestyle='--', alpha=0.7)
 
 # Set background color
+
 ax1.set_facecolor('#f8f9fa')
 
 # Display the plot directly
+
 display(fig1)
 
 # Create a trigonometric visualization
+
 display("Creating trigonometric visualization...")
 
 # First create the x and y coordinates of the points
+
 n_angles = 36
 n_radii = 8
 min_radius = 0.25
 radii = np.linspace(min_radius, 0.95, n_radii)
 
-angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
+angles = np.linspace(0, 2 \* np.pi, n_angles, endpoint=False)
 angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
 angles[:, 1::2] += np.pi / n_angles
 
-x = (radii * np.cos(angles)).flatten()
-y = (radii * np.sin(angles)).flatten()
-z = (np.cos(radii) * np.cos(3 * angles)).flatten()
+x = (radii _ np.cos(angles)).flatten()
+y = (radii _ np.sin(angles)).flatten()
+z = (np.cos(radii) _ np.cos(3 _ angles)).flatten()
 
 # Create the Triangulation; no triangles so Delaunay triangulation created
+
 import matplotlib.tri as tri
 triang = tri.Triangulation(x, y)
 
 # Mask off unwanted triangles
+
 triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                        y[triang.triangles].mean(axis=1))
-                < min_radius)
+y[triang.triangles].mean(axis=1))
+
+< min_radius)
 
 fig2, ax2 = plt.subplots(figsize=(8, 6))
 ax2.set_aspect('equal')
@@ -133,6 +149,7 @@ fig2.colorbar(tpc)
 ax2.set_title('Delaunay Triangulation Visualization')
 
 # Display the second plot directly
+
 display(fig2)
 
 display("Visualizations complete!")
@@ -167,4 +184,4 @@ Try editing the Python code above to see the changes in real-time when you refre
 
 - [PyScript Official Website](https://pyscript.net/)
 - [PyScript Documentation](https://docs.pyscript.net/)
-- [GitHub Repository](https://github.com/pyscript/pyscript) 
+- [GitHub Repository](https://github.com/pyscript/pyscript)

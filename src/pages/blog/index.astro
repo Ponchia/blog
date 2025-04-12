@@ -7,367 +7,365 @@ import ViewCounter from '../../components/ViewCounter.astro';
 import { render } from 'astro:content';
 
 const postsData = await getCollection('blog', ({ data }) => {
-	// Filter out posts with draft: true
-	return !data.draft;
+  // Filter out posts with draft: true
+  return !data.draft;
 });
 const postsWithMetadata = await Promise.all(
-	postsData.map(async (post) => {
-		const { remarkPluginFrontmatter } = await render(post);
-		return {
-			post,
-			remarkPluginFrontmatter
-		};
-	})
+  postsData.map(async post => {
+    const { remarkPluginFrontmatter } = await render(post);
+    return {
+      post,
+      remarkPluginFrontmatter,
+    };
+  })
 );
 
 // Helper function to ensure we have a valid Date object
 function ensureDate(dateValue: Date | string | undefined | null): Date | null {
-	if (!dateValue) return null;
-	
-	if (dateValue instanceof Date) return dateValue;
-	
-	// If it's a string, try to convert it to a Date
-	try {
-		const parsedDate = new Date(dateValue);
-		if (!isNaN(parsedDate.getTime())) {
-			return parsedDate;
-		}
-	} catch (e) {
-		console.error("Invalid date format:", dateValue);
-	}
-	
-	return null;
+  if (!dateValue) return null;
+
+  if (dateValue instanceof Date) return dateValue;
+
+  // If it's a string, try to convert it to a Date
+  try {
+    const parsedDate = new Date(dateValue);
+    if (!isNaN(parsedDate.getTime())) {
+      return parsedDate;
+    }
+  } catch (e) {
+    console.error('Invalid date format:', dateValue);
+  }
+
+  return null;
 }
 
-const posts = postsWithMetadata
-	.sort((a, b) => {
-		// Get effective publish dates (manual or from git) and ensure they're valid Date objects
-		const dateA = ensureDate(a.post.data.pubDate) || ensureDate(a.remarkPluginFrontmatter.gitCreatedDate);
-		const dateB = ensureDate(b.post.data.pubDate) || ensureDate(b.remarkPluginFrontmatter.gitCreatedDate);
-		
-		// If both have dates, sort by them
-		if (dateA && dateB) {
-			return dateB.valueOf() - dateA.valueOf();
-		}
-		
-		// If only one has a date, put the one with a date first
-		if (dateA) return -1;
-		if (dateB) return 1;
-		
-		// If neither has a date, maintain original order
-		return 0;
-	});
+const posts = postsWithMetadata.sort((a, b) => {
+  // Get effective publish dates (manual or from git) and ensure they're valid Date objects
+  const dateA =
+    ensureDate(a.post.data.pubDate) || ensureDate(a.remarkPluginFrontmatter.gitCreatedDate);
+  const dateB =
+    ensureDate(b.post.data.pubDate) || ensureDate(b.remarkPluginFrontmatter.gitCreatedDate);
+
+  // If both have dates, sort by them
+  if (dateA && dateB) {
+    return dateB.valueOf() - dateA.valueOf();
+  }
+
+  // If only one has a date, put the one with a date first
+  if (dateA) return -1;
+  if (dateB) return 1;
+
+  // If neither has a date, maintain original order
+  return 0;
+});
 
 // Helper function to ensure consistent paths with the base URL
 function getPathWithBase(path: string): string {
-	// For URLs like '/blog/{slug}' - keep the leading slash for routing
-	if (path.startsWith('blog/')) {
-		return `/${path}`;
-	}
-	
-	// For image paths, ensure they start with / for root-relative paths
-	if (path.startsWith('/')) {
-		return path; // Keep the leading slash
-	}
-	
-	// Otherwise, add a leading slash to make it root-relative
-	return `/${path}`;
+  // For URLs like '/blog/{slug}' - keep the leading slash for routing
+  if (path.startsWith('blog/')) {
+    return `/${path}`;
+  }
+
+  // For image paths, ensure they start with / for root-relative paths
+  if (path.startsWith('/')) {
+    return path; // Keep the leading slash
+  }
+
+  // Otherwise, add a leading slash to make it root-relative
+  return `/${path}`;
 }
 ---
 
 <Layout title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
-	<div class="blog-container fade-in">
-		<h1 class="section-title">Exploring the Universe</h1>
-		<p class="intro-text">Thoughts, stories, and ideas from across the cosmos.</p>
-		
-		<section class="posts-grid">
-			<ul>
-				{
-					posts.map(({ post, remarkPluginFrontmatter }, index) => {
-						// Generate post URL with correct base path
-						const postUrl = getPathWithBase(`blog/${post.id}/`);
-						
-						// Handle hero image path with proper base path
-						const imgSrc = post.data.heroImage 
-							? getPathWithBase(post.data.heroImage)
-							: '';
-							
-						// Path for view counter
-						const countPath = `/blog/${post.id}/`;
-						
-						// Get the effective publish date (manual or from git) and ensure it's a valid Date
-						const displayDate = ensureDate(post.data.pubDate) || ensureDate(remarkPluginFrontmatter.gitCreatedDate);
-						
-						return (
-							<li class={index === 0 ? 'featured-post' : ''}>
-								<a href={postUrl} class="post-card">
-									<div class="card-image-container">
-										{imgSrc && (
-											<img 
-												width={720} 
-												height={360} 
-												src={imgSrc} 
-												alt={post.data.title} 
-												loading="lazy"
-											/>
-										)}
-									</div>
-									<div class="card-content">
-										<div class="meta-info">
-											{displayDate && (
-												<p class="date">
-													<FormattedDate date={displayDate} />
-													{!post.data.pubDate && remarkPluginFrontmatter.gitCreatedDate && (
-														<span class="date-source">(from git)</span>
-													)}
-												</p>
-											)}
-											{remarkPluginFrontmatter.minutesRead && (
-												<p class="reading-time">{remarkPluginFrontmatter.minutesRead}</p>
-											)}
-											<div class="view-count-wrapper">
-												<ViewCounter slug={countPath} />
-											</div>
-										</div>
-										<h4 class="title">{post.data.title}</h4>
-										{post.data.description && (
-											<p class="description">{post.data.description}</p>
-										)}
-									</div>
-								</a>
-							</li>
-						);
-					})
-				}
-			</ul>
-		</section>
-	</div>
+  <div class="blog-container fade-in">
+    <h1 class="section-title">Exploring the Universe</h1>
+    <p class="intro-text">Thoughts, stories, and ideas from across the cosmos.</p>
+
+    <section class="posts-grid">
+      <ul>
+        {
+          posts.map(({ post, remarkPluginFrontmatter }, index) => {
+            // Generate post URL with correct base path
+            const postUrl = getPathWithBase(`blog/${post.id}/`);
+
+            // Handle hero image path with proper base path
+            const imgSrc = post.data.heroImage ? getPathWithBase(post.data.heroImage) : '';
+
+            // Path for view counter
+            const countPath = `/blog/${post.id}/`;
+
+            // Get the effective publish date (manual or from git) and ensure it's a valid Date
+            const displayDate =
+              ensureDate(post.data.pubDate) || ensureDate(remarkPluginFrontmatter.gitCreatedDate);
+
+            return (
+              <li class={index === 0 ? 'featured-post' : ''}>
+                <a href={postUrl} class="post-card">
+                  <div class="card-image-container">
+                    {imgSrc && (
+                      <img
+                        width={720}
+                        height={360}
+                        src={imgSrc}
+                        alt={post.data.title}
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                  <div class="card-content">
+                    <div class="meta-info">
+                      {displayDate && (
+                        <p class="date">
+                          <FormattedDate date={displayDate} />
+                          {!post.data.pubDate && remarkPluginFrontmatter.gitCreatedDate && (
+                            <span class="date-source">(from git)</span>
+                          )}
+                        </p>
+                      )}
+                      {remarkPluginFrontmatter.minutesRead && (
+                        <p class="reading-time">{remarkPluginFrontmatter.minutesRead}</p>
+                      )}
+                      <div class="view-count-wrapper">
+                        <ViewCounter slug={countPath} />
+                      </div>
+                    </div>
+                    <h4 class="title">{post.data.title}</h4>
+                    {post.data.description && <p class="description">{post.data.description}</p>}
+                  </div>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </section>
+  </div>
 </Layout>
 
 <style>
-	.blog-container {
-		max-width: var(--content-width);
-		margin: 0 auto;
-	}
-	
-	.section-title {
-		text-align: center;
-		margin-bottom: 0.5rem;
-		color: var(--text-primary);
-		position: relative;
-		display: inline-block;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	
-	.section-title::after {
-		content: '';
-		position: absolute;
-		bottom: -10px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 80px;
-		height: 3px;
-		background-color: var(--accent);
-	}
-	
-	.intro-text {
-		text-align: center;
-		margin-bottom: 3rem;
-		font-size: 1.2rem;
-		color: var(--text-primary);
-		opacity: 0.9;
-		max-width: 600px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-	
-	.posts-grid ul {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 2.5rem;
-		list-style-type: none;
-		margin: 0;
-		padding: 0;
-	}
-	
-	.featured-post {
-		grid-column: 1 / -1;
-	}
-	
-	.featured-post .post-card {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 2rem;
-	}
-	
-	.featured-post .card-image-container {
-		height: 100%;
-	}
-	
-	.featured-post .title {
-		font-size: 2.2rem;
-		margin-top: 0.5rem;
-	}
-	
-	.featured-post .description {
-		font-size: 1.1rem;
-	}
-	
-	.post-card {
-		display: flex;
-		flex-direction: column;
-		text-decoration: none;
-		transition: all 0.3s ease;
-		height: 100%;
-		border-radius: 12px;
-		overflow: hidden;
-		background-color: rgba(var(--gray-dark), 0.2);
-	}
-	
-	.post-card:hover {
-		transform: translateY(-5px);
-		background-color: rgba(var(--gray-dark), 0.3);
-	}
-	
-	.date-source {
-		font-size: 0.8rem;
-		opacity: 0.7;
-		margin-left: 0.5rem;
-	}
-	
-	.card-image-container {
-		overflow: hidden;
-		position: relative;
-	}
-	
-	.card-image-container::after {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(to bottom, transparent 70%, rgba(var(--black), 0.8));
-		z-index: 1;
-	}
-	
-	.post-card img {
-		width: 100%;
-		height: 220px;
-		object-fit: cover;
-		transition: transform 0.3s ease;
-	}
-	
-	.featured-post .post-card img {
-		height: 360px;
-	}
-	
-	.post-card:hover img {
-		transform: scale(1.05);
-	}
-	
-	.card-content {
-		padding: 1.5rem;
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-	}
-	
-	.meta-info {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 0.5rem 1rem;
-	}
-	
-	.date {
-		font-size: 0.9rem;
-		color: var(--accent-light);
-		margin: 0;
-	}
-	
-	.reading-time {
-		margin: 0;
-		padding-left: 1rem;
-		font-size: 0.9rem;
-		color: var(--accent-light);
-		position: relative;
-	}
-	
-	.reading-time::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		height: 0.8em;
-		width: 1px;
-		background-color: var(--accent-light);
-	}
-	
-	.view-count-wrapper {
-		position: relative;
-		padding-left: 1rem;
-	}
-	
-	.view-count-wrapper::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		height: 0.8em;
-		width: 1px;
-		background-color: var(--accent-light);
-	}
-	
-	.title {
-		margin: 0.5rem 0;
-		color: var(--text-primary);
-		line-height: 1.2;
-		transition: color 0.2s ease;
-	}
-	
-	.description {
-		margin: 0.75rem 0 0;
-		color: var(--text-primary);
-		opacity: 0.9;
-		font-size: 0.95rem;
-		line-height: 1.6;
-	}
-	
-	@media (max-width: 900px) {
-		.featured-post .post-card {
-			grid-template-columns: 1fr;
-		}
-		
-		.featured-post .title {
-			font-size: 1.8rem;
-		}
-	}
-	
-	@media (max-width: 768px) {
-		.posts-grid ul {
-			grid-template-columns: 1fr;
-			gap: 2rem;
-		}
-		
-		.post-card img {
-			height: 200px;
-		}
-		
-		.featured-post .post-card img {
-			height: 220px;
-		}
-		
-		.section-title {
-			font-size: 2.2rem;
-		}
-		
-		.intro-text {
-			font-size: 1.1rem;
-			margin-bottom: 2rem;
-		}
-	}
+  .blog-container {
+    max-width: var(--content-width);
+    margin: 0 auto;
+  }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: var(--accent);
+  }
+
+  .intro-text {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .posts-grid ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.5rem;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .featured-post {
+    grid-column: 1 / -1;
+  }
+
+  .featured-post .post-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .featured-post .card-image-container {
+    height: 100%;
+  }
+
+  .featured-post .title {
+    font-size: 2.2rem;
+    margin-top: 0.5rem;
+  }
+
+  .featured-post .description {
+    font-size: 1.1rem;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: rgba(var(--gray-dark), 0.2);
+  }
+
+  .post-card:hover {
+    transform: translateY(-5px);
+    background-color: rgba(var(--gray-dark), 0.3);
+  }
+
+  .date-source {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+  }
+
+  .card-image-container {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-image-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 70%, rgba(var(--black), 0.8));
+    z-index: 1;
+  }
+
+  .post-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .featured-post .post-card img {
+    height: 360px;
+  }
+
+  .post-card:hover img {
+    transform: scale(1.05);
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .meta-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+    color: var(--accent-light);
+    margin: 0;
+  }
+
+  .reading-time {
+    margin: 0;
+    padding-left: 1rem;
+    font-size: 0.9rem;
+    color: var(--accent-light);
+    position: relative;
+  }
+
+  .reading-time::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 0.8em;
+    width: 1px;
+    background-color: var(--accent-light);
+  }
+
+  .view-count-wrapper {
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .view-count-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 0.8em;
+    width: 1px;
+    background-color: var(--accent-light);
+  }
+
+  .title {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+    line-height: 1.2;
+    transition: color 0.2s ease;
+  }
+
+  .description {
+    margin: 0.75rem 0 0;
+    color: var(--text-primary);
+    opacity: 0.9;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .featured-post .post-card {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-post .title {
+      font-size: 1.8rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .posts-grid ul {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .post-card img {
+      height: 200px;
+    }
+
+    .featured-post .post-card img {
+      height: 220px;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+    }
+
+    .intro-text {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+  }
 </style>

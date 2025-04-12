@@ -10,9 +10,9 @@ import OptimizedImage from '../../components/OptimizedImage.astro';
 
 # Privacy-Friendly Analytics Without Consent Banners
 
-<OptimizedImage 
-  src="/goat_analytics.png" 
-  alt="Goat mascot showing privacy-friendly analytics with no tracking - cartoon of a goat with a computer showing analytics without privacy concerns" 
+<OptimizedImage
+  src="/goat_analytics.png"
+  alt="Goat mascot showing privacy-friendly analytics with no tracking - cartoon of a goat with a computer showing analytics without privacy concerns"
   width={800}
   height={600}
   format="png"
@@ -41,6 +41,7 @@ This blog uses [GoatCounter](https://www.goatcounter.com/), a privacy-focused an
 ### 1. No Personal Data Collection
 
 GoatCounter **doesn't collect personally identifiable information**:
+
 - No cookies are used for tracking
 - No persistent unique identifiers
 - No fingerprinting techniques
@@ -52,6 +53,7 @@ The GDPR specifically states it "does not apply to anonymous information, namely
 ### 2. Minimal Data Processing
 
 The implementation only collects:
+
 - Page views with timestamps
 - Referrer information (where visitors came from)
 - Browser and device information in aggregate
@@ -70,8 +72,11 @@ Looking at how GoatCounter is implemented in our codebase, you'll see it's desig
 
 ```html
 <!-- Simple analytics script with no personal data collection -->
-<script data-goatcounter="https://ponchia.goatcounter.com/count" 
-        async src="//gc.zgo.at/count.js"></script>
+<script
+  data-goatcounter="https://ponchia.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"
+></script>
 ```
 
 The ViewCounter component displays view counts for posts while ensuring no personally identifiable information is processed or stored.
@@ -126,4 +131,4 @@ This approach demonstrates that respecting privacy and gathering useful analytic
 
 What do you think about this approach to analytics? Would you consider implementing something similar for your website? Let me know in the comments below!
 
-{/* Updated to ensure Git history is tracked */} 
+{/* Updated to ensure Git history is tracked */}

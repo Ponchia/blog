@@ -19,7 +19,9 @@ Search engine optimization (SEO) is essential for ensuring your Astro blog gets 
 This guide provides a practical approach to optimizing your Astro blog, incorporating current best practices and algorithm considerations for 2024-2025.
 
 <Alert type="info">
-  While focused on Astro-specific implementations, most principles here apply to any static site generator or web framework. The techniques are particularly effective for technical blogs and knowledge bases.
+  While focused on Astro-specific implementations, most principles here apply to any static site
+  generator or web framework. The techniques are particularly effective for technical blogs and
+  knowledge bases.
 </Alert>
 
 ## The Evolution of SEO: From Keywords to User Experience
@@ -88,7 +90,7 @@ Let's explore each area with practical implementation examples.
 
 ## 1. Structured Data Implementation with JSON-LD
 
-Structured data helps search engines understand not just what your content says, but what it *means*. For technical blogs, this context is particularly crucial.
+Structured data helps search engines understand not just what your content says, but what it _means_. For technical blogs, this context is particularly crucial.
 
 ### Creating a Reusable Structured Data Component
 
@@ -103,27 +105,27 @@ const { type, data, baseSchema } = Astro.props;
 
 // Base website schema that will be included in all pages
 const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": import.meta.env.SITE_TITLE || "Your Blog Title",
-  "description": import.meta.env.SITE_DESCRIPTION || "Your blog description",
-  "url": new URL(Astro.url.pathname, Astro.site).toString(),
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: import.meta.env.SITE_TITLE || 'Your Blog Title',
+  description: import.meta.env.SITE_DESCRIPTION || 'Your blog description',
+  url: new URL(Astro.url.pathname, Astro.site).toString(),
   // Add organization data, social profiles, etc.
 };
 
 // Merge with any additional schema based on page type
-const schema = type ? 
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      websiteSchema,
-      {
-        "@type": type,
-        ...data
-      }
-    ]
-  } : 
-  baseSchema || websiteSchema;
+const schema = type
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        websiteSchema,
+        {
+          '@type': type,
+          ...data,
+        },
+      ],
+    }
+  : baseSchema || websiteSchema;
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(schema)} />
@@ -144,23 +146,23 @@ const heroImagePath = heroImage ? new URL(heroImage, Astro.site).toString() : un
 
 <head>
   <!-- Other head elements -->
-  
-  <StructuredData 
+
+  <StructuredData
     type="BlogPosting"
     data={{
-      "headline": title,
-      "description": description,
-      "image": heroImagePath,
-      "datePublished": pubDate?.toISOString(),
-      "dateModified": updatedDate?.toISOString() || pubDate?.toISOString(),
-      "author": {
-        "@type": "Person",
-        "name": author || "Your Name"
+      headline: title,
+      description: description,
+      image: heroImagePath,
+      datePublished: pubDate?.toISOString(),
+      dateModified: updatedDate?.toISOString() || pubDate?.toISOString(),
+      author: {
+        '@type': 'Person',
+        name: author || 'Your Name',
       },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": Astro.url.toString()
-      }
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': Astro.url.toString(),
+      },
     }}
   />
 </head>
@@ -171,24 +173,24 @@ const heroImagePath = heroImage ? new URL(heroImage, Astro.site).toString() : un
 For technical articles, extend your schema with code-specific attributes:
 
 ```astro
-<StructuredData 
+<StructuredData
   type="TechArticle"
   data={{
-    "headline": title,
-    "description": description,
-    "image": heroImagePath,
-    "datePublished": pubDate?.toISOString(),
-    "dateModified": updatedDate?.toISOString() || pubDate?.toISOString(),
-    "author": {
-      "@type": "Person",
-      "name": author || "Your Name" 
+    headline: title,
+    description: description,
+    image: heroImagePath,
+    datePublished: pubDate?.toISOString(),
+    dateModified: updatedDate?.toISOString() || pubDate?.toISOString(),
+    author: {
+      '@type': 'Person',
+      name: author || 'Your Name',
     },
-    "proficiencyLevel": "Expert", // Options: Beginner, Intermediate, Expert
-    "dependencies": "Astro 4.x, Tailwind CSS",
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": Astro.url.toString()
-    }
+    proficiencyLevel: 'Expert', // Options: Beginner, Intermediate, Expert
+    dependencies: 'Astro 4.x, Tailwind CSS',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': Astro.url.toString(),
+    },
   }}
 />
 ```
@@ -225,13 +227,13 @@ export async function getStaticPaths() {
   // Get all unique topics from your content
   const posts = await getCollection('blog');
   const topics = [...new Set(posts.flatMap(post => post.data.tags))];
-  
+
   return topics.map(topic => ({
     params: { topic },
-    props: { 
+    props: {
       topic,
-      posts: posts.filter(post => post.data.tags.includes(topic))
-    }
+      posts: posts.filter(post => post.data.tags.includes(topic)),
+    },
   }));
 }
 
@@ -241,13 +243,15 @@ const { topic, posts } = Astro.props;
 <Layout title={`${topic} - Topic Hub`}>
   <h1>{topic}</h1>
   <p>Explore all our content about {topic}</p>
-  
+
   <ul>
-    {posts.map(post => (
-      <li>
-        <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-      </li>
-    ))}
+    {
+      posts.map(post => (
+        <li>
+          <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+        </li>
+      ))
+    }
   </ul>
 </Layout>
 ```
@@ -266,9 +270,10 @@ const allPosts = await getCollection('blog');
 
 // Find posts that share tags with the current post
 const relatedPosts = allPosts
-  .filter(post => 
-    post.id !== currentPost.id && 
-    post.data.tags?.some(tag => currentPost.data.tags?.includes(tag))
+  .filter(
+    post =>
+      post.id !== currentPost.id &&
+      post.data.tags?.some(tag => currentPost.data.tags?.includes(tag))
   )
   .sort((a, b) => {
     // Count matching tags for relevance scoring
@@ -279,18 +284,20 @@ const relatedPosts = allPosts
   .slice(0, maxPosts);
 ---
 
-{relatedPosts.length > 0 && (
-  <section class="related-posts">
-    <h2>Related Articles</h2>
-    <ul>
-      {relatedPosts.map(post => (
-        <li>
-          <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-        </li>
-      ))}
-    </ul>
-  </section>
-)}
+{
+  relatedPosts.length > 0 && (
+    <section class="related-posts">
+      <h2>Related Articles</h2>
+      <ul>
+        {relatedPosts.map(post => (
+          <li>
+            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
 ```
 
 ### Strategic Anchor Text Optimization
@@ -302,7 +309,9 @@ When creating internal links, use descriptive, keyword-rich anchor text that pro
 <a href="/blog/core-web-vitals-guide">Click here</a> to learn about Core Web Vitals.
 
 <!-- Use this -->
-Learn how to optimize your <a href="/blog/core-web-vitals-guide">Core Web Vitals for better SEO performance</a>.
+Learn how to optimize your <a href="/blog/core-web-vitals-guide"
+  >Core Web Vitals for better SEO performance</a
+>.
 ```
 
 Internal linking helps distribute link equity across your site and creates a more navigable structure for both users and search engines to follow.
@@ -332,7 +341,7 @@ export default defineConfig({
             ...item,
             priority: 0.9,
             // Add optional lastmod date if available in frontmatter
-            ...(item.lastmod && { lastmod: item.lastmod })
+            ...(item.lastmod && { lastmod: item.lastmod }),
           };
         }
         return item;
@@ -372,24 +381,19 @@ Implement canonical URLs to prevent duplicate content issues, especially for pag
 ---
 // For paginated pages
 const currentPage = Astro.props.page.currentPage;
-const canonicalURL = new URL(
-  currentPage === 1 
-    ? `/blog/` 
-    : `/blog/${currentPage}/`, 
-  Astro.site
-);
+const canonicalURL = new URL(currentPage === 1 ? `/blog/` : `/blog/${currentPage}/`, Astro.site);
 ---
 
 <head>
   <link rel="canonical" href={canonicalURL} />
-  
-  {currentPage > 1 && (
-    <link rel="prev" href={new URL(`/blog/${currentPage - 1}/`, Astro.site)} />
-  )}
-  
-  {currentPage < Astro.props.page.lastPage && (
-    <link rel="next" href={new URL(`/blog/${currentPage + 1}/`, Astro.site)} />
-  )}
+
+  {currentPage > 1 && <link rel="prev" href={new URL(`/blog/${currentPage - 1}/`, Astro.site)} />}
+
+  {
+    currentPage < Astro.props.page.lastPage && (
+      <link rel="next" href={new URL(`/blog/${currentPage + 1}/`, Astro.site)} />
+    )
+  }
 </head>
 ```
 
@@ -413,15 +417,17 @@ const { trail } = Astro.props;
       </a>
       <meta itemprop="position" content="1" />
     </li>
-    
-    {trail.map((item, index) => (
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a itemprop="item" href={item.url}>
-          <span itemprop="name">{item.name}</span>
-        </a>
-        <meta itemprop="position" content={index + 2} />
-      </li>
-    ))}
+
+    {
+      trail.map((item, index) => (
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a itemprop="item" href={item.url}>
+            <span itemprop="name">{item.name}</span>
+          </a>
+          <meta itemprop="position" content={index + 2} />
+        </li>
+      ))
+    }
   </ol>
 </nav>
 
@@ -433,9 +439,9 @@ const { trail } = Astro.props;
     margin: 0;
     padding: 0;
   }
-  
+
   .breadcrumbs li:not(:last-child)::after {
-    content: "/";
+    content: '/';
     margin: 0 0.5rem;
     color: var(--text-light);
   }
@@ -455,18 +461,20 @@ const { headings } = Astro.props;
 const toc = headings.filter(heading => heading.depth >= 2 && heading.depth <= 3);
 ---
 
-{toc.length > 0 && (
-  <nav class="toc">
-    <h2>Table of Contents</h2>
-    <ul>
-      {toc.map(heading => (
-        <li class={`depth-${heading.depth}`}>
-          <a href={`#${heading.slug}`}>{heading.text}</a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-)}
+{
+  toc.length > 0 && (
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ul>
+        {toc.map(heading => (
+          <li class={`depth-${heading.depth}`}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
 
 <style>
   .toc {
@@ -475,16 +483,16 @@ const toc = headings.filter(heading => heading.depth >= 2 && heading.depth <= 3)
     border-radius: 0.5rem;
     margin-bottom: 2rem;
   }
-  
+
   .toc h2 {
     margin-top: 0;
     font-size: 1.25rem;
   }
-  
+
   .toc ul {
     padding-left: 1rem;
   }
-  
+
   .depth-3 {
     margin-left: 1rem;
   }
@@ -502,14 +510,14 @@ Implement optimal font loading to reduce Largest Contentful Paint (LCP) times:
 ```astro
 <head>
   <!-- Font preloads for improved performance -->
-  <link 
-    rel="preload" 
-    href={assetPath('fonts/your-main-font.woff2')} 
-    as="font" 
-    type="font/woff2" 
-    crossorigin 
+  <link
+    rel="preload"
+    href={assetPath('fonts/your-main-font.woff2')}
+    as="font"
+    type="font/woff2"
+    crossorigin
   />
-  
+
   <!-- Font display strategy -->
   <style is:inline>
     @font-face {
@@ -517,7 +525,7 @@ Implement optimal font loading to reduce Largest Contentful Paint (LCP) times:
       src: url('/fonts/your-main-font.woff2') format('woff2');
       font-weight: 400;
       font-style: normal;
-      font-display: swap; // Use swap to ensure text remains visible during font loading
+      font-display: swap; /* Use swap to ensure text remains visible during font loading */
     }
   </style>
 </head>
@@ -529,14 +537,7 @@ Implement lazy loading for images and defer non-critical JavaScript:
 
 ```astro
 <!-- Lazy load below-the-fold images -->
-<img 
-  src={imgSrc} 
-  alt="Description" 
-  loading="lazy" 
-  decoding="async" 
-  width={720} 
-  height={400} 
-/>
+<img src={imgSrc} alt="Description" loading="lazy" decoding="async" width={720} height={400} />
 
 <!-- Defer non-critical JavaScript -->
 <script src="/js/analytics.js" defer></script>
@@ -553,7 +554,7 @@ Prevent Cumulative Layout Shift (CLS) by reserving space for dynamic content:
     background-color: #f0f0f0; /* Placeholder color */
     width: 100%;
   }
-  
+
   .comment-section {
     min-height: 200px; /* Reserve space for comments */
   }
@@ -594,14 +595,7 @@ const { src, alt, width, height } = Astro.props;
 const cloudinaryUrl = `https://res.cloudinary.com/your-account/image/upload/f_auto,q_auto,w_${width}/${src}`;
 ---
 
-<img 
-  src={cloudinaryUrl} 
-  alt={alt} 
-  width={width} 
-  height={height} 
-  loading="lazy" 
-  decoding="async" 
-/>
+<img src={cloudinaryUrl} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
 ```
 
 ### Accessible Images
@@ -609,12 +603,12 @@ const cloudinaryUrl = `https://res.cloudinary.com/your-account/image/upload/f_au
 Ensure all images have proper alt text and are accessible:
 
 ```astro
-<img 
-  src={imgSrc} 
-  alt="Detailed description of what the image contains and conveys" 
-  width={720} 
-  height={400} 
-  loading="lazy" 
+<img
+  src={imgSrc}
+  alt="Detailed description of what the image contains and conveys"
+  width={720}
+  height={400}
+  loading="lazy"
 />
 ```
 
@@ -637,16 +631,18 @@ const { questions } = Astro.props;
 ---
 
 <div class="faq" itemscope itemtype="https://schema.org/FAQPage">
-  {questions.map(({ question, answer }) => (
-    <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-      <h3 itemprop="name">{question}</h3>
-      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-        <div itemprop="text">
-          <p>{answer}</p>
+  {
+    questions.map(({ question, answer }) => (
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name">{question}</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div itemprop="text">
+            <p>{answer}</p>
+          </div>
         </div>
       </div>
-    </div>
-  ))}
+    ))
+  }
 </div>
 ```
 
@@ -670,36 +666,38 @@ const { author } = Astro.props;
 // Author data could come from a CMS or content collection
 const authorData = {
   name: author,
-  role: "Senior Developer",
-  bio: "Has 10+ years of experience working with web technologies...",
-  image: "/images/authors/author-name.jpg",
+  role: 'Senior Developer',
+  bio: 'Has 10+ years of experience working with web technologies...',
+  image: '/images/authors/author-name.jpg',
   social: [
-    { platform: "GitHub", url: "https://github.com/author-handle" },
-    { platform: "Twitter", url: "https://twitter.com/author-handle" }
-  ]
+    { platform: 'GitHub', url: 'https://github.com/author-handle' },
+    { platform: 'Twitter', url: 'https://twitter.com/author-handle' },
+  ],
 };
 ---
 
 <div class="author-bio" itemscope itemtype="https://schema.org/Person">
-  <img 
-    src={authorData.image} 
-    alt={`Profile photo of ${authorData.name}`} 
-    width="100" 
-    height="100" 
-    itemprop="image" 
+  <img
+    src={authorData.image}
+    alt={`Profile photo of ${authorData.name}`}
+    width="100"
+    height="100"
+    itemprop="image"
   />
-  
+
   <div class="author-info">
     <h3 itemprop="name">{authorData.name}</h3>
     <p itemprop="jobTitle">{authorData.role}</p>
     <p itemprop="description">{authorData.bio}</p>
-    
+
     <div class="social-links">
-      {authorData.social.map(profile => (
-        <a href={profile.url} itemprop="sameAs" target="_blank" rel="noopener noreferrer">
-          {profile.platform}
-        </a>
-      ))}
+      {
+        authorData.social.map(profile => (
+          <a href={profile.url} itemprop="sameAs" target="_blank" rel="noopener noreferrer">
+            {profile.platform}
+          </a>
+        ))
+      }
     </div>
   </div>
 </div>
@@ -733,10 +731,9 @@ Add Google Search Console verification to track your blog's performance:
 const { verification } = Astro.props;
 ---
 
-<!-- Google Search Console verification -->
-{verification && (
-  <meta name="google-site-verification" content={verification} />
-)}
+<!-- Google Search Console verification -->{
+  verification && <meta name="google-site-verification" content={verification} />
+}
 ```
 
 ### SEO Performance Testing
@@ -779,7 +776,8 @@ If you're interested in seeing how these SEO principles were implemented in prac
 By examining these commits, you can see the practical application of the concepts discussed in this article. The code changes demonstrate how various SEO elements were integrated into an Astro blog structure, which may provide helpful examples for your own implementation.
 
 <Alert type="info">
-  Have questions about implementing these SEO strategies in your own Astro blog? Feel free to ask in the comments below or connect with me on [GitHub](https://github.com/ponchia).
+  Have questions about implementing these SEO strategies in your own Astro blog? Feel free to ask in
+  the comments below or connect with me on [GitHub](https://github.com/ponchia).
 </Alert>
 
 ## Resources and Further Reading
@@ -794,11 +792,19 @@ By examining these commits, you can see the practical application of the concept
 - [Structured Data: What You Need to Know](https://searchengineland.com/structured-data-seo-what-you-need-to-know-447304)[^33]
 
 [^1]: https://www.verto.co.uk/news/a-brief-history-of-seo
+
 [^3]: https://www.barkweb.co.uk/blog/guide-to-panda-penguin-and-hummingbird
+
 [^6]: https://searchengineland.com/evolving-seo-for-2025-what-needs-to-change-450911
+
 [^12]: https://content-whale.com/blog/how-to-optimise-for-voice-search/
+
 [^19]: https://www.strikingly.com/blog/posts/7-essential-ai-powered-seo-tools
+
 [^21]: https://anchordigital.com.au/articles/the-evolution-of-seo-from-the-beginning
+
 [^23]: https://www.greenlanemarketing.com/resources/articles/voice-search-optimization
+
 [^32]: https://www.searchenginejournal.com/google-e-e-a-t-how-to-demonstrate-first-hand-experience/474446/
-[^33]: https://searchengineland.com/structured-data-seo-what-you-need-to-know-447304 
+
+[^33]: https://searchengineland.com/structured-data-seo-what-you-need-to-know-447304

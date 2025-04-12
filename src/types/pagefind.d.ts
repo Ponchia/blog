@@ -23,4 +23,4 @@ declare module '@pagefind/default-ui' {
       translations?: Record<string, string>;
     });
   }
-} 
+}

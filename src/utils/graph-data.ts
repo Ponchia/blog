@@ -43,7 +43,7 @@ export interface GraphData {
 export function generateGraphData(posts: BlogPost[]): GraphData {
   if (!posts || posts.length === 0) {
     // eslint-disable-next-line no-console
-    console.log("No posts provided to generateGraphData");
+    console.log('No posts provided to generateGraphData');
     return { nodes: [], links: [] };
   }
 
@@ -56,7 +56,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
     status: post.data.status || 'evergreen',
     // Size will be determined in the visualization component
   }));
-  
+
   // Create nodes for MOCs
   const allMocs = new Set<string>();
   posts.forEach(post => {
@@ -64,13 +64,13 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
       post.data.mocs.forEach((moc: string) => allMocs.add(moc));
     }
   });
-  
+
   const mocNodes: Node[] = Array.from(allMocs).map((moc: string) => ({
     id: `moc-${slugify(moc)}`,
     label: moc,
     type: 'moc',
   }));
-  
+
   // Create nodes for tags
   const allTags = new Set<string>();
   posts.forEach(post => {
@@ -78,13 +78,13 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
       post.data.tags.forEach((tag: string) => allTags.add(tag));
     }
   });
-  
+
   const tagNodes: Node[] = Array.from(allTags).map((tag: string) => ({
     id: `tag-${slugify(tag)}`,
     label: tag,
     type: 'tag',
   }));
-  
+
   // Create links from posts to MOCs
   const postMocLinks: Link[] = [];
   posts.forEach(post => {
@@ -98,7 +98,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
       });
     }
   });
-  
+
   // Create links from posts to tags
   const postTagLinks: Link[] = [];
   posts.forEach(post => {
@@ -112,7 +112,7 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
       });
     }
   });
-  
+
   // Create links for related posts
   const relatedLinks: Link[] = [];
   posts.forEach(post => {
@@ -130,13 +130,13 @@ export function generateGraphData(posts: BlogPost[]): GraphData {
       });
     }
   });
-  
+
   const result = {
     nodes: [...postNodes, ...mocNodes, ...tagNodes],
     links: [...postMocLinks, ...postTagLinks, ...relatedLinks],
   };
-  
+
   // eslint-disable-next-line no-console
   console.log(`Generated graph data: ${result.nodes.length} nodes, ${result.links.length} links`);
   return result;
-} 
+}

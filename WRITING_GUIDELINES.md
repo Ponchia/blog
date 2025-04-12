@@ -37,27 +37,30 @@ This document outlines the guidelines and best practices for writing articles on
 title: 'Descriptive Title'
 description: 'Clear, concise description of the article content'
 pubDate: 'MMM DD YYYY'
-heroImage: '/blog/path-to-image.jpg'  # Optional
-mocs: ['Category1', 'Category2']      # Optional
-tags: ['tag1', 'tag2', 'tag3']       # Required
-status: 'evergreen'                   # Optional: 'evergreen' or 'temporal'
-related: ['article-slug-1']           # Optional
+heroImage: '/blog/path-to-image.jpg' # Optional
+mocs: ['Category1', 'Category2'] # Optional
+tags: ['tag1', 'tag2', 'tag3'] # Required
+status: 'evergreen' # Optional: 'evergreen' or 'temporal'
+related: ['article-slug-1'] # Optional
 ---
 ```
 
 ### Content Sections
 
 1. **Introduction**
+
    - Clear problem statement or topic introduction
    - Why this is important/relevant
    - What the reader will learn
 
 2. **Prerequisites** (if applicable)
+
    - Required knowledge
    - Required tools/software
    - Version information
 
 3. **Main Content**
+
    - Logical progression of concepts
    - Code examples with explanations
    - Visual aids (diagrams, charts) when helpful
@@ -81,42 +84,49 @@ related: ['article-slug-1']           # Optional
 Examples of engaging writing:
 
 ✅ Good:
+
 ```
-Ever tried to debug a race condition? It's like trying to catch a butterfly while 
-riding a unicycle - tricky, unpredictable, and slightly amusing when things go wrong. 
+Ever tried to debug a race condition? It's like trying to catch a butterfly while
+riding a unicycle - tricky, unpredictable, and slightly amusing when things go wrong.
 But fear not! Let's explore some practical techniques to tame these elusive bugs...
 ```
 
 ❌ Too formal:
+
 ```
-This article will discuss the methodologies for identifying and resolving race 
+This article will discuss the methodologies for identifying and resolving race
 conditions in concurrent systems...
 ```
 
 ❌ Too casual:
+
 ```
-OMG race conditions are the worst! They make me want to throw my keyboard out 
+OMG race conditions are the worst! They make me want to throw my keyboard out
 the window! 😭 Let's fix this mess...
 ```
 
 ### Making Technical Content Engaging
 
 1. **Use Relatable Metaphors**
+
    - Compare complex concepts to everyday experiences
    - Use visual analogies that readers can easily grasp
    - Keep metaphors culturally neutral and technically accurate
 
 2. **Tell a Story**
+
    - Frame problems as journey of discovery
    - Share the thought process behind solutions
    - Include "aha!" moments that led to understanding
 
 3. **Add Personality Without Compromising Professionalism**
+
    - Use occasional witty comments in code comments
    - Include relevant cultural references when they help explain concepts
    - Share genuine excitement about elegant solutions
 
 4. **Break Up Heavy Content**
+
    - Insert relevant memes or technical humor where appropriate
    - Use emojis sparingly and purposefully
    - Include interesting asides in blockquotes
@@ -131,19 +141,19 @@ the window! 😭 Let's fix this mess...
 ```typescript
 // Instead of:
 function processData(data: any[]) {
-    // Implementation here
+  // Implementation here
 }
 
 // Try:
 function processData(data: any[]) {
-    // Buckle up! We're about to transform this data faster 
-    // than you can say "O(n log n)"
-    // Pro tip: Keep a cup of coffee nearby, we'll need it...
+  // Buckle up! We're about to transform this data faster
+  // than you can say "O(n log n)"
+  // Pro tip: Keep a cup of coffee nearby, we'll need it...
 }
 ```
 
-> 💡 Pro tip: Sometimes the most elegant solution isn't the most practical. 
-> Just like how a perfect single-page application sounds great until you 
+> 💡 Pro tip: Sometimes the most elegant solution isn't the most practical.
+> Just like how a perfect single-page application sounds great until you
 > realize your users are still waiting for that 5MB JavaScript bundle to load!
 
 ### Interactive Components
@@ -162,17 +172,14 @@ import { useState } from 'react';
 
 function InteractiveDemo({ initialData }) {
   const [data, setData] = useState(initialData);
-  
+
   // Add error boundary wrapper in actual implementation
-  return (
-    <div className="demo-container">
-      {/* Your interactive content */}
-    </div>
-  );
+  return <div className="demo-container">{/* Your interactive content */}</div>;
 }
 ```
 
 2. **Visualization Components**
+
    - Use web-native libraries (D3.js, Chart.js, etc.)
    - Ensure responsive design for all screen sizes
    - Provide fallback static images
@@ -212,12 +219,14 @@ For specialized use cases (like Python with PyScript), include additional setup 
 ## Privacy-Conscious Content
 
 ### Do's
+
 - Use generic examples
 - Focus on technical concepts
 - Reference public documentation
 - Use sample data and placeholder names
 
 ### Don'ts
+
 - Include real user data
 - Reference internal systems
 - Share proprietary code
@@ -242,12 +251,14 @@ For specialized use cases (like Python with PyScript), include additional setup 
 ## Tools and Resources
 
 ### Recommended Tools
+
 - Markdown editor with preview
 - Code formatter for snippets
 - Image optimization tools
 - Diagram creation tools (Mermaid)
 
 ### Useful Resources
+
 - [Astro Documentation](https://docs.astro.build/)
 - [MDX Documentation](https://mdxjs.com/)
 - [PyScript Documentation](https://docs.pyscript.net/)
@@ -276,4 +287,4 @@ Before publishing, ensure your article:
 6. Commit using conventional commit format
 7. Deploy when ready
 
-Remember: This blog serves as both a personal knowledge base and a resource for others. Each article should provide clear value and maintain high technical standards while preserving anonymity. 
+Remember: This blog serves as both a personal knowledge base and a resource for others. Each article should provide clear value and maintain high technical standards while preserving anonymity.

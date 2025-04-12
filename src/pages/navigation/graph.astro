@@ -21,25 +21,27 @@ const posts = await getCollection('blog');
 // Generate graph data
 const graphData = generateGraphData(posts);
 // eslint-disable-next-line no-console
-console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${graphData.links.length} links`);
+console.log(
+  `Graph data generated with ${graphData.nodes.length} nodes and ${graphData.links.length} links`
+);
 ---
 
 <Layout title="Content Graph">
   <main>
     <h1>Content Graph</h1>
     <p class="description">Explore connections between posts and topics</p>
-    
+
     <div class="tabs">
       <a href={getPath('')} class="tab">Content Map</a>
       <a href={getPath('navigation/graph')} class="tab active">Graph View</a>
       <a href={getPath('navigation/tags')} class="tab">All Tags</a>
       <a href={getPath('search')} class="tab">Search</a>
     </div>
-    
+
     <div class="graph-container">
       <GraphView graphData={graphData} client:only="react" />
     </div>
-    
+
     <div class="legend">
       <h3 class="legend-title">Graph Legend</h3>
       <div class="legend-content">
@@ -60,7 +62,7 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
             </div>
           </div>
         </div>
-        
+
         <div class="legend-section">
           <h4>Links</h4>
           <div class="legend-items">
@@ -75,7 +77,7 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
             </div>
           </div>
         </div>
-        
+
         <div class="legend-section">
           <h4>Interactions</h4>
           <div class="legend-items tips">
@@ -96,22 +98,22 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
     margin: 0 auto;
     padding: 1rem;
   }
-  
+
   h1 {
     margin-bottom: 0.5rem;
   }
-  
+
   .description {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .tabs {
     display: flex;
     margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
   }
-  
+
   .tab {
     padding: 0.5rem 1rem;
     text-decoration: none;
@@ -119,17 +121,17 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
   }
-  
+
   .tab:hover {
     color: var(--text-primary);
     border-bottom-color: var(--border-color);
   }
-  
+
   .tab.active {
     color: var(--text-primary);
     border-bottom-color: var(--accent-light);
   }
-  
+
   .graph-container {
     overflow: hidden;
     background-color: var(--bg-primary);
@@ -137,89 +139,103 @@ console.log(`Graph data generated with ${graphData.nodes.length} nodes and ${gra
     height: 70vh; /* Make graph taller */
     min-height: 500px;
   }
-  
+
   .legend {
     background-color: var(--bg-secondary);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
   }
-  
+
   .legend-title {
     margin-top: 0;
     margin-bottom: 1rem;
     font-size: 1.1rem;
     text-align: center;
   }
-  
+
   .legend-content {
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
     justify-content: space-around;
   }
-  
+
   .legend-section {
     flex: 1;
     min-width: 200px;
   }
-  
+
   .legend-section h4 {
     margin-top: 0;
     margin-bottom: 0.75rem;
     font-size: 1rem;
   }
-  
+
   .legend-items {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .legend-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
   }
-  
+
   .dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
   }
-  
+
   .line {
     width: 24px;
     height: 2px;
   }
-  
-  .moc { background-color: #2980b9; }
-  .tag { background-color: #8e44ad; }
-  .evergreen { background-color: #27ae60; }
-  .fleeting { background-color: #e74c3c; }
-  .in-moc { background-color: #2980b9; }
-  .has-tag { background-color: #d35400; }
-  .related { background-color: #8e44ad; }
-  
+
+  .moc {
+    background-color: #2980b9;
+  }
+  .tag {
+    background-color: #8e44ad;
+  }
+  .evergreen {
+    background-color: #27ae60;
+  }
+  .fleeting {
+    background-color: #e74c3c;
+  }
+  .in-moc {
+    background-color: #2980b9;
+  }
+  .has-tag {
+    background-color: #d35400;
+  }
+  .related {
+    background-color: #8e44ad;
+  }
+
   .tips {
     font-size: 0.85rem;
     color: var(--text-secondary);
   }
-  
+
   .tip {
     margin-bottom: 0.25rem;
   }
-  
+
   @media (max-width: 768px) {
     .legend-content {
       flex-direction: column;
       gap: 1.5rem;
     }
-    
+
     .graph-container {
       height: 60vh;
       min-height: 400px;
     }
   }
-</style> 
+</style>

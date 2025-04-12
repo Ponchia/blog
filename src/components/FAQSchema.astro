@@ -1,10 +1,10 @@
 ---
 /**
  * FAQSchema Component
- * 
+ *
  * Adds structured data for FAQ sections to improve search visibility.
  * This helps Google display rich results for FAQ content.
- * 
+ *
  * @param {Array} questions - Array of objects with question and answer properties
  */
 
@@ -25,17 +25,22 @@ if (questions && questions.length > 0) {
 }
 ---
 
-{questions && questions.length > 0 && (
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": questions.map(item => ({
-      "@type": "Question",
-      "name": item.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.answer
-      }
-    }))
-  })}></script>
-)}
+{
+  questions && questions.length > 0 && (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: questions.map(item => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.answer,
+          },
+        })),
+      })}
+    />
+  )
+}

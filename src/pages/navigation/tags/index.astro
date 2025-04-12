@@ -18,38 +18,44 @@ const posts = await getCollection('blog');
 
 // Get all tags and count occurrences
 const tags = getAllTags(posts);
-const tagCounts = tags.map(tag => {
-  const count = posts.filter(post => post.data.tags && post.data.tags.includes(tag)).length;
-  return { tag, count };
-}).sort((a, b) => b.count - a.count);
+const tagCounts = tags
+  .map(tag => {
+    const count = posts.filter(post => post.data.tags && post.data.tags.includes(tag)).length;
+    return { tag, count };
+  })
+  .sort((a, b) => b.count - a.count);
 ---
 
 <Layout title="All Tags">
   <main>
     <h1>All Tags</h1>
     <p class="description">Browse content by tags</p>
-    
+
     <div class="tabs">
       <a href={getPath('')} class="tab">Content Map</a>
       <a href={getPath('navigation/graph')} class="tab">Graph View</a>
       <a href={getPath('navigation/tags')} class="tab active">All Tags</a>
       <a href={getPath('search')} class="tab">Search</a>
     </div>
-    
-    {tagCounts.length === 0 ? (
-      <div class="empty-state">
-        <p>No tags found. Start adding tags to your posts.</p>
-      </div>
-    ) : (
-      <div class="tag-grid">
-        {tagCounts.map(({ tag, count }) => (
-          <a href={getPath(`navigation/tags/${slugify(tag)}`)} class="tag-card">
-            <h2>{tag}</h2>
-            <span class="count">{count} {count === 1 ? 'post' : 'posts'}</span>
-          </a>
-        ))}
-      </div>
-    )}
+
+    {
+      tagCounts.length === 0 ? (
+        <div class="empty-state">
+          <p>No tags found. Start adding tags to your posts.</p>
+        </div>
+      ) : (
+        <div class="tag-grid">
+          {tagCounts.map(({ tag, count }) => (
+            <a href={getPath(`navigation/tags/${slugify(tag)}`)} class="tag-card">
+              <h2>{tag}</h2>
+              <span class="count">
+                {count} {count === 1 ? 'post' : 'posts'}
+              </span>
+            </a>
+          ))}
+        </div>
+      )
+    }
   </main>
 </Layout>
 
@@ -59,22 +65,22 @@ const tagCounts = tags.map(tag => {
     margin: 0 auto;
     padding: 1rem;
   }
-  
+
   h1 {
     margin-bottom: 0.5rem;
   }
-  
+
   .description {
     margin-bottom: 1.5rem;
     color: #666;
   }
-  
+
   .tabs {
     display: flex;
     margin-bottom: 2rem;
     border-bottom: 1px solid #eee;
   }
-  
+
   .tab {
     padding: 0.5rem 1rem;
     text-decoration: none;
@@ -82,23 +88,23 @@ const tagCounts = tags.map(tag => {
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
   }
-  
+
   .tab:hover {
     color: #333;
     border-bottom-color: #ddd;
   }
-  
+
   .tab.active {
     color: #000;
     border-bottom-color: #3498db;
   }
-  
+
   .tag-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 1.5rem;
   }
-  
+
   .tag-card {
     border: 1px solid #eee;
     border-radius: 8px;
@@ -113,24 +119,24 @@ const tagCounts = tags.map(tag => {
     justify-content: center;
     text-align: center;
   }
-  
+
   .tag-card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transform: translateY(-3px);
     border-color: #3498db;
   }
-  
+
   .tag-card h2 {
     margin: 0 0 0.5rem 0;
     font-size: 1.25rem;
     color: #333;
   }
-  
+
   .count {
     font-size: 0.9rem;
     color: #666;
   }
-  
+
   .empty-state {
     text-align: center;
     padding: 2rem;
@@ -138,10 +144,10 @@ const tagCounts = tags.map(tag => {
     border-radius: 8px;
     color: #666;
   }
-  
+
   @media (max-width: 768px) {
     .tag-grid {
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     }
   }
-</style> 
+</style>

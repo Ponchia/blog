@@ -17,11 +17,11 @@ function getPath(path: string) {
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   const mocs = getAllMocs(posts);
-  
+
   return mocs.map(moc => {
     return {
       params: { slug: slugify(moc) },
-      props: { mocName: moc, posts: getPostsByMoc(posts, moc) }
+      props: { mocName: moc, posts: getPostsByMoc(posts, moc) },
     };
   });
 }
@@ -32,15 +32,27 @@ const { mocName, posts } = Astro.props;
 <Layout title={`${mocName} - Map of Content`}>
   <main class="high-contrast">
     <div class="breadcrumbs text-primary">
-      <a href={getPath('map')} class="text-primary">Maps of Content</a> &rsaquo; <span class="text-primary">{mocName}</span>
+      <a href={getPath('map')} class="text-primary">Maps of Content</a> &rsaquo; <span
+        class="text-primary">{mocName}</span
+      >
     </div>
-    
+
     <h1 class="text-primary">{mocName}</h1>
     <p class="description text-primary">Explore posts related to this topic</p>
-    
+
     <div class="actions">
       <a href={getPath('graph')} class="action-btn text-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="12" cy="12" r="10"></circle>
           <circle cx="12" cy="12" r="4"></circle>
           <line x1="21.17" y1="8" x2="12" y2="8"></line>
@@ -50,50 +62,60 @@ const { mocName, posts } = Astro.props;
         View in Graph
       </a>
     </div>
-    
+
     <div class="post-list">
       <h2 class="text-primary">Posts ({posts.length})</h2>
-      
-      {posts.length === 0 ? (
-        <div class="empty-state">
-          <p class="text-primary">No posts found in this category.</p>
-        </div>
-      ) : (
-        <ul>
-          {posts.map(post => (
-            <li>
-              <div class="post-card high-contrast">
-                <div class="post-header">
-                  <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title text-primary">
-                    <span class={`status-indicator ${post.data.status}`}></span>
-                    {post.data.title}
-                  </a>
-                  <div class="post-date text-primary">{post.data.pubDate?.toLocaleDateString()}</div>
+
+      {
+        posts.length === 0 ? (
+          <div class="empty-state">
+            <p class="text-primary">No posts found in this category.</p>
+          </div>
+        ) : (
+          <ul>
+            {posts.map(post => (
+              <li>
+                <div class="post-card high-contrast">
+                  <div class="post-header">
+                    <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title text-primary">
+                      <span class={`status-indicator ${post.data.status}`} />
+                      {post.data.title}
+                    </a>
+                    <div class="post-date text-primary">
+                      {post.data.pubDate?.toLocaleDateString()}
+                    </div>
+                  </div>
+
+                  <p class="post-description text-primary">{post.data.description}</p>
+
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="post-tags">
+                      {post.data.tags.map(tag => (
+                        <a href={getPath(`tags/${tag}`)} class="tag text-primary">
+                          {tag}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+
+                  {post.data.mocs && post.data.mocs.filter(moc => moc !== mocName).length > 0 && (
+                    <div class="also-in">
+                      <span class="also-label text-primary">Also in:</span>
+                      {post.data.mocs
+                        .filter(moc => moc !== mocName)
+                        .map(moc => (
+                          <a href={getPath(`mocs/${slugify(moc)}`)} class="also-moc text-primary">
+                            {moc}
+                          </a>
+                        ))}
+                    </div>
+                  )}
                 </div>
-                
-                <p class="post-description text-primary">{post.data.description}</p>
-                
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="post-tags">
-                    {post.data.tags.map(tag => (
-                      <a href={getPath(`tags/${tag}`)} class="tag text-primary">{tag}</a>
-                    ))}
-                  </div>
-                )}
-                
-                {post.data.mocs && post.data.mocs.filter(moc => moc !== mocName).length > 0 && (
-                  <div class="also-in">
-                    <span class="also-label text-primary">Also in:</span>
-                    {post.data.mocs.filter(moc => moc !== mocName).map(moc => (
-                      <a href={getPath(`mocs/${slugify(moc)}`)} class="also-moc text-primary">{moc}</a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </main>
 </Layout>
@@ -104,36 +126,36 @@ const { mocName, posts } = Astro.props;
     margin: 0 auto;
     padding: 1rem;
   }
-  
+
   .breadcrumbs {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .breadcrumbs a {
     color: var(--accent-light);
     text-decoration: none;
   }
-  
+
   .breadcrumbs a:hover {
     text-decoration: underline;
   }
-  
+
   h1 {
     margin-bottom: 0.5rem;
   }
-  
+
   .description {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .actions {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
   }
-  
+
   .action-btn {
     display: flex;
     align-items: center;
@@ -146,18 +168,18 @@ const { mocName, posts } = Astro.props;
     font-size: 0.9rem;
     transition: background-color 0.3s ease;
   }
-  
+
   .action-btn:hover {
     background-color: var(--accent-dark);
     color: var(--text-primary);
   }
-  
+
   .post-list h2 {
     margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
   }
-  
+
   .post-list ul {
     list-style: none;
     padding: 0;
@@ -165,7 +187,7 @@ const { mocName, posts } = Astro.props;
     display: grid;
     gap: 1.5rem;
   }
-  
+
   .post-card {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -173,18 +195,18 @@ const { mocName, posts } = Astro.props;
     transition: box-shadow 0.3s ease;
     background-color: var(--bg-primary);
   }
-  
+
   .post-card:hover {
     box-shadow: 0 5px 15px var(--border-color);
   }
-  
+
   .post-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
   }
-  
+
   .post-title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -194,30 +216,30 @@ const { mocName, posts } = Astro.props;
     align-items: center;
     margin-right: 1rem;
   }
-  
+
   .post-title:hover {
     color: var(--accent-light);
   }
-  
+
   .post-date {
     font-size: 0.85rem;
     color: var(--text-secondary);
     white-space: nowrap;
   }
-  
+
   .post-description {
     color: var(--text-secondary);
     margin-bottom: 1rem;
     line-height: 1.5;
   }
-  
+
   .post-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .tag {
     background-color: var(--bg-secondary);
     padding: 0.25rem 0.5rem;
@@ -225,14 +247,16 @@ const { mocName, posts } = Astro.props;
     font-size: 0.8rem;
     color: var(--text-secondary);
     text-decoration: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
-  
+
   .tag:hover {
     background-color: var(--accent-dark);
     color: var(--text-primary);
   }
-  
+
   .also-in {
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -241,20 +265,20 @@ const { mocName, posts } = Astro.props;
     align-items: center;
     gap: 0.5rem;
   }
-  
+
   .also-label {
     color: var(--text-secondary);
   }
-  
+
   .also-moc {
     color: var(--accent-light);
     text-decoration: none;
   }
-  
+
   .also-moc:hover {
     text-decoration: underline;
   }
-  
+
   .status-indicator {
     display: inline-block;
     width: 8px;
@@ -262,15 +286,15 @@ const { mocName, posts } = Astro.props;
     border-radius: 50%;
     margin-right: 8px;
   }
-  
+
   .status-indicator.evergreen {
     background-color: #27ae60;
   }
-  
+
   .status-indicator.fleeting {
     background-color: #e74c3c;
   }
-  
+
   .empty-state {
     text-align: center;
     padding: 2rem;
@@ -278,36 +302,36 @@ const { mocName, posts } = Astro.props;
     border-radius: 8px;
     color: var(--text-secondary);
   }
-  
+
   @media (max-width: 768px) {
     .post-header {
       flex-direction: column;
       gap: 0.5rem;
     }
-    
+
     .post-date {
       margin-left: 1rem;
     }
   }
-  
+
   .text-primary {
     color: var(--text-primary) !important;
     opacity: 1 !important;
   }
-  
-  [data-theme="dark"] .high-contrast .text-primary,
-  [data-theme="dark"] .high-contrast h1,
-  [data-theme="dark"] .high-contrast p,
-  [data-theme="dark"] .high-contrast span,
-  [data-theme="dark"] .high-contrast a {
+
+  [data-theme='dark'] .high-contrast .text-primary,
+  [data-theme='dark'] .high-contrast h1,
+  [data-theme='dark'] .high-contrast p,
+  [data-theme='dark'] .high-contrast span,
+  [data-theme='dark'] .high-contrast a {
     color: white !important;
   }
-  
-  [data-theme="light"] .high-contrast .text-primary,
-  [data-theme="light"] .high-contrast h1,
-  [data-theme="light"] .high-contrast p,
-  [data-theme="light"] .high-contrast span,
-  [data-theme="light"] .high-contrast a {
+
+  [data-theme='light'] .high-contrast .text-primary,
+  [data-theme='light'] .high-contrast h1,
+  [data-theme='light'] .high-contrast p,
+  [data-theme='light'] .high-contrast span,
+  [data-theme='light'] .high-contrast a {
     color: black !important;
   }
-</style> 
+</style>

@@ -18,12 +18,12 @@ function getPath(path: string) {
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   const mocs = getAllMocs(posts);
-  
+
   return mocs.map(moc => {
     const mocPosts = getPostsByMoc(posts, moc);
     const relatedTags = new Set<string>();
     const relatedMocs = new Set<string>();
-    
+
     // Find related tags and MOCs
     mocPosts.forEach(post => {
       if (post.data.tags) {
@@ -35,15 +35,15 @@ export async function getStaticPaths() {
         });
       }
     });
-    
+
     return {
       params: { slug: slugify(moc) },
-      props: { 
-        mocName: moc, 
+      props: {
+        mocName: moc,
         posts: mocPosts,
         relatedTags: Array.from(relatedTags),
-        relatedMocs: Array.from(relatedMocs)
-      }
+        relatedMocs: Array.from(relatedMocs),
+      },
     };
   });
 }
@@ -56,7 +56,7 @@ function generateMocDescription(posts: CollectionEntry<'blog'>[], mocName: strin
       post.data.tags.forEach(tag => allTags.add(tag));
     }
   });
-  
+
   const tagList = Array.from(allTags).slice(0, 5).join(', ');
   return `Collection of ${posts.length} posts about ${mocName.toLowerCase()} including topics like ${tagList}`;
 }
@@ -75,15 +75,26 @@ const sortedPosts = [...posts].sort((a, b) => {
 <Layout title={`${mocName} - Map of Content`} description={mocDescription}>
   <main>
     <div class="breadcrumbs">
-      <a href={getPath('')}>Home</a> &rsaquo; <a href={getPath('navigation/map')}>Maps of Content</a> &rsaquo; <span>{mocName}</span>
+      <a href={getPath('')}>Home</a> &rsaquo; <a href={getPath('navigation/map')}>Maps of Content</a
+      > &rsaquo; <span>{mocName}</span>
     </div>
-    
+
     <h1>{mocName}</h1>
     <p class="description">{mocDescription}</p>
-    
+
     <div class="actions">
       <a href={getPath('navigation/graph')} class="action-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="12" cy="12" r="10"></circle>
           <circle cx="12" cy="12" r="4"></circle>
           <line x1="21.17" y1="8" x2="12" y2="8"></line>
@@ -93,84 +104,97 @@ const sortedPosts = [...posts].sort((a, b) => {
         View in Graph
       </a>
     </div>
-    
-    {relatedTags.length > 0 || relatedMocs.length > 0 && (
-      <div class="related-container">
-        {relatedTags.length > 0 && (
-          <div class="related-tags">
-            <h3>Related Tags</h3>
-            <div class="tag-cloud">
-              {relatedTags.map(tag => (
-                <a href={getPath(`navigation/tags/${tag}`)} class="tag">{tag}</a>
-              ))}
-            </div>
+
+    {
+      relatedTags.length > 0 ||
+        (relatedMocs.length > 0 && (
+          <div class="related-container">
+            {relatedTags.length > 0 && (
+              <div class="related-tags">
+                <h3>Related Tags</h3>
+                <div class="tag-cloud">
+                  {relatedTags.map(tag => (
+                    <a href={getPath(`navigation/tags/${tag}`)} class="tag">
+                      {tag}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {relatedMocs.length > 0 && (
+              <div class="related-mocs">
+                <h3>Related Topics</h3>
+                <div class="moc-list">
+                  {relatedMocs.map(relatedMoc => (
+                    <a href={getPath(`navigation/mocs/${slugify(relatedMoc)}`)} class="related-moc">
+                      <span class="moc-icon">📚</span> {relatedMoc}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        
-        {relatedMocs.length > 0 && (
-          <div class="related-mocs">
-            <h3>Related Topics</h3>
-            <div class="moc-list">
-              {relatedMocs.map(relatedMoc => (
-                <a href={getPath(`navigation/mocs/${slugify(relatedMoc)}`)} class="related-moc">
-                  <span class="moc-icon">📚</span> {relatedMoc}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    )}
-    
+        ))
+    }
+
     <div class="post-list">
       <h2>Posts ({posts.length})</h2>
-      
-      {posts.length === 0 ? (
-        <div class="empty-state">
-          <p>No posts found in this category.</p>
-        </div>
-      ) : (
-        <ul>
-          {sortedPosts.map(post => (
-            <li>
-              <div class="post-card">
-                <div class="post-header">
-                  <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title">
-                    <span class={`status-indicator ${post.data.status || 'fleeting'}`}></span>
-                    {post.data.title}
-                  </a>
-                  <div class="post-date">
-                    {post.data.pubDate ? (
-                      post.data.pubDate instanceof Date 
-                        ? post.data.pubDate.toLocaleDateString() 
-                        : new Date(post.data.pubDate).toLocaleDateString()
-                    ) : 'No date'}
+
+      {
+        posts.length === 0 ? (
+          <div class="empty-state">
+            <p>No posts found in this category.</p>
+          </div>
+        ) : (
+          <ul>
+            {sortedPosts.map(post => (
+              <li>
+                <div class="post-card">
+                  <div class="post-header">
+                    <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title">
+                      <span class={`status-indicator ${post.data.status || 'fleeting'}`} />
+                      {post.data.title}
+                    </a>
+                    <div class="post-date">
+                      {post.data.pubDate
+                        ? post.data.pubDate instanceof Date
+                          ? post.data.pubDate.toLocaleDateString()
+                          : new Date(post.data.pubDate).toLocaleDateString()
+                        : 'No date'}
+                    </div>
                   </div>
+
+                  <p class="post-description">{post.data.description}</p>
+
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="post-tags">
+                      {post.data.tags.map(tag => (
+                        <a href={getPath(`navigation/tags/${tag}`)} class="tag">
+                          {tag}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+
+                  {post.data.mocs && post.data.mocs.filter(moc => moc !== mocName).length > 0 && (
+                    <div class="also-in">
+                      <span class="also-label">Also in:</span>
+                      {post.data.mocs
+                        .filter(moc => moc !== mocName)
+                        .map(moc => (
+                          <a href={getPath(`navigation/mocs/${slugify(moc)}`)} class="also-moc">
+                            {moc}
+                          </a>
+                        ))}
+                    </div>
+                  )}
                 </div>
-                
-                <p class="post-description">{post.data.description}</p>
-                
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="post-tags">
-                    {post.data.tags.map(tag => (
-                      <a href={getPath(`navigation/tags/${tag}`)} class="tag">{tag}</a>
-                    ))}
-                  </div>
-                )}
-                
-                {post.data.mocs && post.data.mocs.filter(moc => moc !== mocName).length > 0 && (
-                  <div class="also-in">
-                    <span class="also-label">Also in:</span>
-                    {post.data.mocs.filter(moc => moc !== mocName).map(moc => (
-                      <a href={getPath(`navigation/mocs/${slugify(moc)}`)} class="also-moc">{moc}</a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </main>
 </Layout>
@@ -181,36 +205,36 @@ const sortedPosts = [...posts].sort((a, b) => {
     margin: 0 auto;
     padding: 1rem;
   }
-  
+
   .breadcrumbs {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .breadcrumbs a {
     color: var(--accent-light);
     text-decoration: none;
   }
-  
+
   .breadcrumbs a:hover {
     text-decoration: underline;
   }
-  
+
   h1 {
     margin-bottom: 0.5rem;
   }
-  
+
   .description {
     margin-bottom: 1.5rem;
     color: var(--text-secondary);
   }
-  
+
   .actions {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
   }
-  
+
   .action-btn {
     display: flex;
     align-items: center;
@@ -223,12 +247,12 @@ const sortedPosts = [...posts].sort((a, b) => {
     font-size: 0.9rem;
     transition: background-color 0.3s ease;
   }
-  
+
   .action-btn:hover {
     background-color: var(--accent-dark);
     color: var(--text-primary);
   }
-  
+
   .related-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -239,25 +263,26 @@ const sortedPosts = [...posts].sort((a, b) => {
     padding: 1.5rem;
     background-color: var(--bg-secondary);
   }
-  
-  .related-tags h3, .related-mocs h3 {
+
+  .related-tags h3,
+  .related-mocs h3 {
     margin-top: 0;
     margin-bottom: 1rem;
     font-size: 1.1rem;
   }
-  
+
   .tag-cloud {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .moc-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .related-moc {
     display: flex;
     align-items: center;
@@ -266,21 +291,21 @@ const sortedPosts = [...posts].sort((a, b) => {
     text-decoration: none;
     padding: 0.25rem 0;
   }
-  
+
   .related-moc:hover {
     text-decoration: underline;
   }
-  
+
   .moc-icon {
     font-size: 1rem;
   }
-  
+
   .post-list h2 {
     margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
   }
-  
+
   .post-list ul {
     list-style: none;
     padding: 0;
@@ -288,7 +313,7 @@ const sortedPosts = [...posts].sort((a, b) => {
     display: grid;
     gap: 1.5rem;
   }
-  
+
   .post-card {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -296,18 +321,18 @@ const sortedPosts = [...posts].sort((a, b) => {
     transition: box-shadow 0.3s ease;
     background-color: var(--bg-primary);
   }
-  
+
   .post-card:hover {
     box-shadow: 0 5px 15px var(--border-color);
   }
-  
+
   .post-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
   }
-  
+
   .post-title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -317,30 +342,30 @@ const sortedPosts = [...posts].sort((a, b) => {
     align-items: center;
     margin-right: 1rem;
   }
-  
+
   .post-title:hover {
     color: var(--accent-light);
   }
-  
+
   .post-date {
     font-size: 0.85rem;
     color: var(--text-secondary);
     white-space: nowrap;
   }
-  
+
   .post-description {
     color: var(--text-secondary);
     margin-bottom: 1rem;
     line-height: 1.5;
   }
-  
+
   .post-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .tag {
     background-color: var(--bg-secondary);
     padding: 0.25rem 0.5rem;
@@ -348,14 +373,16 @@ const sortedPosts = [...posts].sort((a, b) => {
     font-size: 0.8rem;
     color: var(--text-secondary);
     text-decoration: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
-  
+
   .tag:hover {
     background-color: var(--accent-dark);
     color: var(--text-primary);
   }
-  
+
   .also-in {
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -364,20 +391,20 @@ const sortedPosts = [...posts].sort((a, b) => {
     align-items: center;
     gap: 0.5rem;
   }
-  
+
   .also-label {
     color: var(--text-secondary);
   }
-  
+
   .also-moc {
     color: var(--accent-light);
     text-decoration: none;
   }
-  
+
   .also-moc:hover {
     text-decoration: underline;
   }
-  
+
   .status-indicator {
     display: inline-block;
     width: 8px;
@@ -385,15 +412,15 @@ const sortedPosts = [...posts].sort((a, b) => {
     border-radius: 50%;
     margin-right: 8px;
   }
-  
+
   .status-indicator.evergreen {
     background-color: #27ae60;
   }
-  
+
   .status-indicator.fleeting {
     background-color: #e74c3c;
   }
-  
+
   .empty-state {
     text-align: center;
     padding: 2rem;
@@ -401,20 +428,20 @@ const sortedPosts = [...posts].sort((a, b) => {
     border-radius: 8px;
     color: var(--text-secondary);
   }
-  
+
   @media (max-width: 768px) {
     .post-header {
       flex-direction: column;
       gap: 0.5rem;
     }
-    
+
     .post-date {
       margin-left: 1rem;
     }
-    
+
     .related-container {
       grid-template-columns: 1fr;
       gap: 1.5rem;
     }
   }
-</style> 
+</style>
