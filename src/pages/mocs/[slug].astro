@@ -30,16 +30,16 @@ const { mocName, posts } = Astro.props;
 ---
 
 <Layout title={`${mocName} - Map of Content`}>
-  <main>
-    <div class="breadcrumbs">
-      <a href={getPath('map')}>Maps of Content</a> &rsaquo; <span>{mocName}</span>
+  <main class="high-contrast">
+    <div class="breadcrumbs text-primary">
+      <a href={getPath('map')} class="text-primary">Maps of Content</a> &rsaquo; <span class="text-primary">{mocName}</span>
     </div>
     
-    <h1>{mocName}</h1>
-    <p class="description">Explore posts related to this topic</p>
+    <h1 class="text-primary">{mocName}</h1>
+    <p class="description text-primary">Explore posts related to this topic</p>
     
     <div class="actions">
-      <a href={getPath('graph')} class="action-btn">
+      <a href={getPath('graph')} class="action-btn text-primary">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <circle cx="12" cy="12" r="4"></circle>
@@ -52,40 +52,40 @@ const { mocName, posts } = Astro.props;
     </div>
     
     <div class="post-list">
-      <h2>Posts ({posts.length})</h2>
+      <h2 class="text-primary">Posts ({posts.length})</h2>
       
       {posts.length === 0 ? (
         <div class="empty-state">
-          <p>No posts found in this category.</p>
+          <p class="text-primary">No posts found in this category.</p>
         </div>
       ) : (
         <ul>
           {posts.map(post => (
             <li>
-              <div class="post-card">
+              <div class="post-card high-contrast">
                 <div class="post-header">
-                  <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title">
+                  <a href={getPath(`blog/${getPostSlug(post)}`)} class="post-title text-primary">
                     <span class={`status-indicator ${post.data.status}`}></span>
                     {post.data.title}
                   </a>
-                  <div class="post-date">{post.data.pubDate?.toLocaleDateString()}</div>
+                  <div class="post-date text-primary">{post.data.pubDate?.toLocaleDateString()}</div>
                 </div>
                 
-                <p class="post-description">{post.data.description}</p>
+                <p class="post-description text-primary">{post.data.description}</p>
                 
                 {post.data.tags && post.data.tags.length > 0 && (
                   <div class="post-tags">
                     {post.data.tags.map(tag => (
-                      <a href={getPath(`tags/${tag}`)} class="tag">{tag}</a>
+                      <a href={getPath(`tags/${tag}`)} class="tag text-primary">{tag}</a>
                     ))}
                   </div>
                 )}
                 
                 {post.data.mocs && post.data.mocs.filter(moc => moc !== mocName).length > 0 && (
                   <div class="also-in">
-                    <span class="also-label">Also in:</span>
+                    <span class="also-label text-primary">Also in:</span>
                     {post.data.mocs.filter(moc => moc !== mocName).map(moc => (
-                      <a href={getPath(`mocs/${slugify(moc)}`)} class="also-moc">{moc}</a>
+                      <a href={getPath(`mocs/${slugify(moc)}`)} class="also-moc text-primary">{moc}</a>
                     ))}
                   </div>
                 )}
@@ -288,5 +288,26 @@ const { mocName, posts } = Astro.props;
     .post-date {
       margin-left: 1rem;
     }
+  }
+  
+  .text-primary {
+    color: var(--text-primary) !important;
+    opacity: 1 !important;
+  }
+  
+  [data-theme="dark"] .high-contrast .text-primary,
+  [data-theme="dark"] .high-contrast h1,
+  [data-theme="dark"] .high-contrast p,
+  [data-theme="dark"] .high-contrast span,
+  [data-theme="dark"] .high-contrast a {
+    color: white !important;
+  }
+  
+  [data-theme="light"] .high-contrast .text-primary,
+  [data-theme="light"] .high-contrast h1,
+  [data-theme="light"] .high-contrast p,
+  [data-theme="light"] .high-contrast span,
+  [data-theme="light"] .high-contrast a {
+    color: black !important;
   }
 </style> 

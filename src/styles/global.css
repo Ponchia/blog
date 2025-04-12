@@ -469,3 +469,39 @@ hr {
 	clip-path: inset(50%);
 	white-space: nowrap;
 }
+
+/* High contrast mode for blog content */
+.high-contrast {
+	color: white !important;
+}
+
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3,
+.high-contrast h4,
+.high-contrast h5,
+.high-contrast h6,
+.high-contrast p,
+.high-contrast a,
+.high-contrast li,
+.high-contrast blockquote {
+	color: white !important;
+}
+
+.high-contrast a {
+	text-decoration: underline !important;
+}
+
+[data-theme="light"] .high-contrast,
+[data-theme="light"] .high-contrast h1,
+[data-theme="light"] .high-contrast h2,
+[data-theme="light"] .high-contrast h3,
+[data-theme="light"] .high-contrast h4,
+[data-theme="light"] .high-contrast h5,
+[data-theme="light"] .high-contrast h6,
+[data-theme="light"] .high-contrast p,
+[data-theme="light"] .high-contrast a,
+[data-theme="light"] .high-contrast li,
+[data-theme="light"] .high-contrast blockquote {
+	color: rgb(17, 24, 39) !important;
+}

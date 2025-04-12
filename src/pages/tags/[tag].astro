@@ -136,11 +136,11 @@ const { tagName, posts } = Astro.props;
   
   .breadcrumbs {
     margin-bottom: 1.5rem;
-    color: #666;
+    color: var(--text-secondary);
   }
   
   .breadcrumbs a {
-    color: #3498db;
+    color: var(--accent-light);
     text-decoration: none;
   }
   
@@ -154,7 +154,7 @@ const { tagName, posts } = Astro.props;
   
   .description {
     margin-bottom: 1.5rem;
-    color: #666;
+    color: var(--text-secondary);
   }
   
   .actions {
@@ -168,8 +168,8 @@ const { tagName, posts } = Astro.props;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
     text-decoration: none;
     border-radius: 4px;
     font-size: 0.9rem;
@@ -177,12 +177,13 @@ const { tagName, posts } = Astro.props;
   }
   
   .action-btn:hover {
-    background-color: #e0e0e0;
+    background-color: var(--accent);
+    color: var(--bg-primary);
   }
   
   .post-list h2 {
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
   }
   
@@ -195,15 +196,15 @@ const { tagName, posts } = Astro.props;
   }
   
   .post-card {
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.5rem;
     transition: box-shadow 0.3s ease;
-    background-color: #fff;
+    background-color: var(--bg-primary);
   }
   
   .post-card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px var(--border-color);
   }
   
   .post-header {
@@ -217,19 +218,19 @@ const { tagName, posts } = Astro.props;
     font-size: 1.25rem;
     font-weight: 600;
     text-decoration: none;
-    color: #333;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     margin-right: 1rem;
   }
   
   .post-title:hover {
-    color: #3498db;
+    color: var(--accent-light);
   }
   
   .post-date {
     font-size: 0.85rem;
-    color: #999;
+    color: var(--text-secondary);
     white-space: nowrap;
   }
   
@@ -240,7 +241,8 @@ const { tagName, posts } = Astro.props;
   }
   
   .post-description {
-    color: #666;
+    color: var(--text-primary);
+    opacity: 0.9;
     margin-bottom: 1rem;
     line-height: 1.5;
   }
@@ -253,21 +255,23 @@ const { tagName, posts } = Astro.props;
   }
   
   .tag {
-    background-color: #f0f0f0;
+    background-color: var(--bg-secondary);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-primary);
+    opacity: 0.9;
     text-decoration: none;
   }
   
   .tag:hover {
-    background-color: #e0e0e0;
+    background-color: var(--accent);
+    color: var(--bg-primary);
   }
   
   .current-tag {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--accent);
+    color: var(--bg-primary);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.8rem;
@@ -275,7 +279,7 @@ const { tagName, posts } = Astro.props;
   
   .in-mocs {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-secondary);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -283,11 +287,12 @@ const { tagName, posts } = Astro.props;
   }
   
   .in-label {
-    color: #999;
+    color: var(--text-secondary);
+    opacity: 0.8;
   }
   
   .in-moc {
-    color: #3498db;
+    color: var(--accent-light);
     text-decoration: none;
   }
   
