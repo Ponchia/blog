@@ -38,6 +38,8 @@ This document outlines a comprehensive plan to improve SEO for the Astro blog pr
    - ✅ Updated BaseHead props interface to include keywords
    - ✅ Added the ability to pass tags as keywords to meta tags
    - ✅ Added performance resource hints (preconnect, dns-prefetch)
+   - ✅ Created title template system in consts.ts
+   - ✅ Implemented title formatting with template option
 
 3. **Structured Data Enhancements**:
    - ✅ Enhanced BlogPosting schema with `@id` properties
@@ -50,6 +52,12 @@ This document outlines a comprehensive plan to improve SEO for the Astro blog pr
    - ✅ Added prevention for duplicate content issues in robots.txt
    - ✅ Added Host directive for canonical domain
 
+5. **Content Optimization Tools**:
+   - ✅ Added utility functions for generating descriptions from content
+   - ✅ Created keyword generation helper function
+   - ✅ Added SEO-friendly slug creation utility
+   - ✅ Implemented reading time calculator function
+
 ## Improvement Areas Still to Address
 
 ### 1. Metadata and Content Optimization
@@ -60,11 +68,8 @@ This document outlines a comprehensive plan to improve SEO for the Astro blog pr
 - [ ] Implement keyword-focused content planning
 
 #### Title Optimization
-- [ ] Review and optimize title format (currently `{pageTitle}`)
-- [ ] Create a title template in `consts.ts`:
-  ```typescript
-  export const TITLE_TEMPLATE = "%s | Ponchia's Blog";
-  ```
+- [ ] Review and optimize title format (currently `{pageTitle} | Astro Blog`)
+- [x] Create a title template in `consts.ts`
 - [ ] Ensure titles include target keywords (ideally at the beginning)
 - [ ] Keep titles under 60 characters for optimal display in SERPs
 - [ ] Create more compelling titles that encourage click-through
@@ -74,7 +79,7 @@ This document outlines a comprehensive plan to improve SEO for the Astro blog pr
 - [ ] Include target keywords in descriptions
 - [ ] Keep descriptions between 120-155 characters
 - [ ] Add call-to-actions where appropriate
-- [ ] Implement automatic description fallbacks using first paragraph when none provided
+- [x] Implement automatic description fallbacks using first paragraph when none provided
 
 ### 2. Technical SEO Enhancements
 
@@ -158,6 +163,7 @@ This document outlines a comprehensive plan to improve SEO for the Astro blog pr
 - ✅ Create/update robots.txt 
 - ✅ Enhance BlogPosting schema in BlogPost.astro
 - ✅ Implement basic performance improvements
+- ✅ Create title template system
 
 ### Short-term (1-2 Weeks)
 1. [ ] Conduct keyword research and create content map
