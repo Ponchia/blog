@@ -10,8 +10,11 @@ import EnhancedOptimizedImage from '../components/EnhancedOptimizedImage.astro';
 import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 import JsonLD from '../components/JsonLD.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
+import { generateKeywords } from '../utils/content-helpers';
 
-type Props = CollectionEntry<'blog'>['data'] & { minutesRead?: string };
+type Props = CollectionEntry<'blog'>['data'] & { 
+  minutesRead?: string;
+};
 
 const {
   title,
@@ -72,6 +75,9 @@ const currentPath = Astro.url.pathname;
 // Current slug for related posts
 const currentSlug = currentPath.split('/').pop() || '';
 
+// Generate keywords string from tags and add key topics
+const keywordsString = generateKeywords(tags, ['blog', 'tech', 'development']);
+
 // Generate schema data for JsonLD component
 const schemaData = {
   '@context': 'https://schema.org',
@@ -108,14 +114,14 @@ const schemaData = {
     name: "Ponchia's Blog"
   },
   articleBody: description,
-  keywords: tags?.join(', '),
+  keywords: keywordsString,
   wordCount: minutesRead ? parseInt(minutesRead) * 200 : undefined,
 };
 ---
 
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} keywords={tags?.join(', ')} />
+    <BaseHead title={title} description={description} keywords={keywordsString} />
 
     <!-- Add breadcrumb schema -->
     <BreadcrumbSchema
