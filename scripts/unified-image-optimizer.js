@@ -47,7 +47,7 @@ if (!fs.existsSync(assetsDir)) {
 // Logging function
 function log(message, force = false) {
   if (options.verbose || force) {
-    console.log(message);
+    process.stdout.write(`${message}\n`);
   }
 }
 

@@ -21,18 +21,7 @@ const { questions } = Astro.props;
 
 // Only render if there are actually questions
 if (questions && questions.length > 0) {
-  const faqData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": questions.map(item => ({
-      "@type": "Question",
-      "name": item.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.answer
-      }
-    }))
-  };
+  // The schema data is now used directly in the script tag below
 }
 ---
 

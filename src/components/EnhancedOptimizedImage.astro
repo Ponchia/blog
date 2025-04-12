@@ -34,9 +34,6 @@ const {
   usePlaceholder = false
 } = Astro.props;
 
-// Generate a unique ID for this component instance
-const uniqueId = `image-${Math.random().toString(36).slice(2, 11)}`;
-
 // Process the image using sharp
 let optimizedImage = { src: typeof src === 'object' && 'src' in src ? src.src : src };
 let placeholderImage = null;
@@ -86,6 +83,7 @@ try {
 if (usePlaceholder && placeholder === 'blur' && placeholderImage) {
   showPlaceholder = true;
 }
+---
 
 {showPlaceholder && placeholderImage && (
   <div class="optimized-image-container">

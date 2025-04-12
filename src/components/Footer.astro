@@ -101,14 +101,15 @@ function getPath(path: string) {
 	}
 	
 	.sitemap-section a {
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 		text-decoration: none;
 		font-size: 0.9rem;
 		transition: color 0.2s ease;
 	}
 	
 	.sitemap-section a:hover {
-		color: var(--accent-light);
+		color: var(--text-primary);
 		text-decoration: underline;
 	}
 	
@@ -123,7 +124,8 @@ function getPath(path: string) {
 		margin: 0;
 		font-size: 0.9rem;
 		letter-spacing: 0.5px;
-		color: var(--text-secondary);
+		color: var(--text-primary);
+		opacity: 0.9;
 	}
 	
 	@media (max-width: 768px) {
