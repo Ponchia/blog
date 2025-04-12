@@ -26,3 +26,16 @@ pnpm-debug.log*
 .cursor/*
 
 .vscode/*
+
+# Playwright testing artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+**/accessibility-report/
+
+# Temporary test files
+blog_page.html
+**/temporary-*
+**/temp-*
+**/.last-run.json
