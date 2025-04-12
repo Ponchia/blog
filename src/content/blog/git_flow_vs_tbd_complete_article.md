@@ -1,7 +1,7 @@
 ---
 title: 'Git Flow vs. Trunk-Based Development: Choosing the Right Branching Strategy'
 description: 'An in-depth comparison of Git Flow and Trunk-Based Development branching strategies, with practical guidelines for choosing the right approach for your team.'
-pubDate: 'Apr 02 2024'
+pubDate: 'Apr 01 2025'
 heroImage: '/blog/git_flow_vs_tbd.jpg'
 tags: ['git', 'workflow', 'development', 'continuous-integration']
 draft: true
